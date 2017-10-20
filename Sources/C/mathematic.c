@@ -20,19 +20,16 @@ float* autocorrelate(float* signal, int sizeInBytesSignal){
     limit = 0;
     delay = 0;
     for (k = -(nbDataSignal-1) ; k < nbDataSignal ; ++k){
-        if( k < 0 ){
-            limit++;
+        limit++;
+
+        if( k <= 0 )
             dSignalIndex = -k;
-        }
         else if( k > 0 ){
-            limit--;
+            limit = limit - 2;
             dSignalIndex = 0;
             delay++;
         }
-        else if( k == 0 ){
-            limit++;
-            dSignalIndex = 0;
-        }
+
         for (i = 0 ; i < limit ; ++i){
             corrArr[corrArrIndex] = corrArr[corrArrIndex] + signal[i + delay] * signal[dSignalIndex];
             dSignalIndex++;
