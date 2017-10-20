@@ -8,6 +8,6 @@
 #ifndef INCLUDES_MATHEMATIC_H_
 #define INCLUDES_MATHEMATIC_H_
 
-float* autocorrelate(float* signal,  int sizeInBytesSignal);
+float* autocorrelate(float* signal,  int nbDataSignal);
 
 #endif /* INCLUDES_MATHEMATIC_H_ */
