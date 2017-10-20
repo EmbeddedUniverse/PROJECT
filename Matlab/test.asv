@@ -120,10 +120,10 @@ clc
 formatSpec = '%f';
 
 pre_autocorrelation_data_C_file = fopen('pre_autocorrelation_data_C.txt','r');
-pre_autocorrelation_data_C = fscanf(pre_autocorrelation_data_C_file,formatSpec);
+pre_autocorrelation_data_C = fscanf(pre_autocorrelation_data_C_file,formatSpec)
 
 autocorrelation_results_C_file = fopen('autocorrelation_results_C.txt','r');
-autocorrelation_results_C = fscanf(autocorrelation_results_C_file,formatSpec);
+autocorrelation_results_C = fscanf(autocorrelation_results_C_file,formatSpec)
 
 fclose(pre_autocorrelation_data_C_file);
 fclose(autocorrelation_results_C_file);
@@ -131,18 +131,35 @@ fclose(autocorrelation_results_C_file);
 % Number of signal data in input
 number_of_data_input = length(pre_autocorrelation_data_C);
 
+
+
 % Test
-R_xcorr = xcorr(pre_autocorrelation_data_C);
+R1_xcorr = xcorr(x1);
+R2_xcorr = xcorr(x2);
+R3_xcorr = xcorr(x3);
 
-R_recoded = autocorrelate(pre_autocorrelation_data_C);
-
-R_C = autocorrelation_results_C;
+R1_recoded = autocorrelate(x1);
+R2_recoded = autocorrelate(x2);
+R3_recoded = autocorrelate(x3);
 
 k = -(number_of_data_input-1):(number_of_data_input-1);
 
 figure()
-plot(k , R_xcorr, 'r', k , R_recoded, 'b--o', k , R_C, 'g--x')
-title('Autocorrelation comparison with Matlab and C algorythms')
+subplot(3,1,1)
+plot(k , R1_xcorr, 'r', k , R1_recoded, 'b--o')
+title('Autocorrelation with constant pulse input value')
 xlabel('k delay')
 ylabel('Correlation')
-legend('Matlab','Recoded', 'C')
+legend('Matlab','Recoded')
+subplot(3,1,2)
+plot(k , R2_xcorr, 'r', k , R2_recoded, 'b--o')
+title('Autocorrelation with minimal input value')
+xlabel('k delay')
+ylabel('Correlation')
+legend('Matlab','Recoded')
+subplot(3,1,3)
+plot(k , R3_xcorr, 'r', k , R3_recoded, 'b--o')
+title('Autocorrelation with random input values')
+xlabel('k delay')
+ylabel('Correlation')
+legend('Matlab','Recoded')

@@ -48,8 +48,9 @@ float* autocorrelate(float* signal, int sizeInBytesSignal){
             }
 
         }
-        else if( k == 0){
-            delayedSignal = signal;
+        else if( k == 0 ){
+            for(i = 0 ; i < nbDataSignal ; ++i)
+                delayedSignal[i] = signal[i];
         }
 
         for (m = 0 ; m < nbDataSignal ; ++m){
