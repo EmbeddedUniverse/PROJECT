@@ -10,7 +10,7 @@
 #include <stdbool.h>
 
 //TODO:General tests (Miscellaneous)
-bool test1(); //Example to erase or replace
+bool test1(); //Example to erase
 
 
 //TODO:Project features unit test

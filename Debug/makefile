@@ -11,6 +11,7 @@ GEN_CMDS__FLAG :=
 
 ORDERED_OBJS += \
 "./Sources/C/main.obj" \
+"./Sources/C/mathematic.obj" \
 "./Sources/C/test.obj" \
 $(GEN_CMDS__FLAG) \
 -llibc.a \
@@ -156,8 +157,8 @@ PROJECT.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "Sources\C\main.obj" "Sources\C\test.obj" 
-	-$(RM) "Sources\C\main.d" "Sources\C\test.d" 
+	-$(RM) "Sources\C\main.obj" "Sources\C\mathematic.obj" "Sources\C\test.obj" 
+	-$(RM) "Sources\C\main.d" "Sources\C\mathematic.d" "Sources\C\test.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
