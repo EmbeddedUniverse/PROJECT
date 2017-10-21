@@ -5,8 +5,7 @@
  *      Author: para2709
  */
 
-#include "../../Includes/mathematic.h"
-
+#include "mathematic.h"
 
 
 float* autocorrelate(float* signal, int sizeInBytesSignal){
@@ -22,7 +21,6 @@ float* autocorrelate(float* signal, int sizeInBytesSignal){
         int k = i - (N-1);
         int start = (k > 0) ? k : 0;
         int end = (k < 0) ? i : N-1;
-        int sum = 0;
 
         for(int n = start; n <= end; ++n)
             result[i] += signal[n] * signal[n-k];
