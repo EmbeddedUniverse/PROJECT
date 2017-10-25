@@ -11,8 +11,8 @@ main(void){
     float signal[10] = { 2 , 3 , 4 , 5 , 6 , 5 , 4 , 3 , 2 , 1 };
 
     float*corrArr;
-    corrArr = autocorrelate(signal, sizeof(signal)/sizeof(float));
-
+    //corrArr = autocorrelate(signal, sizeof(signal)/sizeof(float));
+    corrArr = autoCorrASM(signal, sizeof(signal)/sizeof(float));
     printf("-----------------------------------");
 
     int i,nbData;

@@ -9,5 +9,6 @@
 #define INCLUDES_MATHEMATIC_H_
 
 float* autocorrelate(float* signal,  int nbDataSignal);
+float* autoCorrASM(float* signal,  int nbDataSignal);
 
 #endif /* INCLUDES_MATHEMATIC_H_ */
