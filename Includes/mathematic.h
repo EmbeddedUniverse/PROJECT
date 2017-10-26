@@ -10,4 +10,6 @@
 
 float* autocorrelate(float* signal,  int nbDataSignal);
 
+float* autocorrelateASM(float* signal,  int nbDataSignal);
+
 #endif /* INCLUDES_MATHEMATIC_H_ */
