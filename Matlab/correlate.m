@@ -27,7 +27,7 @@ temp = zeros(length_signal, length(R));
 
 i=1;
 while i<= length_signal && i < 500
-        temp(i,:)=[zeros(1, i-1),x_norm(i)*refSignal_norm,zeros(1,length_signal-i)];
+        temp(i,:)=[zeros(1, i-1),x_norm(i)*fliplr(refSignal_norm),zeros(1,length_signal-i)];
         R = R+temp(i,:);
         i = i+1;
 end

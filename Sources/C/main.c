@@ -5,14 +5,19 @@
 #include <stdio.h>
 
 #include "../../Includes/mathematic.h"
+#include "../../Includes/correlation.h"
+
+int ResultCorr=0;
 
 main(void){
+
 
     float signal[12] = { 0.06234 , 2.032 , 3.578 , 4.7654 , 1.8233 , 9.8768 , 8.624 , 5.7653 , 7.76584 , 4.3 , 6.77777 , 0.999 };
 
     float*corrArr;
     corrArr = autocorrelate(signal, sizeof(signal)/sizeof(float));
 
+    correlate(signal, signal, sizeof(signal)/sizeof(float), sizeof(signal)/sizeof(float) );
     printf("-----------------------------------");
 
     int i,nbData;
