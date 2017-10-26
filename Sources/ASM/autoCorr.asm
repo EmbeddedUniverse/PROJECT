@@ -13,7 +13,7 @@ _autoCorrASM
 loopNbrResult:
 	;K = B1
 	SUB B4,1,B3 ; (N-1)
-	SUB B0,B3,B1
+	SUB A0,B3,B1
 
 	;START = B2
 	CMPGT B1,0,A2
@@ -22,7 +22,7 @@ loopNbrResult:
 
 	;END = B3
 	CMPLT B1,0,A2
-	[A2] MV B0,B3
+	[A2] MV A0,B3
 	ADD B3,1,B3
 
 loopResult:
