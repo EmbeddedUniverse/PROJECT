@@ -42,28 +42,27 @@ clc
 number_of_data_input = 20;
 
 % Maximal
-x1 = ones(number_of_data_input,1);
+x1 = ones(1,number_of_data_input);
 
 % Minimal
-x2 = zeros(number_of_data_input,1);
+x2 = 2*ones(1,number_of_data_input-4);
 
 % Nominal
-x3 = rand(number_of_data_input,1);
+x3 = rand(1,number_of_data_input);
 
 % Test
-R1 = autocorrelate(x1);
-R2 = autocorrelate(x2);
-R3 = autocorrelate(x3);
+R1 = correlate(x1,x1);
+R2 = correlate(x2,x2);
+R3 = correlate(x3,x3);
 
-k = -(number_of_data_input-1):(number_of_data_input-1);
 
 figure()
 subplot(3,1,1)
-plot(k , R1)
+plot(1:39,R1)
 subplot(3,1,2)
-plot(k , R2)
+plot(1:31,R2)
 subplot(3,1,3)
-plot(k , R3)
+plot(1:39,R3)
 
 %% Test - Autocorrelation functions comparison (Matlab and recoded version)
 clear all
@@ -86,9 +85,9 @@ R1_xcorr = xcorr(x1);
 R2_xcorr = xcorr(x2);
 R3_xcorr = xcorr(x3);
 
-R1_recoded = autocorrelate(x1);
-R2_recoded = autocorrelate(x2);
-R3_recoded = autocorrelate(x3);
+R1_recoded = correlate(x1',x1');
+R2_recoded = correlate(x2',x2');
+R3_recoded = correlate(x3',x3');
 
 k = -(number_of_data_input-1):(number_of_data_input-1);
 
