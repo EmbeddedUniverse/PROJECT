@@ -8,11 +8,14 @@
 
 main(void){
 
-    float signal[10] = { 2 , 3 , 4 , 5 , 6 , 5 , 4 , 3 , 2 , 1 };
-    float output[19]={0};
+    float signal[3] = { 4.3 ,2.5 , 1.7 };
+    float output[5] = {0};
+    int sizeOfSignal = sizeof(signal)/sizeof(float);
+    int sizeOfOutput = sizeof(output)/sizeof(float);
+
     float*corrArr;
     //corrArr = autocorrelate(signal, sizeof(signal)/sizeof(float));
-    autoCorrASM(&signal[0], sizeof(signal)/sizeof(float),&output[0]);
+    autoCorrASM(&signal[0], sizeOfSignal, &output[0],sizeOfOutput);
     printf("-----------------------------------");
 
     int i,nbData;
