@@ -8,15 +8,15 @@
 #define INCLUDES_TEST_H_
 
 #include <stdbool.h>
+#include <stdio.h>
 
 //TODO:General tests (Miscellaneous)
-bool test1(); //Example to erase
+//...
 
+//Tests every written unit tests
+bool unitTest();
 
-//TODO:Project features unit test
-
-
-//TODO:Project features integration test
-
+//Tests every written integration tests
+bool integrationTest();
 
 #endif /* INCLUDES_TEST_H_ */
