@@ -3,7 +3,6 @@
  */
 
 #include <stdio.h>
-
 #include "test.h"
 #include "run.h"
 
