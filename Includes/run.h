@@ -1,15 +1,15 @@
 /*
- * process.h
+ * run.h
  *
  *  Created on: 26 oct. 2017
  *      Author: para2709
  */
 
-#ifndef INCLUDES_PROCESS_H_
-#define INCLUDES_PROCESS_H_
+#include <stdio.h>
 
+#ifndef INCLUDES_RUN_H_
+#define INCLUDES_RUN_H_
 
+void run();
 
-
-
-#endif /* INCLUDES_PROCESS_H_ */
+#endif /* INCLUDES_RUN_H_ */

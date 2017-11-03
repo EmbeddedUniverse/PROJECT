@@ -1,6 +1,6 @@
-	.def _autoCorrASM
+	.def _autocorrelateASM
 
-_autoCorrASM
+_autocorrelateASM
 	.asmfunc
 
 	; A4 = INPUT VALUES

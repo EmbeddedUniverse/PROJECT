@@ -5,9 +5,7 @@
  *      Author: para2709
  */
 
-#include "../../Includes/mathematic.h"
-
-
+#include "mathematic.h"
 
 float* autocorrelate(float* signal, int nbDataSignal){
 
