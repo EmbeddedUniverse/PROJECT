@@ -3,8 +3,8 @@
  */
 
 #include <stdio.h>
-
-#include "../../Includes/mathematic.h"
+#include <stdlib.h>
+#include "mathematic.h"
 
 main(void){
 
@@ -48,5 +48,4 @@ main(void){
         fprintf(f2, "%f\n", corrArr[i]);
 
     fclose(f2);
-
 }
