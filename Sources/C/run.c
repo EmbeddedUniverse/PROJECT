@@ -9,8 +9,8 @@
 
 void run(){
 
-    printf("----------------------------------------------\n");
-    printf("\tRUNNING PROGRAM\n");
+    printf("\n----------------------------------------------\n");
+    printf("\t    RUNNING PROGRAM\n");
     printf("----------------------------------------------\n");
 
     //TODO: Add program code lines and replace the lines below

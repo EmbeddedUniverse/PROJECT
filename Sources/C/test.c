@@ -191,7 +191,7 @@ bool testSelection(testType type){
 }
 
 void printTestResult(char title[], char  author[], char  reviser[], char description[], int ID, char result[]){
-    printf("----------------------------------------------\n");
+    printf("\n----------------------------------------------\n");
     printf("TEST : %s\n", title);
     printf("AUTHOR : %s\n", author);
     printf("REVISER : %s\n", reviser);
@@ -205,11 +205,12 @@ bool askIfTestAgain(){
     char command = 0;
     bool validAnswer = false;
     do{
-        printf("||||||||||||||||||||||||||||||||||||||||||||\n");
+        printf("\n\n||||||||||||||||||||||||||||||||||||||||||||||||||\n");
         printf("\t TEST AGAIN ?  Yes = 1 OR No = 0 ?\n");
-        printf("||||||||||||||||||||||||||||||||||||||||||||\n");
+        printf("||||||||||||||||||||||||||||||||||||||||||||||||||\n");
         printf("\n->Command : ");
         scanf("%d", &command);
+        printf("\n");
         if(command == 0 || command == 1)
             validAnswer = OK;
     }while(!validAnswer);

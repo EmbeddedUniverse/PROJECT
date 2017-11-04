@@ -6,14 +6,22 @@
 #include "test.h"
 #include "run.h"
 
+int clean_stdin()
+{
+    while (getchar()!='\n');
+    return 1;
+}
+
 main(void){
     unsigned short command = 0;
 
     while(1){
-        printf("\n----------------------------------------------\n");
-        printf("\t1 - Run program | 2 - Test | 3 - Exit\n");
-        printf("----------------------------------------------\n");
-        printf("\n\nCommand : ");
+        printf("\n------------------------------------------------------\n");
+        printf("\t    Embedded Universe's Software");
+        printf("\n------------------------------------------------------\n");
+        printf("\t1 - Run program | 2 - Test | 3 - Exit");
+        printf("\n------------------------------------------------------\n");
+        printf("\n\n->Command : ");
         scanf("%d", &command);
 
         if(command == 1)
