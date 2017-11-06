@@ -8,6 +8,8 @@
 #define CORRELATION_H_
 
 #include <stdbool.h>
+#include <stdlib.h>
+#include <math.h>
 
 float* correlate(float* signalX, float* signalRef, int nbDataSignalX, int nbDataSignalRef);
 
