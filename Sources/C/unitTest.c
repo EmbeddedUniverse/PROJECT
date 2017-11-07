@@ -7,6 +7,11 @@
 
 #include "test.h"
 #include "unitTest.h"
+#include "correlation.h"
+#include "mathematic.h"
+#include "TestSignal.dat"
+#include "TestSignalResult.dat"
+
 
 void templateTest(){
     nTest test;
@@ -37,6 +42,7 @@ void autocorrelateTest(){
     test.ID = 1;
     strncpy(test.result,FAIL, 5);
 
+    float* ResAutocorr = autocorrelate(SIGNALREF, TESTSIGNAL);
     //    float signal[10] = { 2 , 3 , 4 , 5 , 6 , 5 , 4 , 3 , 2 , 1 };
     //    float output[19]={0};
     //    float*corrArr;
@@ -78,7 +84,62 @@ void autocorrelateTest(){
     //
     //    fclose(f2);
 
+    int i =0;
+
+    //If the results of each sample of the algorithm match the results obtained with xcorr the test is passed
+    for(i=0; i<TESTSIGNAL; i++)
+    {
+        // The result of the algorithm is within a 0.01% margin of the result obtained with xcorr
+        if(ResAutocorr[i]/SIGNALRES[i] < 1.0001 && ResAutocorr[i]/SIGNALRES[i] > 0.9999)
+        {
+            strncpy(test.result, PASS, 5);
+        }
+        else
+        {
+            strncpy(test.result, FAIL, 5);
+            break;
+        }
+    }
+
     strncpy(test.result, FAIL, 5);
 
     printTestResult(test.title, test.author, test.reviser, test.description, test.ID, test.result);
+}
+
+void correlateTest(){
+    nTest test;
+    strncpy(test.title,"TEST'S CORRELATE TEST", 50);
+    strncpy(test.author,"V.G. & E.B.", 50);
+    strncpy(test.reviser,"NAN", 100);
+    strncpy(test.description,"Test of the function correlate() in C ", 100);
+    test.ID = 2;
+    strncpy(test.result,FAIL, 5);
+
+    int i = 0;
+    float signalreference[TESTSIGNAL];
+    for(i = 0; i<TESTSIGNAL; i++)
+    {
+        signalreference[i] = SIGNALREF[i];
+    }
+
+    float* ResCorr =  correlate(SIGNALREF,signalreference, TESTSIGNAL, TESTSIGNAL);
+
+    //If the results of each sample of the algorithm match the results obtained with xcorr the test is passed
+    for(i=0; i<TESTSIGNAL; i++)
+    {
+        // The result of the algorithm is within a 0.001% margin of the result obtained with xcorr
+        if(ResCorr[i]/SIGNALRES[i] < 1.00001 && ResCorr[i]/SIGNALRES[i] > 0.99999)
+        {
+            strncpy(test.result, PASS, 5);
+        }
+        else
+        {
+            strncpy(test.result, FAIL, 5);
+            break;
+        }
+    }
+
+    //Automatically prints your results
+    printTestResult(test.title, test.author, test.reviser, test.description, test.ID, test.result);
+
 }

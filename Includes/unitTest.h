@@ -8,8 +8,10 @@
 #ifndef INCLUDES_UNITTEST_H_
 #define INCLUDES_UNITTEST_H_
 
+
 //Example below of how to implement a unit/integration test
 void templateTest(void);
 void autocorrelateTest(void);
+void correlateTest(void);
 
 #endif /* INCLUDES_UNITTEST_H_ */

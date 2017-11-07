@@ -81,7 +81,7 @@ float* correlate(float* signalX, float* signalRef, int nbDataSignalX, int nbData
             tempRes[(i*(2*lengthSignal-1)+j)] = x_norm[i]*ref_norm[k];
             j++;
         }
-        for(k = 0; k < (lengthSignal-i); k++)
+        for(k = 0; k < (lengthSignal-1-i); k++)
         {
             tempRes[(i*(2*lengthSignal-1)+j)] = 0;
             j++;
