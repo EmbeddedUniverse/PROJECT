@@ -30,6 +30,7 @@ typedef enum {
 }McBSP_Port;
 
 // Serial functions
-int setupSerial (int McBSP_port, BaudRate baud);
+int setupSerial (McBSP_Port port, BaudRate baud);
+int setReceiveFunction(void (*callback)(char));
 
 #endif /* INCLUDES_SERIAL_H_ */
