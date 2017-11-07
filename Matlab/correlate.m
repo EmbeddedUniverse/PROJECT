@@ -1,4 +1,4 @@
-function [ R ] = correlate( x, refSignal )
+    function [ R ] = correlate( x, refSignal )
 % Function : autocorrelate 
 % Input : entry signal x and refSignal
 % Output : vector R (result of the correlation)

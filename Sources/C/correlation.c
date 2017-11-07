@@ -9,6 +9,7 @@
 
 float* correlate(float* signalX, float* signalRef, int nbDataSignalX, int nbDataSignalRef){
 
+    float*corrArr = (float*)malloc(2*sizeof(float)*nbDataSignalX-sizeof(float));
     float *x_norm;
     float *ref_norm;
     float *tempRes;
@@ -49,53 +50,52 @@ float* correlate(float* signalX, float* signalRef, int nbDataSignalX, int nbData
        lengthSignal = nbDataSignalX;
     }
 
-    ResultCorr = (float*)malloc(sizeof(float)*(lengthSignal*2-1)-sizeof(float));
+    ResultCorr = (float*)malloc(sizeof(float)*(lengthSignal*2-1));
 
     //Instead of creating a 2d array, the temporary array will contain lengthSignal*(lengthSignal*2-1) elements.
-    tempRes = (float*)malloc(sizeof(float)*(lengthSignal*(lengthSignal*2-1))-sizeof(float));
+    tempRes = (float*)malloc(sizeof(float)*(lengthSignal*(lengthSignal*2-1)));
 
     //Reverse ref signal normalized
     float temp;
     for(i = 0; i  < (int)floor(lengthSignal/2); i++)
     {
         temp = ref_norm[i];
-        ref_norm[i] = ref_norm[lengthSignal-i];
-        ref_norm[lengthSignal-i] = temp;
+        ref_norm[i] = ref_norm[(lengthSignal-1)-i];
+        ref_norm[(lengthSignal-1)-i] = temp;
     }
 
     //fill temporary table with values of each iteration
-    for (i = 0; i<lengthSignal; i++ )
+    for (i = 0; i<lengthSignal; i++)
     {
+        j = 0;
         if(i!=0)
         {
-            for(k = 0; k < (i-1); k++ )
+            for(k = 0; k <= (i-1); k++)
             {
-                tempRes[(i*lengthSignal+j)] = 0;
+                tempRes[(i*(2*lengthSignal-1)+j)] = 0;
                 j++;
             }
         }
         for(k = 0; k < lengthSignal ; k++)
         {
-            tempRes[(i*lengthSignal+j)] = x_norm[i]*ref_norm[k];
+            tempRes[(i*(2*lengthSignal-1)+j)] = x_norm[i]*ref_norm[k];
             j++;
         }
-        for(k = 0; k < (lengthSignal-i); k++ )
+        for(k = 0; k < (lengthSignal-i); k++)
         {
-            tempRes[(i*lengthSignal+j)] = 0;
+            tempRes[(i*(2*lengthSignal-1)+j)] = 0;
             j++;
         }
-
-        j = 0;
     }
 
     //Sum each iteration of the temporary table
-    for(j=0; j< lengthSignal; j++)
+    for(i=0; i< (2*lengthSignal-1); i++)
     {
-        for(i = 0; i < lengthSignal; i++)
+        for(j = 0; j < lengthSignal; j++)
         {
-            ResultCorr[j] = ResultCorr[j]+ tempRes[(2*lengthSignal-1)];
+            ResultCorr[i] = ResultCorr[i]+ tempRes[j*(2*lengthSignal-1)+i];
         }
     }
-
-return ResultCorr;
+    corrArr = ResultCorr;
+    return corrArr;
 }
