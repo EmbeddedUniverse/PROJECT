@@ -12,6 +12,8 @@ int clean_stdin()
     return 1;
 }
 
+int ResultCorr=0;
+
 main(void){
     unsigned short command = 0;
 
