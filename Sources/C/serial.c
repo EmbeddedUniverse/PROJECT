@@ -8,7 +8,6 @@
 #include <string.h>
 #include <dsk6713.h>
 #include "serial.h"
-#include "addresses.h"
 #include "constants.h"
 #include "math.h"
 
