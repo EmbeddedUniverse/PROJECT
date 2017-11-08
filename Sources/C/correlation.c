@@ -7,13 +7,9 @@
 
 #include "../../Includes/correlation.h"
 
-float* correlate(float* signalX, float* signalRef, int nbDataSignalX, int nbDataSignalRef){
 
-    float*corrArr = (float*)malloc(2*sizeof(float)*nbDataSignalX-sizeof(float));
-    float *x_norm;
-    float *ref_norm;
-    float *tempRes;
-    float *ResultCorr;
+float* correlate(float* ResultCorr, float* signalX, float* signalRef, float* x_norm, float* ref_norm, float* tempRes, int nbDataSignalX, int nbDataSignalRef){
+
     int lengthSignal;
     int i,j,k;
 
@@ -50,7 +46,11 @@ float* correlate(float* signalX, float* signalRef, int nbDataSignalX, int nbData
        lengthSignal = nbDataSignalX;
     }
 
-    ResultCorr = (float*)malloc(sizeof(float)*(lengthSignal*2-1));
+    //Initialize ResultCorr array to 0
+    for(i=0; i < (lengthSignal*2-1); i++ )
+    {
+        ResultCorr[i] = 0;
+    }
 
     //Instead of creating a 2d array, the temporary array will contain lengthSignal*(lengthSignal*2-1) elements.
     tempRes = (float*)malloc(sizeof(float)*(lengthSignal*(lengthSignal*2-1)));
@@ -96,6 +96,6 @@ float* correlate(float* signalX, float* signalRef, int nbDataSignalX, int nbData
             ResultCorr[i] = ResultCorr[i]+ tempRes[j*(2*lengthSignal-1)+i];
         }
     }
-    corrArr = ResultCorr;
-    return corrArr;
+
+    return ResultCorr;
 }

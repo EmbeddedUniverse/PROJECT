@@ -11,10 +11,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-float* correlate(float* signalX, float* signalRef, int nbDataSignalX, int nbDataSignalRef);
-
-
-
+float* correlate(float* ResultCorr, float* signalX, float* signalRef, float* x_norm, float* ref_norm, float* tempRes, int nbDataSignalX, int nbDataSignalRef);
 
 
 #endif

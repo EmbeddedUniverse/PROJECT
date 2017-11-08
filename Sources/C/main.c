@@ -6,13 +6,14 @@
 #include "test.h"
 #include "run.h"
 
+
+
 int clean_stdin()
 {
     while (getchar()!='\n');
     return 1;
 }
 
-int ResultCorr=0;
 
 main(void){
     unsigned short command = 0;

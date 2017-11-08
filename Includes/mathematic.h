@@ -8,9 +8,12 @@
 #ifndef INCLUDES_MATHEMATIC_H_
 #define INCLUDES_MATHEMATIC_H_
 
-float* autocorrelate(float* signal,  int nbDataSignal);
+#include <stdbool.h>
+#include <stdlib.h>
+#include <math.h>
 
-void autocorrelateASM(float* signal,  int nbDataSignal, float* output);
+float* autocorrelate(float* ResultAutocorr, float* signal,  int nbDataSignal);
+void autocorrelateASM(float* signal,  int nbDataSignal, float* output, int nbDataResult);
 
 
 #endif /* INCLUDES_MATHEMATIC_H_ */

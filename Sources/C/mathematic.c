@@ -7,7 +7,34 @@
 
 #include "mathematic.h"
 
-float* autocorrelate(float* signal, int nbDataSignal){
+float* autocorrelate(float* ResultAutocorr, float* signal, int sizeInBytesSignal)
+{
+    int i,n =0;
+    int N = sizeInBytesSignal;
+
+    int resultLength = 2 * N - 1;
+
+    //Initialize ResultAutocorr array to 0
+    for(i=0; i < resultLength; i++ )
+    {
+        ResultAutocorr[i]=0;
+    }
+
+    //Autocorrelate
+    for(i = 0; i < (resultLength); ++i)
+    {
+        int k = i - (N-1);
+        int start = (k > 0) ? k : 0;
+        int end = (k < 0) ? i : N-1;
+
+        for(n = start; n <= end; ++n)
+            ResultAutocorr[i] += signal[n] * signal[n-k];
+    }
+    return ResultAutocorr;
+}
+
+
+/* float* autocorrelate(float* signal, int nbDataSignal){
 
     // Array containing the autocorrelation results for each value of "k"
     float*corrArr = (float*)malloc(2*sizeof(float)*nbDataSignal-sizeof(float));
@@ -39,4 +66,4 @@ float* autocorrelate(float* signal, int nbDataSignal){
             corrArrIndex++;
         }
     return corrArr;
-}
+}*/

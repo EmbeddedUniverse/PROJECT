@@ -14,14 +14,16 @@ void (*unitTestSelected[]) (void) = {
    //Add unit tests below
    templateTest,
    autocorrelateTest,
-   correlateTest
+   correlateTest,
+   autocorrelateASMTest
 };
 
 char* unitTestName[][30] = {
    //Add unit test's names below
                         {"templateTest"},
                         {"autocorrelateTest"},
-                        {"correlateTest"}
+                        {"correlateTest"},
+                        {"autocorrelateASMTest"}
 };
 
 void (*integrationTestSelected[]) (void) = {
