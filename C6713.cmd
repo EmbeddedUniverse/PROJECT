@@ -65,25 +65,43 @@
 
 MEMORY
 {
-    VECS:   o = 00000000h       l = 00220h /* reset & interrupt vectors     */
-    PMEM:   o = 00000400h       l = 0FC00h /* intended for initialization   */
-    BMEM:   o = 80000000h       l = 10000h /* .bss, .sysmem, .stack, .cinit */
+    IVECS:   o = 00000000h      l = 0x00000400	/* reset & interrupt vectors     */
+    IRAM:    o = 00000400h      l = 0x0002FC00	/* intended for initialization   */
+    L2RAM    o = 0x00030000  	l = 0x00010000  /* 64kB - Internal RAM/CACHE */
+    SDRAM:   o = 80000000h      l = 0x10000000 /* SDRAM in 6713 DSK */
+    EMIFCE1  o = 0x90000000  	l = 0x10000000  /* Flash/CPLD in 6713 DSK */
+    EMIFCE2  o = 0xA0000000  	l = 0x10000000  /* Daughterboard in 6713 DSK */
+	EMIFCE3  o = 0xB0000000 	l = 0x10000000 /* Daughterboard in 6713 DSK */
 }
 
 SECTIONS
 {
-    .vectors     >      VECS
-    .text       >       PMEM
-    .switch     >       PMEM
-    "xmit_buf"  >       BMEM
-    "recv_buf"  >       BMEM
-    .tables     >       BMEM
-    .data       >       BMEM
-    .stack      >       BMEM
-    .bss        >       BMEM
-    .sysmem     >       BMEM
-    .cinit      >       BMEM
-    .const      >       BMEM
-    .cio        >       BMEM
-    .far        >       BMEM
+    .vectors    >       IVECS
+    "xmit_buf"  >       IRAM
+    "recv_buf"  >       IRAM
+    .text          >  IRAM
+    .stack         >  IRAM
+    .bss           >  IRAM
+    .cio           >  IRAM
+    .const         >  IRAM
+    .data          >  IRAM
+    .switch        >  IRAM
+    .sysmem        >  IRAM
+    .far           >  IRAM
+    .args          >  IRAM
+    .ppinfo        >  IRAM
+    .ppdata        >  IRAM
+
+    /* COFF sections */
+    .pinit         >  IRAM
+    .cinit         >  IRAM
+
+    /* EABI sections */
+    .binit         >  IRAM
+    .init_array    >  IRAM
+    .neardata      >  IRAM
+    .fardata       >  IRAM
+    .rodata        >  IRAM
+    .c6xabi.exidx  >  IRAM
+	.c6xabi.extab > IRAM
 }

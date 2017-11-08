@@ -98,6 +98,7 @@
 #include <csl_dma.h>
 #include <csl_irq.h> 
 #include <stdio.h>
+#include <string.h>
 #include <dsk6713.h>
 
 typedef unsigned int Uint32;
@@ -110,26 +111,21 @@ unsigned short xmitbuf[0x0400];
 unsigned short recvbuf[0x0400];
 
 /* Definitions  */
-#define BUFFER_SIZE 27              /* total number of UART data words  */
+#define BUFFER_SIZE 3              /* total number of UART data words  */
 #define TRUE 1
 #define FALSE 0
 
 /* Declare CSL objects */
 MCBSP_Handle hMcbsp0;           /* handle for McBSP1  */
-#if (EDMA_SUPPORT)
-    EDMA_Handle hEdma12;            /* handle for EDMA 14 */
-    EDMA_Handle hEdma13;            /* handle for EDMA 15 */
-#endif
-#if (DMA_SUPPORT)
-    DMA_Handle hDma1;               /* handle for DMA 1 */
-    DMA_Handle hDma2;               /* handle for DMA 2 */
-#endif
+
+EDMA_Handle hEdma12;            /* handle for EDMA 14 */
+EDMA_Handle hEdma13;            /* handle for EDMA 15 */
 
 /* Global Variables */
 volatile int receive_done = FALSE;
 volatile int transmit_done = TRUE;
-char xmit_msg[BUFFER_SIZE] = "McBSP does UART on C6000!\n";
-char recv_msg[BUFFER_SIZE] = "Transmission didn't work!\n"; 
+char xmit_msg[BUFFER_SIZE+1] = "\0";
+char recv_msg[BUFFER_SIZE+1] = "C";
 
 /* Include the vector table to call the IRQ ISRs hookup */
 extern far void vectors();
@@ -137,28 +133,22 @@ extern far void vectors();
 /* Prototypes   */
 void ConfigMcBSP(void);
 void ConfigEDMA(void);
-void ConfigDMA(void);
-void ProcessTransmitData(void);
-void ProcessReceiveData(void);
+char *ProcessReceiveData(void);
 short VoteLogic(unsigned short);
-int CheckTestCase(void);
-interrupt void c_int11(void);
-interrupt void c_int09(void);
 interrupt void c_int08(void);
 
+char message[] = "String received: %c (%x)\n";
 
 /*******************************************************************/
 /* void main(void)                                                 */
 /*******************************************************************/
 void main(void)
 {
-
-    int waittime = 0;
-    int works = FALSE;
-
+    memset(recv_msg, 0, BUFFER_SIZE+1);
+    // Allow board level communication
     DSK6713_init();
 
-    //DSK6713_rset(DSK6713_MISC, 3);
+    DSK6713_rset(DSK6713_MISC, 1);
 
     /* initialize the CSL library */
     CSL_init();
@@ -170,85 +160,38 @@ void main(void)
     /* point to the IRQ vector table */
     IRQ_setVecs(vectors);
 
-    // Allow board level communication
 
+    /* disable and clear the event interrupt */
+    IRQ_reset(IRQ_EVT_EDMAINT);
 
-    #if (EDMA_SUPPORT)
+    /* clear Parameter RAM of EDMA */
+    EDMA_clearPram(0x00000000);
 
-        /* disable and clear the event interrupt */
-        IRQ_reset(IRQ_EVT_EDMAINT);
-
-        /* clear Parameter RAM of EDMA */
-        EDMA_clearPram(0x00000000);
-
-    #endif
-
-    #if (DMA_SUPPORT)
-
-        DMA_reset(INV);
-
-    #endif
 
     /* process transmit data */
-    printf("Processing Transmit string...\n");
-    ProcessTransmitData();
-    printf("String transmitted: %s \n", xmit_msg);
+    //ProcessTransmitData();
 
-    #if (EDMA_SUPPORT)
 
-        /* Open the EDMA channels - EDMA 14 for transmit, EDMA 15 for receive   */
-        hEdma12 = EDMA_open(EDMA_CHA_XEVT0, EDMA_OPEN_RESET);
-        hEdma13 = EDMA_open(EDMA_CHA_REVT0, EDMA_OPEN_RESET);
 
-    #endif
-
-    #if (DMA_SUPPORT)
-
-        /* Open the DMA channels - DMA 1 for transmit, DMA 2 for receive */
-        hDma1 = DMA_open(DMA_CHA0, DMA_OPEN_RESET);
-        hDma2 = DMA_open(DMA_CHA0, DMA_OPEN_RESET);
-
-    #endif
+    /* Open the EDMA channels - EDMA 12 for transmit, EDMA 13 for receive   */
+    hEdma12 = EDMA_open(EDMA_CHA_XEVT0, EDMA_OPEN_RESET);
+    hEdma13 = EDMA_open(EDMA_CHA_REVT0, EDMA_OPEN_RESET);
 
     /* Open the McBSP channel 1 */
     hMcbsp0 = MCBSP_open(MCBSP_DEV0, MCBSP_OPEN_RESET);
 
-    #if (EDMA_SUPPORT)
 
-        /* Configure the EDMA channels */
-        ConfigEDMA();
+    /* Configure the EDMA channels */
+    ConfigEDMA();
 
-        /* enable EDMA-CPU interrupt tied to McBSP */
-        IRQ_enable(IRQ_EVT_EDMAINT);
+    /* enable EDMA-CPU interrupt tied to McBSP */
+    IRQ_enable(IRQ_EVT_EDMAINT);
 
-        /* enable EDMA channel interrupt to CPU */
-        EDMA_intEnable(12);
-        EDMA_intEnable(13);
+    /* enable EDMA channel interrupt to CPU */
+    EDMA_intEnable(13);
 
-        /* Enable EDMA channels */
-        EDMA_enableChannel(hEdma12);
-        EDMA_enableChannel(hEdma13);
-
-    #endif
-
-    #if (DMA_SUPPORT)
-
-        /* Configure the DMA channels */
-        ConfigDMA();
-
-        IRQ_disable(IRQ_EVT_DMAINT1);
-        IRQ_disable(IRQ_EVT_DMAINT2);
-
-        IRQ_clear(IRQ_EVT_DMAINT1);
-        IRQ_clear(IRQ_EVT_DMAINT2);
-
-        IRQ_enable(IRQ_EVT_DMAINT1);
-        IRQ_enable(IRQ_EVT_DMAINT2);
-
-        DMA_start(hDma1);            /*start DMA channel 1*/
-        DMA_start(hDma2);            /*start DMA channel 2*/
-
-    #endif
+    /* Enable EDMA channels */
+    EDMA_enableChannel(hEdma13);
 
     /* Setup for McBSP */
     ConfigMcBSP();
@@ -256,6 +199,7 @@ void main(void)
     /* Start Sample Rate Generator: set /GRST = 1 */
     MCBSP_enableSrgr(hMcbsp0);
 
+    int waittime;
     /* inserted wait time for McBSP to get ready */
     for (waittime=0; waittime<0xF; waittime++);
 
@@ -264,301 +208,70 @@ void main(void)
     MCBSP_enableXmt(hMcbsp0);
 
     /* Enable Frame Sync Generator for McBSP 1: set /FRST = 1 */
-    MCBSP_enableFsync(hMcbsp0);
+    //MCBSP_enableFsync(hMcbsp0);
 
     /* To flag an interrupt to the CPU when EDMA transfer/receive is done */
+    unsigned int nextTable = EDMA_getTableAddress(hEdma13);
     while (!receive_done || !transmit_done);
 
-    /* Check to make sure the test case works */
-    works = CheckTestCase();
-    if (works != 0) printf("Transmission Error....\n\n");
-    else printf("Received data matched transmitted data!\n\n");
-
     /* process received data */
-    printf("Processing Receive string...\n");
-    ProcessReceiveData();
-    printf("String received: %s \n", recv_msg);
+    ///char recv_char = ProcessReceiveData();
+    //printf(message, recv_char, recv_char);
 
-    #if (EDMA_SUPPORT)
+    IRQ_disable(IRQ_EVT_EDMAINT);
+    EDMA_RSET(CIER, 0x0);
 
-        IRQ_disable(IRQ_EVT_EDMAINT);
-        EDMA_RSET(CIER, 0x0);
-
-    #endif
-
-    #if (DMA_SUPPORT)
-
-        IRQ_disable(IRQ_EVT_DMAINT1);
-        IRQ_disable(IRQ_EVT_DMAINT2);
-
-    #endif
 
     MCBSP_close(hMcbsp0);   /* close McBSP 1 */
 
-    #if (EDMA_SUPPORT)
+    EDMA_close(hEdma13);    /* close EDMA 15 */
 
-        EDMA_close(hEdma12);    /* close EDMA 14 */
-        EDMA_close(hEdma13);    /* close EDMA 15 */
-
-    #endif
-
-    #if (DMA_SUPPORT)
-
-        DMA_close(hDma1);   /* close DMA 1 */
-        DMA_close(hDma2);   /* close DMA 2 */
-
-    #endif
 }   /* End of main() */
    
 
 /*******************************************************************/
 /* void ConfigEDMA(void): set up EDMA channel 14/15 for UART Xmit  */
 /*******************************************************************/
-#if (EDMA_SUPPORT)
-
 void ConfigEDMA(void)
 {
-    EDMA_configArgs(hEdma12,
+    // A table where to store the EDMA paramaters
+    EDMA_Handle recvEdmaTable = EDMA_allocTable(EDMA_ALLOC_ANY);
 
-        /* OPT Setup */
-        #if (C64_SUPPORT)
-            EDMA_OPT_RMK(
+    // The EDMA config
+    EDMA_Config recvEdmaConfig = {
+        EDMA_OPT_RMK(               // OPT
             EDMA_OPT_PRI_HIGH,      /* 1  */
-            EDMA_OPT_ESIZE_16BIT,           /* 01 */
-                EDMA_OPT_2DS_NO,        /* 0  */
-                EDMA_OPT_SUM_INC,       /* 01 */
-                EDMA_OPT_2DD_NO,        /* 0  */
-                EDMA_OPT_DUM_NONE,      /* 00 */
-                EDMA_OPT_TCINT_YES,     /* 1  */
-                EDMA_OPT_TCC_OF(14),            /* 14 */
-            EDMA_OPT_TCCM_DEFAULT,          /* 0  */
-            EDMA_OPT_ATCINT_DEFAULT,        /* 0  */
-            EDMA_OPT_ATCC_DEFAULT,          /* 0  */
-            EDMA_OPT_PDTS_DEFAULT,          /* 0  */
-            EDMA_OPT_PDTD_DEFAULT,          /* 0  */
-            EDMA_OPT_LINK_NO,       /* 0  */
-                EDMA_OPT_FS_NO          /* 0  */
-            ),
-        #else
-            EDMA_OPT_RMK(
-            EDMA_OPT_PRI_HIGH,      /* 1  */
-            EDMA_OPT_ESIZE_16BIT,           /* 01 */
-                EDMA_OPT_2DS_NO,        /* 0  */
-                EDMA_OPT_SUM_INC,       /* 01 */
-                EDMA_OPT_2DD_NO,        /* 0  */
-                EDMA_OPT_DUM_NONE,      /* 00 */
-                EDMA_OPT_TCINT_YES,     /* 1  */
-                EDMA_OPT_TCC_OF(14),            /* 14 */
-                EDMA_OPT_LINK_NO,       /* 0  */
-                EDMA_OPT_FS_NO          /* 0  */
-            ),
-        #endif
-
-        /* SRC Setup */
-        EDMA_SRC_RMK((Uint32) xmitbuf),        /*xmitbuf address*/
-
-        /* CNT Setup */
-        EDMA_CNT_RMK(
-            EDMA_CNT_FRMCNT_DEFAULT,
-            EDMA_CNT_ELECNT_OF(BUFFER_SIZE*11)
+            EDMA_OPT_ESIZE_16BIT,   /* 01 */
+            EDMA_OPT_2DS_NO,        /* 0  */
+            EDMA_OPT_SUM_NONE,      /* 00 */
+            EDMA_OPT_2DD_NO,        /* 0  */
+            EDMA_OPT_DUM_INC,       /* 01 */
+            EDMA_OPT_TCINT_YES,     /* 1  */
+            EDMA_OPT_TCC_OF(13),    /* 13 */
+            EDMA_OPT_LINK_YES,      /* 1  */
+            EDMA_OPT_FS_NO          /* 0  */
         ),
-
-        /* DST Setup */
-        EDMA_DST_RMK(MCBSP_getXmtAddr(hMcbsp0)),
-
-        /* IDX Setup */
+        EDMA_SRC_DEFAULT,
+        EDMA_CNT_RMK(0, BUFFER_SIZE * 9),          // CNT
+        EDMA_DST_DEFAULT,
         EDMA_IDX_RMK(0,0),
+        EDMA_RLD_DEFAULT
+    };
 
-        /* RLD Setup */
-        EDMA_RLD_RMK(0,0)
-        );
+    recvEdmaConfig.src = MCBSP_getRcvAddr(hMcbsp0);     // SRC
+    recvEdmaConfig.dst = (Uint32) recvbuf;              // DST
+    recvEdmaConfig.rld =
+        // ELERLD
+        (BUFFER_SIZE * 9) << 16
+        // Link to itself
+        | (EDMA_getTableAddress(recvEdmaTable) & 0x0000FFFF);
 
-    EDMA_configArgs(hEdma13,
-
-        /* OPT Setup */
-        #if (C64_SUPPORT)
-            EDMA_OPT_RMK(
-            EDMA_OPT_PRI_HIGH,      /* 1  */
-            EDMA_OPT_ESIZE_16BIT,           /* 01 */
-                EDMA_OPT_2DS_NO,        /* 0  */
-                EDMA_OPT_SUM_NONE,      /* 00 */
-                EDMA_OPT_2DD_NO,        /* 0  */
-                EDMA_OPT_DUM_INC,       /* 01 */
-                EDMA_OPT_TCINT_YES,     /* 1  */
-                EDMA_OPT_TCC_OF(15),            /* 15 */
-            EDMA_OPT_TCCM_DEFAULT,          /* 0  */
-            EDMA_OPT_ATCINT_DEFAULT,        /* 0  */
-            EDMA_OPT_ATCC_DEFAULT,          /* 0  */
-            EDMA_OPT_PDTS_DEFAULT,          /* 0  */
-            EDMA_OPT_PDTD_DEFAULT,          /* 0  */
-                EDMA_OPT_LINK_NO,       /* 0  */
-                EDMA_OPT_FS_NO          /* 0  */
-            ),
-        #else
-            EDMA_OPT_RMK(
-            EDMA_OPT_PRI_HIGH,          /* 1  */
-            EDMA_OPT_ESIZE_16BIT,           /* 01 */
-                EDMA_OPT_2DS_NO,        /* 0  */
-                EDMA_OPT_SUM_NONE,      /* 00 */
-                EDMA_OPT_2DD_NO,        /* 0  */
-                EDMA_OPT_DUM_INC,       /* 01 */
-                EDMA_OPT_TCINT_YES,     /* 1  */
-                EDMA_OPT_TCC_OF(15),            /* 15 */
-                EDMA_OPT_LINK_NO,       /* 0  */
-                EDMA_OPT_FS_NO          /* 0  */
-            ),
-        #endif
-
-        /* SRC Setup */
-        EDMA_SRC_RMK(MCBSP_getRcvAddr(hMcbsp0)),
-
-        /* CNT Setup */
-        EDMA_CNT_RMK(0, (BUFFER_SIZE * 11)),
-
-        /* DST Setup */
-        EDMA_DST_RMK((Uint32) recvbuf),        /*recvbuf address*/
-
-        /* IDX Setup */
-        EDMA_IDX_RMK(0,0),
-
-        /* RLD Setup */
-        EDMA_RLD_RMK(0,0)
-    );
+    EDMA_config(recvEdmaTable, &recvEdmaConfig);
+    EDMA_config(hEdma13, &recvEdmaConfig);
 
 } /* End of ConfigEDMA() */
 
-#endif
 
-
-/*******************************************************************/
-/* void ConfigDMA(void): set up DMA channels 1 & 2 for UART Xmit   */
-/*******************************************************************/
-#if (DMA_SUPPORT)
-
-void ConfigDMA(void)
-{
-
-    DMA_configArgs(hDma1,
-
-        /* PRICTL Setup */
-        DMA_PRICTL_RMK(
-            DMA_PRICTL_DSTRLD_NONE,
-            DMA_PRICTL_SRCRLD_NONE,
-            DMA_PRICTL_EMOD_HALT,
-            DMA_PRICTL_FS_DISABLE,
-            DMA_PRICTL_TCINT_ENABLE,
-            DMA_PRICTL_PRI_DMA,
-            DMA_PRICTL_WSYNC_XEVT1,
-            DMA_PRICTL_RSYNC_NONE,
-            DMA_PRICTL_INDEX_NA,
-            DMA_PRICTL_CNTRLD_NA,
-            DMA_PRICTL_SPLIT_DISABLE,
-            DMA_PRICTL_ESIZE_16BIT,
-            DMA_PRICTL_DSTDIR_NONE,
-            DMA_PRICTL_SRCDIR_INC,
-            DMA_PRICTL_START_STOP
-        ),
-
-        /* SECCTL Setup */
-        DMA_SECCTL_RMK(
-            DMA_SECCTL_WSPOL_ACTIVEHIGH,
-            DMA_SECCTL_RSPOL_ACTIVEHIGH,
-            DMA_SECCTL_FSIG_NORMAL,
-            DMA_SECCTL_DMACEN_FRAMECOND,
-            DMA_SECCTL_WSYNCCLR_NOTHING,
-            DMA_SECCTL_WSYNCSTAT_CLEAR,
-            DMA_SECCTL_RSYNCCLR_NOTHING,
-            DMA_SECCTL_RSYNCSTAT_CLEAR,
-            DMA_SECCTL_WDROPIE_DISABLE,
-            DMA_SECCTL_WDROPCOND_CLEAR,
-            DMA_SECCTL_RDROPIE_DISABLE,
-            DMA_SECCTL_RDROPCOND_CLEAR,
-            DMA_SECCTL_BLOCKIE_ENABLE,      /* BLOCK IE=1: enables DMA channel int */
-            DMA_SECCTL_BLOCKCOND_CLEAR,
-            DMA_SECCTL_LASTIE_DISABLE,
-            DMA_SECCTL_LASTCOND_CLEAR,
-            DMA_SECCTL_FRAMEIE_DISABLE,
-            DMA_SECCTL_FRAMECOND_CLEAR,
-            DMA_SECCTL_SXIE_DISABLE,
-            DMA_SECCTL_SXCOND_CLEAR
-        ),
-
-        /* SRC Setup */
-        DMA_SRC_RMK((Uint32) xmitbuf),              /*xmitbuf*/
-
-        /* DST Setup */
-        DMA_DST_RMK(MCBSP_getXmtAddr(hMcbsp0)),     /*McBSP DXR */
-
-        /* XFRCNT Setup */
-        DMA_XFRCNT_RMK(
-            DMA_XFRCNT_FRMCNT_OF(1),
-            DMA_XFRCNT_ELECNT_OF(BUFFER_SIZE*11)
-        )
-
-    );
-
-    DMA_configArgs(hDma2,
-
-        /* PRICTL Setup */
-        DMA_PRICTL_RMK(
-            DMA_PRICTL_DSTRLD_NONE,
-            DMA_PRICTL_SRCRLD_NONE,
-            DMA_PRICTL_EMOD_HALT,
-            DMA_PRICTL_FS_DISABLE,
-            DMA_PRICTL_TCINT_ENABLE,
-            DMA_PRICTL_PRI_DMA,
-            DMA_PRICTL_WSYNC_NONE,
-            DMA_PRICTL_RSYNC_REVT1,
-            DMA_PRICTL_INDEX_NA,
-            DMA_PRICTL_CNTRLD_NA,
-            DMA_PRICTL_SPLIT_DISABLE,
-            DMA_PRICTL_ESIZE_16BIT,
-            DMA_PRICTL_DSTDIR_INC,
-            DMA_PRICTL_SRCDIR_NONE,
-            DMA_PRICTL_START_STOP
-        ),
-
-        /* SECCTL Setup */
-        DMA_SECCTL_RMK(
-            DMA_SECCTL_WSPOL_ACTIVEHIGH,
-            DMA_SECCTL_RSPOL_ACTIVEHIGH,
-            DMA_SECCTL_FSIG_NORMAL,
-            DMA_SECCTL_DMACEN_FRAMECOND,
-            DMA_SECCTL_WSYNCCLR_NOTHING,
-            DMA_SECCTL_WSYNCSTAT_CLEAR,
-            DMA_SECCTL_RSYNCCLR_NOTHING,
-            DMA_SECCTL_RSYNCSTAT_CLEAR,
-            DMA_SECCTL_WDROPIE_DISABLE,
-            DMA_SECCTL_WDROPCOND_CLEAR,
-            DMA_SECCTL_RDROPIE_DISABLE,
-            DMA_SECCTL_RDROPCOND_CLEAR,
-            DMA_SECCTL_BLOCKIE_ENABLE,      /* BLOCK IE=1: enables DMA channel int */
-            DMA_SECCTL_BLOCKCOND_CLEAR,
-            DMA_SECCTL_LASTIE_DISABLE,
-            DMA_SECCTL_LASTCOND_CLEAR,
-            DMA_SECCTL_FRAMEIE_DISABLE,
-            DMA_SECCTL_FRAMECOND_CLEAR,
-            DMA_SECCTL_SXIE_DISABLE,
-            DMA_SECCTL_SXCOND_CLEAR
-        ),
-
-        /* SRC Setup */
-        DMA_SRC_RMK(MCBSP_getRcvAddr(hMcbsp0)),     /*McBSP DRR */
-
-        /* DST Setup */
-        DMA_DST_RMK((Uint32) recvbuf),              /*recvbuf*/
-
-        /* XFRCNT Setup */
-        DMA_XFRCNT_RMK(
-            DMA_XFRCNT_FRMCNT_OF(1),
-            DMA_XFRCNT_ELECNT_OF(BUFFER_SIZE*11)
-        )
-
-    );
-
-} /* End of ConfigDMA() */
-
-#endif
 
 /*******************************************************************/
 /* void ConfigMcBSP(void): Setup for McBSP Configuration           */
@@ -569,93 +282,48 @@ void ConfigMcBSP(void)
     MCBSP_Config mcbspCfg1 = {
 
         /* SPCR Setup */
-        #if (DMA_SUPPORT)
-            MCBSP_SPCR_RMK(
-                MCBSP_SPCR_FRST_DEFAULT,        /* 0  */
-                MCBSP_SPCR_GRST_DEFAULT,        /* 0  */
-                MCBSP_SPCR_XINTM_XRDY,          /* 00 */
-                MCBSP_SPCR_XSYNCERR_DEFAULT,            /* 0  */
-                MCBSP_SPCR_XRST_DEFAULT,        /* 0  */
-                MCBSP_SPCR_DLB_OFF,         /* 0  */
-                MCBSP_SPCR_RJUST_RZF,           /* 00 */
-                MCBSP_SPCR_CLKSTP_DISABLE,      /* 0x */
-                MCBSP_SPCR_RINTM_RRDY,          /* 00 */
-                MCBSP_SPCR_RSYNCERR_DEFAULT,            /* 0  */
-                MCBSP_SPCR_RRST_DEFAULT         /* 0  */
-            ),
-        #endif
-        #if (EDMA_SUPPORT)
-            MCBSP_SPCR_RMK(
-                MCBSP_SPCR_FREE_YES,            /* 1  */
-                MCBSP_SPCR_SOFT_DEFAULT,        /* 0  */
-                MCBSP_SPCR_FRST_DEFAULT,        /* 0  */
-                MCBSP_SPCR_GRST_DEFAULT,        /* 0  */
-                MCBSP_SPCR_XINTM_XRDY,          /* 00 */
-                MCBSP_SPCR_XSYNCERR_DEFAULT,            /* 0  */
-                MCBSP_SPCR_XRST_DEFAULT,        /* 0  */
-                MCBSP_SPCR_DLB_OFF,         /* 0  */
-                MCBSP_SPCR_RJUST_RZF,           /* 00 */
-                MCBSP_SPCR_CLKSTP_DISABLE,      /* 0  */
-                MCBSP_SPCR_DXENA_OFF,           /* 0  */
-                MCBSP_SPCR_RINTM_RRDY,          /* 00 */
-                MCBSP_SPCR_RSYNCERR_DEFAULT,            /* 0  */
-                MCBSP_SPCR_RRST_DEFAULT         /* 0  */
-            ),
-        #endif
+        MCBSP_SPCR_RMK(
+            MCBSP_SPCR_FREE_YES,            /* 1  */
+            MCBSP_SPCR_SOFT_DEFAULT,        /* 0  */
+            MCBSP_SPCR_FRST_DEFAULT,        /* 0  */
+            MCBSP_SPCR_GRST_DEFAULT,        /* 0  */
+            MCBSP_SPCR_XINTM_XRDY,          /* 00 */
+            MCBSP_SPCR_XSYNCERR_DEFAULT,            /* 0  */
+            MCBSP_SPCR_XRST_DEFAULT,        /* 0  */
+            MCBSP_SPCR_DLB_OFF,         /* 0  */
+            MCBSP_SPCR_RJUST_RZF,           /* 00 */
+            MCBSP_SPCR_CLKSTP_DISABLE,      /* 0  */
+            MCBSP_SPCR_DXENA_OFF,           /* 0  */
+            MCBSP_SPCR_RINTM_RRDY,          /* 00 */
+            MCBSP_SPCR_RSYNCERR_DEFAULT,            /* 0  */
+            MCBSP_SPCR_RRST_DEFAULT         /* 0  */
+        ),
 
         /* RCR Setup */
-        #if (DMA_SUPPORT)
-            MCBSP_RCR_RMK(
-            MCBSP_RCR_RPHASE_DUAL,          /* 1     */
+        MCBSP_RCR_RMK(
+            MCBSP_RCR_RPHASE_SINGLE,          /* 1     */
             MCBSP_RCR_RFRLEN2_OF(1),        /* 00010 */
-                MCBSP_RCR_RWDLEN2_8BIT,         /* 000   */
-                MCBSP_RCR_RCOMPAND_MSB,         /* 00    */
-                MCBSP_RCR_RFIG_YES,         /* 1     */
-                MCBSP_RCR_RDATDLY_1BIT,         /* 01    */
-                MCBSP_RCR_RFRLEN1_OF(8),        /* 01000 */
-                MCBSP_RCR_RWDLEN1_16BIT         /* 010   */
-            ),
-        #endif
-        #if (EDMA_SUPPORT)
-            MCBSP_RCR_RMK(
-            MCBSP_RCR_RPHASE_DUAL,          /* 1     */
-            MCBSP_RCR_RFRLEN2_OF(1),        /* 00010 */
-                MCBSP_RCR_RWDLEN2_8BIT,         /* 000   */
-                MCBSP_RCR_RCOMPAND_MSB,         /* 00    */
-                MCBSP_RCR_RFIG_YES,         /* 1     */
-                MCBSP_RCR_RDATDLY_1BIT,         /* 01    */
-                MCBSP_RCR_RFRLEN1_OF(8),        /* 01000 */
-                MCBSP_RCR_RWDLEN1_16BIT,        /* 010   */
-                MCBSP_RCR_RWDREVRS_DISABLE      /* 0     */
-            ),
-        #endif
+            MCBSP_RCR_RWDLEN2_DEFAULT,         /* 000   */
+            MCBSP_RCR_RCOMPAND_MSB,         /* 00    */
+            MCBSP_RCR_RFIG_YES,         /* 1     */
+            MCBSP_RCR_RDATDLY_1BIT,         /* 01    */
+            MCBSP_RCR_RFRLEN1_OF(8),        /* 01000 */
+            MCBSP_RCR_RWDLEN1_16BIT,        /* 010   */
+            MCBSP_RCR_RWDREVRS_DISABLE      /* 0     */
+        ),
 
         /* XCR Setup */
-        #if (DMA_SUPPORT)
-            MCBSP_XCR_RMK(
-                MCBSP_XCR_XPHASE_DUAL,          /* 1     */
-                MCBSP_XCR_XFRLEN2_OF(1),        /* 00010 */
-            MCBSP_XCR_XWDLEN2_8BIT,         /* 000   */
-            MCBSP_XCR_XCOMPAND_MSB,         /* 00    */
-            MCBSP_XCR_XFIG_YES,         /* 1     */
-            MCBSP_XCR_XDATDLY_0BIT,         /* 00    */
-            MCBSP_XCR_XFRLEN1_OF(8),        /* 01000 */
-            MCBSP_XCR_XWDLEN1_16BIT         /* 010   */
-            ),
-        #endif
-        #if (EDMA_SUPPORT)
-            MCBSP_XCR_RMK(
-                MCBSP_XCR_XPHASE_DUAL,          /* 1     */
-                MCBSP_XCR_XFRLEN2_OF(1),        /* 00010 */
+        MCBSP_XCR_RMK(
+            MCBSP_XCR_XPHASE_DUAL,          /* 1     */
+            MCBSP_XCR_XFRLEN2_OF(1),        /* 00010 */
             MCBSP_XCR_XWDLEN2_8BIT,         /* 000   */
             MCBSP_XCR_XCOMPAND_MSB,         /* 00    */
             MCBSP_XCR_XFIG_YES,         /* 1     */
             MCBSP_XCR_XDATDLY_0BIT,         /* 00    */
             MCBSP_XCR_XFRLEN1_OF(8),        /* 01000 */
             MCBSP_XCR_XWDLEN1_16BIT,        /* 010   */
-        MCBSP_XCR_XWDREVRS_DISABLE      /* 0     */
-            ),
-        #endif
+            MCBSP_XCR_XWDREVRS_DISABLE      /* 0     */
+        ),
 
         /* SRGR Setup */
         MCBSP_SRGR_RMK(
@@ -665,32 +333,19 @@ void ConfigMcBSP(void)
             MCBSP_SRGR_FSGM_DXR2XSR,            /* 0      */
             MCBSP_SRGR_FPER_DEFAULT,            /* 0      */
             MCBSP_SRGR_FWID_DEFAULT,            /* 0      */
- //         MCBSP_SRGR_CLKGDV_OF(40)            /* CLKGDV */
-            MCBSP_SRGR_CLKGDV_OF(108)           /* CLKGDV */
+            // clockDividerValue = roundf(CLK_SRC / ((float)baud * 16.0f)) - 1;
+            MCBSP_SRGR_CLKGDV_OF(121)           /* CLKGDV */
         ),
 
         /* MCR Setup */
         MCBSP_MCR_DEFAULT,                      /* default values */
 
         /* RCER Setup */
-        #if (C64_SUPPORT)
-            MCBSP_RCERE0_DEFAULT,
-            MCBSP_RCERE1_DEFAULT,
-            MCBSP_RCERE2_DEFAULT,
-            MCBSP_RCERE3_DEFAULT,
-        #else
-            MCBSP_RCER_DEFAULT,                     /* default values */
-        #endif
+        MCBSP_RCER_DEFAULT,                     /* default values */
+
 
         /* XCER Setup */
-        #if (C64_SUPPORT)
-            MCBSP_XCERE0_DEFAULT,
-            MCBSP_XCERE1_DEFAULT,
-            MCBSP_XCERE2_DEFAULT,
-            MCBSP_XCERE3_DEFAULT,
-        #else
-            MCBSP_XCER_DEFAULT,                     /* default values */
-        #endif
+        MCBSP_XCER_DEFAULT,                     /* default values */
 
         /* PCR Setup */
         MCBSP_PCR_RMK(
@@ -715,60 +370,6 @@ void ConfigMcBSP(void)
 
 
 
-/*******************************************************************/
-/* void ProcessTransmitData(void)                                  */
-/*                                                                 */
-/* This function expands each of the 8-bit ASCII characters in the */
-/* transmit string "xmit_msg" into UART transmission 16-bit word   */
-/* and place them in the transmit buffer "xmitbuf".  In addition,  */
-/* 16-bit Start and 8-bit Stop framing words, respectively, are    */
-/* inserted before and after each of the ASCII characters in the   */
-/* buffer.                                                         */
-/*******************************************************************/
-void ProcessTransmitData(void)
-{
-    int     i;
-    short   cnt = 1;
-    unsigned char   xmit_char;
-    unsigned short  *xmitbufptr;
-
-    /* point to Transmit Buffer */
-    xmitbufptr = (unsigned short *)xmitbuf;
-
-    for (i=0; i<(sizeof(xmitbuf)/sizeof(unsigned int)); i++)
-    {
-        xmitbufptr[i] = 0x0000; /* zero fill buffer */
-    }
-
-    xmitbufptr = (unsigned short *)xmitbuf;
-
-    /* Process data BYTES in xmit_msg[] and put in xmit buffer  */
-    for (i = 0; i < BUFFER_SIZE; i++)
-    {
-        /*Get transmit character (one byte) from xmit_msg[] and put in xmit buffer*/
-        xmit_char   =   xmit_msg[i];
-
-        /* Process each BYTE of transmit character  */
-        for (cnt = -1; cnt < 10; cnt++)
-        {
-            if (cnt == -1)
-                *xmitbufptr++   =   0x0000;
-
-            else if (cnt == 8 || cnt ==9)
-                *xmitbufptr++   =   0xFFFF;
-
-            else if (xmit_char & (1 << cnt))
-                *xmitbufptr++   =   0xFFFF;
-
-            else
-                *xmitbufptr++   =   0x0000;
-
-        }   /* end for cnt  */
-
-    }   /* end for i    */
-
-}   /* end ProcessTransmitData  */
-
 
 /*******************************************************************/
 /* void ProcessReceiveData(void)                                   */
@@ -778,17 +379,20 @@ void ProcessTransmitData(void)
 /* It calls the subroutine VoteLogic() to determine each bit of    */
 /* the ASCII character.  It then puts the result in recv_msg.      */
 /*******************************************************************/
-void ProcessReceiveData(void)
+char *ProcessReceiveData(void)
 {
-    int i;
+    int i = 0;
     unsigned char recv_char = 0;
     short cnt = -1;
     short recv_val;
-    unsigned short  raw_data;
     unsigned short  *recvbufptr;    /*receive buffer pointer*/
 
     /* Point to the receive buffer  */
     recvbufptr  = (unsigned short *)recvbuf;
+
+    /* Process all data in the Receive buffer   */
+    recv_char = 0;
+
 
     /* Process all data in the Receive buffer   */
     for (i = 0; i < BUFFER_SIZE; i++)
@@ -796,75 +400,29 @@ void ProcessReceiveData(void)
         recv_char = 0;
 
         /* Process each UART frame  */
-        for (cnt = -1; cnt < 10; cnt++)
+        for (cnt = -1; cnt < 8; cnt++)
         {
-            if(cnt == -1 || cnt == 8 || cnt == 9)
+            if(cnt != -1)
             {
-                /* Ignore Start and Stop bits   */
-                *recvbufptr++;
-            }
-            else
-            {
-                /* Get 16-bit data from receive buffer  */
-                raw_data    =   *recvbufptr;
-                recvbufptr++;
-
                 /* get the value of the majority of the bits    */
-                recv_val    =   VoteLogic(raw_data);
+                recv_val    =   VoteLogic(*recvbufptr);
 
                 /* put received bit into proper place   */
                 recv_char   += recv_val << cnt;
             }
+
+            recvbufptr++;
         }   /* end for cnt  */
 
         /* A full BYTE is decoded. Put in result: recv_msg[i]   */
         recv_msg[i] =   recv_char;
+    }
+    /* A full BYTE is decoded. Put in result: recv_msg[i]   */
+    return   recv_msg;
 
-    }   /* end for i    */
 
 }   /* end ProcessReceiveData() function    */
 
-
-/*******************************************************************/
-/* void CheckTestCase(void)                                        */
-/*******************************************************************/
-int CheckTestCase(void)
-{
-    unsigned short *source;
-    unsigned short *result;
-    unsigned int i = 0;
-    short cnt = -1;
-    int error = 0;
-
-    source = (unsigned short *) xmitbuf;
-    result = (unsigned short *) recvbuf;
-
-    for (i = 0; i < BUFFER_SIZE ; i++)
-    {
-        for (cnt = -1; cnt < 10; cnt++)
-        {
-            /* Ignore the start and stop bits */
-            if(cnt == -1 || cnt == 8 || cnt ==9)
-            {
-                source++;
-                result++;
-            }
-            else
-            {
-                if (*source != *result)
-                {
-                    error = i + 1;
-                    break;
-                }
-                source++;
-                result++;
-            }
-        }
-    }
-
-    return(error);
-
-}   /* end CheckTestCase() function */
 
 
 /*******************************************************************/
@@ -911,39 +469,24 @@ short VoteLogic(unsigned short value)
 /* EDMA Data Transfer Completion ISRs                              */
 /*******************************************************************/
 
+char expected[]= "%s\n";
 
-interrupt void c_int11(void)  /* DMA 2 */
-{
-    #if (DMA_SUPPORT)
-        transmit_done = TRUE;
-        printf("Transmit Completed\n");
-    #endif
+void nonono(){
+    char *recv_char = ProcessReceiveData();
+    printf(expected, recv_char);
 }
-
-interrupt void c_int09(void)  /* DMA 1 */
-{
-    #if (DMA_SUPPORT)
-        receive_done = TRUE;
-        printf("Receive Completed\n");
-    #endif
-}
-
 
 interrupt void c_int08(void)
 {
-    #if (EDMA_SUPPORT)
-        if (EDMA_intTest(14))
-        {
-            EDMA_intClear(14);
-            transmit_done = TRUE;
-            printf("Transmit Completed\n");
-        }
+    if (EDMA_intTest(12))
+    {
+        EDMA_intClear(12);
+        transmit_done = TRUE;
+    }
 
-        if (EDMA_intTest(15))
-        {
-            EDMA_intClear(15);
-            receive_done = TRUE;
-            printf("Receive Completed\n\n");
-        }
-    #endif
+    if (EDMA_intTest(13))
+    {
+        EDMA_intClear(13);
+        nonono();
+    }
 }

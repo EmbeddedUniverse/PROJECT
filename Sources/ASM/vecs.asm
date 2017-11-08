@@ -65,9 +65,9 @@
   .global _vector6
   .global _vector7
   .global _c_int08 ; Hookup the c_int08 ISR in main() for EDMA
-  .global _c_int09 ; Hookup the c_int09 ISR in main() for DMA
+  .global _vector9 ; Hookup the c_int09 ISR in main() for DMA
   .global _vector10
-  .global _c_int11 ; Hookup the c_int09 ISR in main() for DMA
+  .global _vector11 ; Hookup the c_int09 ISR in main() for DMA
   .global _vector12
   .global _vector13
   .global _vector14
@@ -124,9 +124,9 @@ _vector5: VEC_ENTRY _vec_dummy
 _vector6: VEC_ENTRY _vec_dummy
 _vector7: VEC_ENTRY _vec_dummy
 _vector8: VEC_ENTRY _c_int08 ; Hookup the c_int08 ISR in main() for EDMA
-_vector9: VEC_ENTRY _c_int09 ; Hookup the c_int09 ISR in main() for DMA
+_vector9: VEC_ENTRY _vec_dummy ; Hookup the c_int09 ISR in main() for DMA
 _vector10: VEC_ENTRY _vec_dummy
-_vector11: VEC_ENTRY _c_int11 ; Hookup the c_int09 ISR in main() for DMA
+_vector11: VEC_ENTRY _vec_dummy ; Hookup the c_int09 ISR in main() for DMA
 _vector12: VEC_ENTRY _vec_dummy
 _vector13: VEC_ENTRY _vec_dummy
 _vector14: VEC_ENTRY _vec_dummy
