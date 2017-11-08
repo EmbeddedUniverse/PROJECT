@@ -5,9 +5,14 @@
  *      Author: para2709
  */
 
-#include "run.h"
 #include <csl.h>
 #include <dsk6713.h>
+#include "run.h"
+#include "serial.h"
+
+void printRes(const char* message, size_t length) {
+    printf("%s\r\n", message);
+}
 
 void run(){
 
@@ -20,7 +25,8 @@ void run(){
     DSK6713_init();
 
 
-    //TODO: Add program code lines and replace the lines below
-    printf("\n**************NOT IMPLEMENTED**************\n");
-    return;
+    setupSerial(McBSP0, BAUD_57600, 16, printRes);
+
+
+    while(1);
 }

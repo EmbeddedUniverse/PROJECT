@@ -99,6 +99,8 @@ int setupSerial (
     /* Wake up the McBSP as receiver */
     MCBSP_enableRcv(hMcbsp);
 
+    setReceiveFunction(callBack);
+
     return 0;
 }
 
@@ -291,7 +293,8 @@ interrupt void c_int08(void)
         ProcessReceiveData();
 
         // Call Callback Function
-        sendCharBackFunction(recvBuff, recvBuffLength);
+        if (sendCharBackFunction)
+            sendCharBackFunction(recvBuff, recvBuffLength);
 
         // Clear Interupt
         EDMA_intClear(expectedInterruptCode);
