@@ -10,7 +10,9 @@
 #include "correlation.h"
 #include "mathematic.h"
 #include "TestSignal.dat"
+#include "TestSignal2.dat"
 #include "TestSignalResult.dat"
+#include "TestSignalResult2.dat"
 
 //Parameter for correlation and autocorrelation
 #define LengthTrame 10
@@ -86,30 +88,25 @@ void correlateTest(){
     test.ID = 2;
     strncpy(test.result,FAIL, 5);
 
-
-    //Copy of the signal WILL NOT BE NECESSARY WITH SAMPLING""""""""""
-    int i = 0;
-    float ReversedReference[LengthTrame];
-    for(i = 0; i<LengthTrame; i++)
-    {
-        ReversedReference[i] = TESTSIGNALREF[i];
-    }
+    int i;
     //////////////////////////////////////////////////////////////////
 
-    correlate(ResultCorr, TESTSIGNALREF, ReversedReference, x_norm, ref_norm, tempRes, LengthTrame, LengthRefSignal);
+    correlate(ResultCorr, SIGNALREF2, TESTSIGNALREF, TESTSIGNAL2, TESTSIGNAL);
 
     //If the results of each sample of the algorithm match the results obtained with xcorr the test is passed
-    for(i=0; i<LengthResult; i++)
+    for(i=0; i<TESTSIGNALRES2; i++)
     {
+        printf("Excpected: %.5f \t Result: %.5f \n", SIGNALRES2[i], ResultCorr[i]);
+
         // The result of the algorithm is within a 0.001% margin of the result obtained with xcorr
-        if(ResultCorr[i]/TESTSIGNALRESULT[i] < 1.00001 && ResultCorr[i]/TESTSIGNALRESULT[i] > 0.99999)
+        if(ResultCorr[i]/SIGNALRES2[i] < 1.00001 && ResultCorr[i]/SIGNALRES2[i] > 0.99999)
         {
             strncpy(test.result, PASS, 5);
         }
         else
         {
             strncpy(test.result, FAIL, 5);
-            break;
+            //break;
         }
     }
     //Automatically prints your results
