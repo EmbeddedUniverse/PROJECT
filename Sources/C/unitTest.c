@@ -14,15 +14,17 @@
 
 //Parameter for correlation and autocorrelation
 #define LengthTrame 10
+#define LengthRefSignal 10
 #define LengthResult 19
 
-float ResultCorr[LengthResult];
-float ResultAutocorr[LengthResult];
+float ResultCorr[LengthResult];                 //Result of the correlation
+float ResultAutocorr[LengthResult];             //Result of the autocorrelation
 
-float x_norm[LengthResult];
-float ref_norm[LengthResult];
-float tempRes[LengthResult*LengthTrame];
-///////////////////////////////////////////////
+// Allocating memory for intermediate values
+float x_norm[LengthResult];                     //Copy of the aquired sign  ///////will not be necessary for real function use, only test
+float ref_norm[LengthResult];                   //Copy of the referenced signal
+float tempRes[LengthResult*LengthTrame];        //temporary table for result of correlation
+////////////////////////////////////////////
 
 
 
@@ -55,14 +57,14 @@ void autocorrelateTest(){
     test.ID = 1;
     strncpy(test.result,FAIL, 5);
 
-    autocorrelate(ResultAutocorr, SIGNALREF, TESTSIGNAL);
+    autocorrelate(ResultAutocorr, TESTSIGNALREF, LengthTrame);
 
     int i =0;
     //If the results of each sample of the algorithm match the results obtained with xcorr the test is passed
-    for(i=0; i<TESTSIGNAL; i++)
+    for(i=0; i<LengthTrame; i++)
     {
         // The result of the algorithm is within a 0.001% margin of the result obtained with xcorr
-        if(ResultAutocorr[i]/SIGNALRES[i] < 1.00001 && ResultAutocorr[i]/SIGNALRES[i] > 0.99999)
+        if(ResultAutocorr[i]/TESTSIGNALRESULT[i] < 1.00001 && ResultAutocorr[i]/TESTSIGNALRESULT[i] > 0.99999)
         {
             strncpy(test.result, PASS, 5);
         }
@@ -87,19 +89,20 @@ void correlateTest(){
 
     //Copy of the signal WILL NOT BE NECESSARY WITH SAMPLING""""""""""
     int i = 0;
-    float signalreference[TESTSIGNAL];
-    for(i = 0; i<TESTSIGNAL; i++)
+    float ReversedReference[LengthTrame];
+    for(i = 0; i<LengthTrame; i++)
     {
-        signalreference[i] = SIGNALREF[i];
+        ReversedReference[i] = TESTSIGNALREF[i];
     }
+    //////////////////////////////////////////////////////////////////
 
-    correlate(ResultCorr, SIGNALREF, signalreference, x_norm, ref_norm, tempRes, TESTSIGNAL, TESTSIGNAL);
+    correlate(ResultCorr, TESTSIGNALREF, ReversedReference, x_norm, ref_norm, tempRes, LengthTrame, LengthRefSignal);
 
     //If the results of each sample of the algorithm match the results obtained with xcorr the test is passed
-    for(i=0; i<TESTSIGNAL; i++)
+    for(i=0; i<LengthResult; i++)
     {
         // The result of the algorithm is within a 0.001% margin of the result obtained with xcorr
-        if(ResultCorr[i]/SIGNALRES[i] < 1.00001 && ResultCorr[i]/SIGNALRES[i] > 0.99999)
+        if(ResultCorr[i]/TESTSIGNALRESULT[i] < 1.00001 && ResultCorr[i]/TESTSIGNALRESULT[i] > 0.99999)
         {
             strncpy(test.result, PASS, 5);
         }
@@ -122,14 +125,14 @@ void autocorrelateASMTest(){
     test.ID = 1;
     strncpy(test.result,FAIL, 5);
 
-    autocorrelateASM(SIGNALREF, LengthTrame, ResultAutocorr, LengthResult);
+    autocorrelateASM(TESTSIGNALREF, LengthTrame, ResultAutocorr, LengthResult);
 
     int i =0;
     //If the results of each sample of the algorithm match the results obtained with xcorr the test is passed
-    for(i=0; i<TESTSIGNAL; i++)
+    for(i=0; i<LengthResult; i++)
     {
         // The result of the algorithm is within a 0.001% margin of the result obtained with xcorr
-        if(ResultAutocorr[i]/SIGNALRES[i] < 1.00001 && ResultAutocorr[i]/SIGNALRES[i] > 0.99999)
+        if(ResultAutocorr[i]/TESTSIGNALRESULT[i] < 1.00001 && ResultAutocorr[i]/TESTSIGNALRESULT[i] > 0.99999)
         {
             strncpy(test.result, PASS, 5);
         }
