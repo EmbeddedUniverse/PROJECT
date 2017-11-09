@@ -35,9 +35,9 @@ refx = que(:,1)-1';
 refy = que(:,2)-1';
 refz = que(:,3)-1';
 
-% buffX = buffX;
-% buffY = buffY';
-% buffZ = buffZ';
+buffX = buffX';
+buffY = buffY';
+buffZ = buffZ';
 
 autocorr = xcorr(refz, refz);
 corrX = xcorr(refz, buffX);

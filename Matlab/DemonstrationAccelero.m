@@ -33,23 +33,37 @@ for a=1:3
     pause(1);
 end
 
-fileID = fopen('ReferenceSignal.dat','w');
-%fprintf(fileID, '#define NUMREFDATA %d\n', N);
-%fprintf(fileID, 'float REFERENCESIGNAL[NUMREFDATA] = {\n');
+fileIDx = fopen('ReferenceSignalX.dat','w');
+fileIDy = fopen('ReferenceSignalY.dat','w');
+fileIDz = fopen('ReferenceSignalZ.dat','w');
+fprintf(fileIDx, '#define NUMREFDATA %d\n', N);
+fprintf(fileIDx, 'float REFERENCESIGNALX[NUMREFDATA] = {\n');
+fprintf(fileIDy, '#define NUMREFDATA %d\n', N);
+fprintf(fileIDy, 'float REFERENCESIGNALY[NUMREFDATA] = {\n');
+fprintf(fileIDz, '#define NUMREFDATA %d\n', N);
+fprintf(fileIDz, 'float REFERENCESIGNALZ[NUMREFDATA] = {\n');
+
 while(i<N-1)
     sample = fscanf(serialLink,'x=%f y=%f z=%f');
     buffX(1,i) = sample(1);
-    buffY(1,i) = sample(2);
+    buffY(1,i) = -(sample(2)+1);
     buffZ(1,i) = sample(3);
-    fprintf(fileID,'   %f,  %f,  %f  \n', sample(1), sample(2), sample(3));
+    fprintf(fileIDx,'   %f,  \n', sample(1));
+    fprintf(fileIDy,'   %f,  \n', (-sample(2)));
+    fprintf(fileIDz,'   %f,  \n', sample(3));
     i = i+1;
 end
 sample = fscanf(serialLink,'x=%f y=%f z=%f');
-fprintf(fileID, '   %f,  %f,  %f  \n', sample(1), sample(2), sample(3));
-%fprintf(fileID, '};\n');
-fclose(fileID);
+fprintf(fileIDx,'   %f,  };\n', sample(1));
+fprintf(fileIDy,'   %f,  };\n', (-sample(2)));
+fprintf(fileIDz,'   %f,  };\n', sample(3));
+
+fclose(fileIDx);
+fclose(fileIDy);
+fclose(fileIDz);
+
 buffX(1,N) = sample(1);
-buffY(1,N) = sample(2);
+buffY(1,N) = -sample(2);
 buffZ(1,N) = sample(3);
 
 figure()
