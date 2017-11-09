@@ -15,8 +15,8 @@
 
 MEMORY
 {
-    IRAM     o = 0x00000000  l = 0x00030000  /* 192kB - Internal RAM */
-    L2RAM    o = 0x00030000  l = 0x00010000  /* 64kB - Internal RAM/CACHE */
+    IVECS:   o = 00000000h   l = 0x00000400	 /* reset & interrupt vectors     */
+    IRAM:    o = 00000400h   l = 0x0002FC00	 /* intended for initialization   */
     EMIFCE0  o = 0x80000000  l = 0x10000000  /* SDRAM in 6713 DSK */
     EMIFCE1  o = 0x90000000  l = 0x10000000  /* Flash/CPLD in 6713 DSK */
     EMIFCE2  o = 0xA0000000  l = 0x10000000  /* Daughterboard in 6713 DSK */
@@ -25,6 +25,7 @@ MEMORY
 
 SECTIONS
 {
+	.vectors       >  IVECS
     .text          >  IRAM
     .stack         >  IRAM
     .bss           >  IRAM
