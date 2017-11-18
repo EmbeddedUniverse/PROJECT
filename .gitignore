@@ -2,3 +2,7 @@ Debug/
 .launches/
 .settings/
 *.asv
+
+*.wav
+
+*.m4a
