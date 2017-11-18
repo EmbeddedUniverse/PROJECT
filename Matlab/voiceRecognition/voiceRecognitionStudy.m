@@ -78,6 +78,9 @@ pkFreqArray = sort(pkFreqArray,'descend');
 
 %% Find specific maximum peaks with different colour code for each sample
 figure()
-% frequencies = [cos(X), 0.5*sin(X)];
-% magnitudes = ;
-stem(pkFreqArraySamples)
+stem(pkFreqArraySamples')
+title('Main harmonics of each sample')
+xlabel('Nth sample')
+ylabel('Frequency (Hz)')
+
+
