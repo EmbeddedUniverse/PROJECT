@@ -5,62 +5,65 @@
 clear all
 close all
 clc
+
+%% Parameters to change ***manually
+% Parameters just below can be changed for analysis's tweaks
+freq_sep = 1000; % Minimum freq separation between main peaks (200) (100)
+nPeaks = 5;    % Number of main peaks per sample to analyze (20)    (5)
+
 %% Constants folder path names
-Piou = 'piouSamples\Piou.wav\';
+Piou = 'piouSamples\CleanedPiou.wav\';
 Ppppiii = 'piouSamples\Ppppiii.wav\';
 iiiou = 'piouSamples\iiiou.wav\';
 ouuuu = 'piouSamples\ouuuu.wav\';
 
-%% Parameters to change ***manually
-nbSamples = 20;  %Depends on how many samples are analyzed
-
-% Parameters just below can be changed for tweaks for analysis
-freq_sep = 1000; % Minimum freq separation between main peaks (200) (100)
-Npeaks = 5;    % Number of main peaks per sample to analyze (20)    (5)
-
 %% Sample data load
-[data, Fs] = loadAllWavSamples(nbSamples, Piou);
+[data, Fs] = loadAllWavSamples(Piou);
+
 %% FFT
-[L,~] = size(data);
-plotArray = zeros(L,nbSamples*2-1);
+[L,nbSamples] = size(data);
+fftArray = zeros(L,nbSamples*2); %Preallocation for speed
 
 for i = 1:nbSamples
-    plotArray(:,2*i) = fft(data(:,i));
+    fftArray(:,2*i) = fft(data(:,i));
 end
 
 % Cutting a half of the data because of the symetrical result
-plotArray = plotArray(1:L/2,:);
+fftArray = fftArray(1:L/2,:);
 L = L/2;
 f = Fs*(0:L-1)/L;
 
 for i = 1:nbSamples
-    plotArray(:,2*i-1) = plotArray(:,2*i-1) + f';
+    fftArray(:,2*i-1) = fftArray(:,2*i-1) + f';
 end
 
-% Plot separately
+%% Plot separately (Uncomment to see each sample's FFT)
+% for i = 1:nbSamples
+%     figure()
+%     plot(fftArray(:,2*i-1),fftArray(:,2*i))
+%     title('FFT of the chosen sound')
+%     xlabel('f(Hz)')
+%     ylabel('|X(f)|')
+% end
+
+%% Find specific maximum peaks (Only the harmonics strong enough in magnitude  for recognition)
+absFFTArray = fftArray;
 for i = 1:nbSamples
-    figure()
-    plot(plotArray(:,2*i-1),plotArray(:,2*i))
-    title('FFT of the chosen sound')
-    xlabel('f(Hz)')
-    ylabel('|X(f)|')
+    absFFTArray(:,2*i) = abs(fftArray(:,2*i));
 end
 
-% Find specific peaks
-abs_plotArray = plotArray;
+pkFreqArray = zeros(nPeaks*nbSamples,1); %Preallocation for speed
+pkFreqArraySamples = zeros(nPeaks,nbSamples); %Preallocation for speed
 for i = 1:nbSamples
-    abs_plotArray(:,2*i) = abs(plotArray(:,2*i));
-end
-
-pkFreqArray = zeros(Npeaks*nbSamples,1);
-for i = 1:nbSamples
-    figure()
-    findpeaks(abs_plotArray(:,2*i),abs_plotArray(:,2*i-1),'MinPeakDistance',freq_sep,'SortStr','descend','NPeaks',Npeaks)
+    %Uncomment to see each main peaks of the main harmonics of each sample
+%     figure()
+%     findpeaks(absFFTArray(:,2*i),absFFTArray(:,2*i-1),'MinPeakDistance',freq_sep,'SortStr','descend','NPeaks',nPeaks)
     
-    [pk,pkloc] = findpeaks(abs_plotArray(:,2*i),abs_plotArray(:,2*i-1),'MinPeakDistance',freq_sep,'SortStr','descend','NPeaks',Npeaks);
-    x = i*Npeaks-(Npeaks-1);
-    y = i*Npeaks;
+    [pk,pkloc] = findpeaks(absFFTArray(:,2*i),absFFTArray(:,2*i-1),'MinPeakDistance',freq_sep,'SortStr','descend','NPeaks',nPeaks);
+    x = i*nPeaks-(nPeaks-1);
+    y = i*nPeaks;
     pkFreqArray(x:y) = pkloc';
+    pkFreqArraySamples(:,i) = pkFreqArray(x:y);
 end
 
 % Sort the frequencies of the main peaks of all the chosen samples
@@ -68,7 +71,13 @@ pkFreqArray = sort(pkFreqArray,'descend');
 
 % Show on a graph an approximate of a potential bandpass for the selected
 % fragment of the sound "PIOU"
-figure()
-stem(pkFreqArray,ones(length(pkFreqArray),1),'r')
-ylim([0 2])
+% Uncomment to see the main peaks stem graph of each samplein same colour
+% figure()
+% stem(pkFreqArray,ones(length(pkFreqArray),1),'r')
+% ylim([0 2])
 
+%% Find specific maximum peaks with different colour code for each sample
+figure()
+% frequencies = [cos(X), 0.5*sin(X)];
+% magnitudes = ;
+stem(pkFreqArraySamples)
