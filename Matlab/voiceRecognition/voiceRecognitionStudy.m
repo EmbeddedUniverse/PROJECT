@@ -8,8 +8,8 @@ clc
 
 %% Parameters to change ***manually
 % Parameters just below can be changed for analysis's tweaks
-freq_sep = 1000; % Minimum freq separation between main peaks (200) (100)
-nPeaks = 1;    % Number of main peaks per sample to analyze (20)    (5)
+freq_sep = 200; % Minimum freq separation between main peaks (200) (100)
+nPeaks = 20;    % Number of main peaks per sample to analyze (20)    (5)
 
 %% Constants folder path names
 Piou = 'piouSamples\CleanedPiou.wav\';
@@ -95,3 +95,11 @@ ylabel('Magnitude')
 ylim([0 2])
 hold off
 
+%Calculate the mean and the standard deviation of the harmonics per
+%separation band (see variable's value of "freq_sep" at the top of the script)
+meanPkFreqArraySamples = zeros(i,1);
+stdPkFreqArraySamples = zeros(i,1);
+for i = 1:nPeaks
+    meanPkFreqArraySamples(i) = mean(pkFreqArraySamples(i,:));
+    stdPkFreqArraySamples(i) = std(pkFreqArraySamples(i,:));
+end
