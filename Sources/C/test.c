@@ -15,7 +15,8 @@ void (*unitTestSelected[]) (void) = {
    templateTest,
    autocorrelateTest,
    correlateTest,
-   autocorrelateASMTest
+   autocorrelateASMTest,
+   speechRecognitionTest
 };
 
 char* unitTestName[][30] = {
@@ -23,7 +24,8 @@ char* unitTestName[][30] = {
                         {"templateTest"},
                         {"autocorrelateTest"},
                         {"correlateTest"},
-                        {"autocorrelateASMTest"}
+                        {"autocorrelateASMTest"},
+                        {"speechRecognitionTest"}
 };
 
 void (*integrationTestSelected[]) (void) = {

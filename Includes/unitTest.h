@@ -12,7 +12,8 @@
 //Example below of how to implement a unit/integration test
 void templateTest(void);
 void autocorrelateTest(void);
-void autocorrelateASMTest(void);
 void correlateTest(void);
+void autocorrelateASMTest(void);
+void speechRecognitionTest(void);
 
 #endif /* INCLUDES_UNITTEST_H_ */

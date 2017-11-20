@@ -8,7 +8,7 @@ clc
 
 %% Parameters to change ***manually
 % Parameters just below can be changed for analysis's tweaks
-freq_sep = 200; % Minimum freq separation between main peaks (200) (100)
+freq_sep = 700; % Minimum freq separation between main peaks (200) (100)
 nPeaks = 20;    % Number of main peaks per sample to analyze (20)    (5)
 
 %% Constants folder path names
@@ -99,7 +99,15 @@ hold off
 %separation band (see variable's value of "freq_sep" at the top of the script)
 meanPkFreqArraySamples = zeros(i,1);
 stdPkFreqArraySamples = zeros(i,1);
+
+% Same but tries with a logarithmic representation (base 10)
+logMeanPkFreqArraySamples = zeros(i,1);
+logStdPkFreqArraySamples = zeros(i,1);
+
 for i = 1:nPeaks
     meanPkFreqArraySamples(i) = mean(pkFreqArraySamples(i,:));
     stdPkFreqArraySamples(i) = std(pkFreqArraySamples(i,:));
+    
+    logMeanPkFreqArraySamples(i) = mean(log10(pkFreqArraySamples(i,:)));
+    logStdPkFreqArraySamples(i) = std(log10(pkFreqArraySamples(i,:)));
 end
