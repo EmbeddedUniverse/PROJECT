@@ -39,7 +39,7 @@ bool recognition(float absFFTResult[]){
 
     //TODO: Figure out what is the threshold value to valid a detection ? Must it be a positive value only? Is sufficient?
     int i = 0;
-    while(i < BUFFER_LENGTH || flagRecognition){
+    while(i < BUFFER_LENGTH && !flagRecognition){
         if(absFFTResult[i] > THRESHOLD)
             flagRecognition = true;
         i++;
