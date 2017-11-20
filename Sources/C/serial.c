@@ -18,7 +18,7 @@ short VoteLogic(unsigned short value);
 void ProcessReceiveData(void);
 
 
-extern far void vectors();
+extern void vectors();
 
 const unsigned short FRAME_LENGTH = 9;
 const int RECV_INT_CODE_0 = EDMA_CHA_REVT0;
