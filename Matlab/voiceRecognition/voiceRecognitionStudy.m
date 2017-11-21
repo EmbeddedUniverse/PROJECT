@@ -1,6 +1,7 @@
-%%/Title: Program to study the voice recognition application for Embedded Universe Project
-%%/Description: Takes multiple samples of the "PIOU" sounds 
-%%/              and try to figure out which patterns are useful in the sounds
+%%/Title:       voiceRecognitionStudy
+%%/Description: Program to study the voice recognition application for Embedded Universe Project
+%%/             Takes multiple samples of the "PIOU" sounds and try to figure out which patterns
+%%/             are useful in the sounds
 
 clear all
 close all
