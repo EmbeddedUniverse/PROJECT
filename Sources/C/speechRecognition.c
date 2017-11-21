@@ -7,22 +7,36 @@
 
 #include "speechRecognition.h"
 
+int IIR_secOrder(int sample2Q13, int w[], const short C[]);
+
 bool speechRecognition(float sample[]){
     //hamming(sample); TODO : Figure out if a hamming window is needed
-    filter(sample);
-    fft(sample);
+    convertIn2Q13(sample);
+    filter(sample2Q13);
+    fft(sample2Q13);
     return recognition(absFFTResult);
 }
 
-void filter(float sample[]){
-
+void convertIn2Q13(float sample[]){
+    int i;
+    for(i = 0; i < BUFFER_LENGTH; i++)
+        sample2Q13[i] = (int)(sample[i]*pow((double)2,13));
 }
 
-void fft(float sample[]){
+void filter(int sample2Q13[]){
+    int i,y;
+    for(i = 0; i < nbFilters; i++){
+        for(y = 0; y < nbSecondOrder; y++){
+            //IIR_secOrder(sample2Q13, , );
+        }
+    }
+}
+
+void fft(int sample2Q13[]){
     int i;
-    for (i = 0 ; i < BUFFER_LENGTH ; i++){
+    for(i = 0 ; i < BUFFER_LENGTH ; i++){
         if(i%2 == 0)
-            cplxSample[i] = cplxSample[i/2];
+            cplxSample[i] = sample2Q13[i/2];
         else
             cplxSample[i] = 0;
     }
