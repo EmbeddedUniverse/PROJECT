@@ -15,7 +15,7 @@ nbFilters = 2;
 %Sampling frequency
 fs = 16000;
 %Order N needed to create the waterfall form
-N = 6;
+N = 10;
 %Ripple in the bandpass according to specs
 ripple_dB = 8;
 %Stopband attenuation 
@@ -23,7 +23,7 @@ stopBandAtt_dB = 40;
 %Cutoff frequencies for the filters (Each row is a filter and each column :
 %left side is for high-passing from this frequency and the right side is to
 %low-passing from this frequency.
-fc = [500 1000; 4000 6000; 0 0; 0 0; 0 0; 0 0];
+fc = [500 900; 4000 6000; 0 0; 0 0; 0 0; 0 0];
 
 %% Parameters/Constants
 %Nyquist frequency
@@ -37,43 +37,50 @@ n2Q13_divider = 1\n2Q13_multiplier;
 nbCoeffsSecondOrder = 6;
 
 %% FILTERS
+
+%Those arrays below will be useful for printing the values in a .dat file for CCS
 sosArray = zeros(N/2*nbFilters,nbCoeffsSecondOrder);
 globalGainArray = zeros(nbFilters,1);
+
+%Producing "nbFilters" filter(s)
 for i = 1:nbFilters
     for y = 1:2
-        %Filter order N=4 
+        %Filter order N
         if(y == 1)
+            %Elliptic filter
             [A,B,C,D] = ellip(N/2,ripple_dB, stopBandAtt_dB,fc(i,:)/fNyq);
         else
+            %Chebyshev filter
             [A,B,C,D] = cheby1(N/2,ripple_dB,fc(i,:)/fNyq,'bandpass');
         end
-
+        
         [sos globalGain] = ss2sos(A,B,C,D, 'up', 'inf');
         
-        % 2 parts of order N=2 as a waterfall
-        if(N == 4)
-            [b a] = sos2tf(sos, globalGain); 
-            figure()
-            freqz(b,a);
-            title(strcat('Frequency response of the filter IIR Biquad for FILTER ',num2str(i)))
-            figure()
-            zplane(b,a);
-            title(strcat('Poles and zeros of the filter IIR Biquad for FILTER ',num2str(i)))
-        end
-        
         if(y == 1)
-            [b1,a1] = ss2tf(A,B,C,D);
+            %Elliptic filter
+            [b1,a1] = sos2tf(sos, globalGain);
         end
         
         if(y == 2)
-            [b2,a2] = ss2tf(A,B,C,D);
+            %Chebyshev filter
+            [b2,a2] = sos2tf(sos, globalGain);
+            
+            %Comparing Elliptic filter with Chebyshev filter
             figure()
-            freqz([b1,a1],[b2,a2]);
-            title(strcat('Frequency response of the filter IIR Biquad for FILTER ',num2str(i)))
-            figure()
-            zplane([b1,a1],[b2,a2]);
-            title(strcat('Poles and zeros of the filter IIR Biquad for FILTER ',num2str(i)))
+            freqz(b1,a1);
+            hold on
+            freqz(b2,a2);
+            lines = findall(gcf,'type','line');
+            set(lines(1),'color','red')
+            set(lines(2),'color','blue')
+            hold off
             legend('Elliptic','Chebyshev')
+            title(strcat('Frequency response of the filter IIR (',num2str(N),'/2)quad for FILTER ',num2str(i)))
+            figure()
+            zplane([b1,a1])
+            figure()
+            zplane([b2,a2])
+            title(strcat('Poles and zeros of the filter IIR (',num2str(N),'/2)quad for FILTER ',num2str(i)))
         end
     end
     
@@ -87,11 +94,13 @@ for i = 1:nbFilters
     sos = round(sos*n2Q13_multiplier);
     globalGain = round(globalGain.*n2Q13_multiplier);
 
+    %Filling the arrays for upcoming printing
     sosArray((N/2*i-(N/2-1)):(N/2*i),:) = sosArray((N/2*i-(N/2-1)):(N/2*i),:) + sos;
     globalGainArray(i) = globalGainArray(i) + globalGain;
     
-    % %% Write txt file of the coefficients values 
-    % fileID = fopen('coeffsIIR.txt','w');
+    %Printing the .dat file
+    % %% Write .dat file of the coefficients values 
+    % fileID = fopen('coeffsIIR.dat','w');
     % 
     % sos = [sos;sos2;sos3;sos4;sos5;sos6];
     % gain = [globalGain;gain_global2;gain_global3;gain_global4;gain_global5;gain_global6];

@@ -29,9 +29,8 @@ void fft(float sample[]){
 
     DSPF_sp_cfftr4_dif(cplxSample, w, BUFFER_LENGTH);
 
-    for (i = 0 ; i < BUFFER_LENGTH ; i++){
+    for (i = 0 ; i < BUFFER_LENGTH ; i++)
         absFFTResult[i] = sqrt(cplxSample[2*i]*cplxSample[2*i] + cplxSample[2*i+1]*cplxSample[2*i+1]);
-    }
 }
 
 bool recognition(float absFFTResult[]){
