@@ -6,7 +6,7 @@ targetFs = 16000;
 segmentLength = 256;
 segmentOverlap = 100;
 sumThreshold = 1;
-firK = -0.5;
+firK = -0.97;
 
 load mtlb %Non Piou Signal
 cmtlb = changeFS(mtlb, Fs, targetFs);
@@ -59,3 +59,7 @@ for i = 1:size(chosenSegments,1)
     wSegments(i,:) = chosenSegments(i,:).*window;
 end
 
+% m = abs(fft(wSegments(8,:)));
+% plot(1:256, m)
+
+% Saving hlf
