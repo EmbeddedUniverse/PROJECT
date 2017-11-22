@@ -13,6 +13,7 @@
 #include "TestSignal2.dat"
 #include "TestSignalResult.dat"
 #include "TestSignalResult2.dat"
+#include "TestVoiceSamples.dat"
 
 //Parameter for correlation and autocorrelation
 #define LengthTrame 10
@@ -155,6 +156,8 @@ void speechRecognitionTest(){
 //        if(speechRecognition(sample[]))
 //            strncpy(test.result, PASS, 5);
 //    }
+
+
 
     printTestResult(test.title, test.author, test.reviser, test.description, test.ID, test.result);
 }
