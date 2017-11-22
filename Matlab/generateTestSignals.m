@@ -17,7 +17,8 @@ samplingFrequency = 16000;
 
 % BadSignal
 load mtlb
-fsAdjustedBad = changeFS(mtlb, Fs, samplingFrequency);
+xxx = changeFS(mtlb, Fs, samplingFrequency)';
+fsAdjustedBad = xxx(1:sampleLength);
 
 % Good Signals
 [signals, inputFs] = loadAllWavSamples('../Ressources/AudioSample/');
@@ -29,10 +30,11 @@ for i = 1:nbGoodSample
     fsAdjustedGood(i,1:size(x,2)) = x;
 end
 
-% player = audioplayer(fsAdjustedGood(5,:), samplingFrequency);
-% play(player);
+player = audioplayer(fsAdjustedBad(1,:), samplingFrequency);
+play(player);
 
 fileID = fopen('../Ressources/TestVoiceSamples.dat','w');
+fprintf(fileID, '// This is an output of generateTestSignals.m\r\n\r\n');
 fprintf(fileID, '#define %s %d\r\n', sampleLengthName, sampleLength);
 fprintf(fileID, '#define %s %d\r\n', samplingFrequencyName, samplingFrequency);
 fprintf(fileID, '#define %s %d\r\n', nbGoodSampleName, nbGoodSample);
@@ -40,5 +42,24 @@ fprintf(fileID, '#define %s %d\r\n', nbBadSampleName, nbBadSample);
 
 % Good samples
 fprintf(fileID, '\r\nfloat %s [%s][%s] = \r\n{\r\n', goodSampleName, nbGoodSampleName, sampleLengthName);
+for i = 1:size(fsAdjustedGood, 1)
+    fprintf(fileID, '\t{');
+    for j = 1:(size(fsAdjustedGood, 2) - 1)
+        fprintf(fileID, '%e, ', fsAdjustedGood(i,j));
+    end
+    fprintf(fileID, '%e},\r\n', fsAdjustedGood(i,size(fsAdjustedGood, 2)));
+end
+fprintf(fileID, '};\r\n');
+
+% Bad Samples
+fprintf(fileID, '\r\nfloat %s [%s][%s] = \r\n{\r\n', badSampleName, nbBadSampleName, sampleLengthName);
+for i = 1:size(fsAdjustedBad, 1)
+    fprintf(fileID, '\t{');
+    for j = 1:(size(fsAdjustedBad, 2) - 1)
+        fprintf(fileID, '%e, ', fsAdjustedBad(i,j));
+    end
+    fprintf(fileID, '%e},\r\n', fsAdjustedBad(i,size(fsAdjustedBad, 2)));
+end
+fprintf(fileID, '};\r\n');
 
 fclose(fileID);
