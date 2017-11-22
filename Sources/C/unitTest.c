@@ -9,6 +9,7 @@
 #include "unitTest.h"
 #include "correlation.h"
 #include "mathematic.h"
+#include "speechRecognition.h"
 #include "TestSignal.dat"
 #include "TestSignal2.dat"
 #include "TestSignalResult.dat"
@@ -147,7 +148,7 @@ void speechRecognitionTest(){
     nTest test;
     strncpy(test.title,"SPEECH RECOGNITION TEST", 50);
     strncpy(test.author,"Anthony Parris", 50);
-    strncpy(test.reviser,"NAN", 100);
+    strncpy(test.reviser,"Edouard Denommee", 100);
     strncpy(test.description,"Test the recognition of the sound 'PEW'", 100);
     test.ID = 4;
     strncpy(test.result,FAIL, 5);
@@ -158,6 +159,25 @@ void speechRecognitionTest(){
 //    }
 
 
+    // Verifying good samples are recognized
+    int i;
+    for (i = 0; i < NB_TEST_PEW_GOOD; ++i)
+    {
+        bool detected = speechRecognition(TEST_PEW_GOOD[i]);
+        if (! detected ){
+            printTestResult(test.title, test.author, test.reviser, test.description, test.ID, test.result);
+        }
+    }
 
+    // Verifying bad samples are not recognized
+    for (i = 0; i < NB_TEST_PEW_BAD; ++i)
+    {
+        bool detected = speechRecognition(TEST_PEW_BAD[i]);
+        if (detected){
+            printTestResult(test.title, test.author, test.reviser, test.description, test.ID, test.result);
+        }
+    }
+
+    strncpy(test.result,PASS, 5);
     printTestResult(test.title, test.author, test.reviser, test.description, test.ID, test.result);
 }

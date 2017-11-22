@@ -5,7 +5,12 @@
  *      Author: para2709
  */
 
+#define SPEECHRECOGNITION_MODULE_IMPORT
+
 #include "speechRecognition.h"
+#include "DSPF_sp_cfftr4_dif.h"
+#include "twiddles.h"
+#include "coeffsIIR.h"
 
 int IIR_secOrder(int sample2Q13, int w[], const short C[]);
 
