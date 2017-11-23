@@ -156,5 +156,5 @@ bool goodSeries()
     }
 
 
-    return false;
+    return true;
 }

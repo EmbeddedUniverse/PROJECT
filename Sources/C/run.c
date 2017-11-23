@@ -36,8 +36,14 @@ void run(){
             if (detectPiou(voiceSample))
             {
                 DSK6713_LED_on(0);
-                DSK6713_waitusec(1000000);
+                DSK6713_LED_on(1);
+                DSK6713_LED_on(2);
+                DSK6713_LED_on(3);
+                DSK6713_waitusec(125000);
                 DSK6713_LED_off(0);
+                DSK6713_LED_off(1);
+                DSK6713_LED_off(2);
+                DSK6713_LED_off(3);
             }
 
             VOICE_reset();
