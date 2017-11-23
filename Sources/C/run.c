@@ -20,7 +20,8 @@ void run(){
     while(1)
     {
         if (voiceSampleReady){
-            printf("Analyzing voice\r\n");
+            //play(voiceSample, VOICE_BUFFER_LENGTH);
+            //while(!readyToPlay);
             VOICE_reset();
         }
     }

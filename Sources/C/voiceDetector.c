@@ -1,6 +1,10 @@
 #include <string.h>
 #include <stdio.h>
 
+#define WAITING 0
+#define RECORDING 1
+#define ANALAZING 2
+
 #define VOICE_DETECT_MODULE_IMPORT
 #include "voiceDetector.h"
 #include "C6713Helper_UdeS.h"
@@ -9,7 +13,11 @@
 volatile short detectionArray[DETECTION_BUFFER_LENGTH];
 volatile int detectionIndex;
 volatile int voiceSampleIndex;
-volatile bool recording;
+volatile int voiceMEF;
+
+volatile short *signalToPlay;
+size_t playLength;
+volatile int playIndex;
 
 int VOICE_init()
 {
@@ -22,13 +30,11 @@ int VOICE_init()
 
 int VOICE_reset()
 {
-    //memset((void *)detectionArray, 0, DETECTION_BUFFER_LENGTH * sizeof(short));
+    memset((void *)detectionArray, 0, DETECTION_BUFFER_LENGTH * sizeof(short));
     detectionIndex = 0;
     voiceSampleReady = false;
     voiceSampleIndex = 0;
-    recording = false;
-
-    //IRQ_enable(11);
+    voiceMEF = WAITING;
 
     return 0;
 }
@@ -37,38 +43,55 @@ interrupt void c_int11(void)
 {
     short newValue = input_right_sample();
 
-//    if (!recording)
-//    {
-//        detectionArray[detectionIndex++] = abs(newValue);
-//
-//        unsigned int i, sum = 0;
-//
-//        for (i = 0; i < DETECTION_BUFFER_LENGTH; ++i)
-//            sum += detectionArray[i];
-//
-//        if (sum > DETECTION_THRESHOLD)
-//        {
-//            recording = true;
-//            printf("Started rec; val : %d\r\n", sum);
-//        }
-//
-//        if (detectionIndex >= DETECTION_BUFFER_LENGTH)
-//            detectionIndex = 0;
-//    }
-//    else
-//    {
-//        voiceSample[voiceSampleIndex++] = newValue;
-//
-//        if (voiceSampleIndex >= VOICE_BUFFER_LENGTH)
-//        {
-//            recording = false;
-//
-//            voiceSampleReady = true;
-//
-//            // Stop interrupting for new samples until the record is analysed
-//            IRQ_disable(11);
-//        }
-//    }
-//
-//    output_sample(0);
+    if (voiceMEF == WAITING)
+    {
+        detectionArray[detectionIndex++] = abs(newValue);
+
+        unsigned int i, sum = 0;
+
+        for (i = 0; i < DETECTION_BUFFER_LENGTH; ++i)
+            sum += detectionArray[i];
+
+        if (sum > DETECTION_THRESHOLD)
+        {
+            voiceMEF = RECORDING;
+        }
+
+        if (detectionIndex >= DETECTION_BUFFER_LENGTH)
+            detectionIndex = 0;
+    }
+    else if (voiceMEF == RECORDING)
+    {
+        voiceSample[voiceSampleIndex++] = newValue;
+
+        if (voiceSampleIndex >= VOICE_BUFFER_LENGTH)
+        {
+            voiceMEF = ANALAZING;
+
+            voiceSampleReady = true;
+        }
+    }
+
+    if (playIndex < playLength)
+    {
+        short vToPlay = signalToPlay[playIndex++];
+
+        output_sample((int)vToPlay << 16 | ((int)vToPlay&0xFFFF));
+        return;
+    }
+    else
+        readyToPlay = true;
+
+    output_sample(0);
+}
+
+int play(volatile short signal[], size_t length)
+{
+    signalToPlay = signal;
+    playLength = length;
+    playIndex = 0;
+
+    readyToPlay = false;
+
+    return 0;
 }

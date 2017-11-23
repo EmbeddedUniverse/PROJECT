@@ -13,9 +13,11 @@
 #endif
 
 EXTERN volatile bool voiceSampleReady;
+EXTERN volatile bool readyToPlay;
 EXTERN volatile short voiceSample[VOICE_BUFFER_LENGTH];
 
 int VOICE_init();
 int VOICE_reset();
+int play(volatile short signal[], size_t length);
 
 #endif
