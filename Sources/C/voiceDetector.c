@@ -23,7 +23,7 @@ int VOICE_init()
 {
     VOICE_reset();
 
-    comm_intr(DSK6713_AIC23_FREQ_16KHZ, DSK6713_AIC23_INPUT_MIC);
+    comm_intr(VOICE_AIC_SAMPLING_FREQ, DSK6713_AIC23_INPUT_MIC);
 
     return 0;
 }
