@@ -165,6 +165,7 @@ void speechRecognitionTest(){
         bool detected = speechRecognitionBands(TEST_PEW_BUFFER);
         if (!detected){
             printTestResult(test.title, test.author, test.reviser, test.description, test.ID, test.result);
+            return;
         }
     }
 
@@ -175,6 +176,7 @@ void speechRecognitionTest(){
         bool detected = speechRecognitionBands(TEST_PEW_BUFFER);
         if (detected){
             printTestResult(test.title, test.author, test.reviser, test.description, test.ID, test.result);
+            return;
         }
     }
 
