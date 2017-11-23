@@ -7,14 +7,31 @@
 
 #include "speechRecognition.h"
 
-int IIR_secOrder(int sample2Q13, int w[], const short C[]);
+//ASM prototype : filter function
+int IIR_secOrder(int x, int w[], const short C[]);
 
-bool speechRecognition(float sample[]){
-    //hamming(sample); TODO : Figure out if a hamming window is needed
+bool speechRecognitionBands(float sample[]){
+    int nthFilter, nbRecognition = 0;
+    for(nthFilter = 0; nthFilter < nbFilters; nthFilter++){
+        if(speechRecognitionBand(sample, nthFilter))
+            nbRecognition++;
+    }
+    return (nbRecognition == nbFilters) ? RECOGNIZED : UNRECOGNIZED;
+}
+
+bool speechRecognitionBand(float sample[], unsigned short nthFilter){
+    //hanning(sample); TODO : Figure out if a hanning window is needed
     convertIn2Q13(sample);
-    filter(sample2Q13);
+    filter(sample2Q13, nthFilter);
     fft(sample2Q13);
     return recognition(absFFTResult);
+}
+
+void hanning(float sample[]){
+    int i;
+    for (i = 0;i<BUFFER_LENGTH;i++){
+        //sample[i] = HAN_WINDOW[i]*sample[i];
+    }
 }
 
 void convertIn2Q13(float sample[]){
@@ -23,13 +40,32 @@ void convertIn2Q13(float sample[]){
         sample2Q13[i] = (int)(sample[i]*pow((double)2,13));
 }
 
-void filter(int sample2Q13[]){
-    int i,y;
-    for(i = 0; i < nbFilters; i++){
-        for(y = 0; y < nbSecondOrder; y++){
-            //IIR_secOrder(sample2Q13, , );
+void filter(int sample2Q13[], unsigned short nthFilter){
+    int x,y;
+    for(x = 0; x < nbSecondOrder; x++){
+        for(y = 0; y < BUFFER_LENGTH; y++){
+            //Chose between ASM and C function
+            IIR_2ndOrder_directII(sample2Q13[y], interVar, filters[nthFilter]->coeffsIIR[x]);
+            //IIR_secOrder(sample2Q13[y], interVar, filters[nthFilter]->coeffsIIR[x][0]);
+
+            sample2Q13[y] = (int)(filters[nthFilter]->globalGain[x])*sample2Q13[y];   // 2Q13 x 15Q13 = 17Q26
+            sample2Q13[y] = (sample2Q13[y]>>13);                                      // y->17Q13
+            sat_16bits(sample2Q13[y]);                                                // y->2Q13
         }
     }
+}
+
+short sat_16bits(int x){
+    short r;
+
+    if (x>(pow(2,15)-1))
+        r =(short)pow(2,15)-1;
+    else if (x<-pow(2,15))
+        r = (short)-pow(2,15);
+    else
+        r = (short)x;
+
+    return r;
 }
 
 void fft(int sample2Q13[]){
