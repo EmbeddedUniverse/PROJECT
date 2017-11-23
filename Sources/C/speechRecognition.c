@@ -5,10 +5,23 @@
  *      Author: para2709
  */
 
+#define SPEECHRECOGNITION_MODULE_IMPORT
+
 #include "speechRecognition.h"
+#include "DSPF_sp_cfftr4_dif.h"
+#include "twiddles.h"
+#include "coeffsIIR.h"
+#include "IIR_2ndOrder_directII.h"
 
 //ASM prototype : filter function
 int IIR_secOrder(int x, int w[], const short C[]);
+
+void initSpeechRecognition(void){
+    //Add all the stuff needed to be initialized first before starting speech recognition functions
+    int i;
+    for(i=0 ; i < nbInterVar; i++)
+        interVar[i] = 0;
+}
 
 bool speechRecognitionBands(float sample[]){
     int nthFilter, nbRecognition = 0;

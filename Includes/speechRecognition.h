@@ -11,11 +11,6 @@
 #include <stdbool.h>
 #include <math.h>
 
-#include "DSPF_sp_cfftr4_dif.h"
-#include "twiddles.h"
-#include "coeffsIIR.h"
-#include "IIR_2ndOrder_directII.h"
-
 // Possible values for BUFFER_LENGTH : 16, 81, 256, 625, 1296, 2401, 4096 ...
 #define BUFFER_LENGTH 256
 #define THRESHOLD 0
@@ -23,15 +18,26 @@
 #define RECOGNIZED 1
 #define UNRECOGNIZED 0
 
-float absFFTResult[BUFFER_LENGTH];
-float cplxSample[2*BUFFER_LENGTH];
+/***************************************************************************
+    Set EXTERN macro :
+***************************************************************************/
 
-int sample2Q13[BUFFER_LENGTH];
+#ifdef SPEECHRECOGNITION_MODULE_IMPORT
+    #define EXTERN
+#else
+    #define EXTERN extern
+#endif
 
-int interVar[nbInterVar] ={0,0,0};
+EXTERN float absFFTResult[BUFFER_LENGTH];
+EXTERN float cplxSample[2*BUFFER_LENGTH];
 
-bool flagRecognition = false;
+EXTERN int sample2Q13[BUFFER_LENGTH];
 
+EXTERN int interVar[nbInterVar];
+
+EXTERN bool flagRecognition;
+
+void initSpeechRecognition(void);
 bool speechRecognitionBands(float sample[]);
 bool speechRecognitionBand(float sample[], unsigned short nthFilter);
 void hanning(float sample[]);
