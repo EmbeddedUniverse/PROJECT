@@ -101,17 +101,33 @@ bool detectPiou(short sample[VOICE_BUFFER_LENGTH])
 }
 
 // Determines if the series of phonem is a pew
-// This can be improved massively
-// Currently it only checks for 1 p, i, and u in that sequence
 bool goodSeries()
 {
     int ipIndex = 0;
 
-    for (; ipIndex < NB_BLOCKS; ++ipIndex)
+    // There must be a P in the first 3 phonems
+    for(; ipIndex <= 3; ++ipIndex)
     {
-        if(detectedPhonems[ipIndex] == 'p')
+        if (ipIndex >= 3)
+            return false;
+
+        if (detectedPhonems[ipIndex] == 'p')
             break;
     }
+
+    // There make sure there are no more than 3 consecutive P
+    int firstP_i = ipIndex;
+    int nbP = 0;
+    while(detectedPhonems[ipIndex] == 'p')
+    {
+        ++nbP;
+        ++ipIndex;
+        if (nbP > 3)
+            return false;
+    }
+
+    // Allowing one mistake from P to i transition
+    if(detectedPhonems[ipIndex++])
 
     for (; ipIndex < NB_BLOCKS; ++ipIndex)
     {
