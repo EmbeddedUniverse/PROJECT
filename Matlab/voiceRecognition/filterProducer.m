@@ -22,11 +22,11 @@ CHEBYSHEV = 2;
 %% Specifications of the filters (Can be changed manually)
 %Number of filters (Will calculate the all the coefficiens for the number
 %of filters specified)
-nbFilters = 1;
+nbFilters = 2;
 %Sampling frequency
 fs = 16000;
 %Order N needed to create the waterfall form
-N = 12; %Minimum order 4
+N = 8; %Minimum order 4
 %Ripple in the bandpass according to specs
 ripple_dB = 3;
 %Stopband attenuation
@@ -34,7 +34,7 @@ stopBandAtt_dB = 40;
 %Cutoff frequencies for the filters (Each row is a filter and each column :
 %left side is for high-passing from this frequency and the right side is to
 %low-passing from this frequency.
-fc = [3100 3900; 0 0; 0 0; 0 0; 0 0; 0 0];
+fc = [6800 7800; 6000 6500; 0 0; 0 0; 0 0; 0 0];
 
 %Flag whether the coefficients printed are for a elliptic filter or a
 %chebyshev filter
@@ -52,7 +52,7 @@ lowLimit = fc(1,1);
 maxLowLimit = lowLimit - 100;
 
 highLimit = fc(1,2);
-maxHighLimit = highLimit - 100;
+maxHighLimit = highLimit + 100;
 
 %% Parameter from spec above
 %Nyquist frequency
@@ -201,7 +201,7 @@ for i = 1:nbFilters
                     else
                         filterType = 'CHEBYSHEV';
                     end
-                    fileID = fopen('coeffsIIR.txt','w');
+                    fileID = fopen('coeffsIIR.h','w');
                     fprintf(fileID, '\n\n#ifndef INCLUDES_COEFFSIIR_H_\n');
                     fprintf(fileID, '#define INCLUDES_COEFFSIIR_H_\n');
                     fprintf(fileID, strcat('//********** ',filterType,' FILTERS **********\n'));
@@ -260,7 +260,7 @@ for i = 1:nbFilters
                     else
                         filterType = 'CHEBYSHEV';
                     end
-                    fileID = fopen('coeffsIIR.txt','w');
+                    fileID = fopen('coeffsIIR.h','w');
                     fprintf(fileID, '\n\n#ifndef INCLUDES_COEFFSIIR_H_\n');
                     fprintf(fileID, '#define INCLUDES_COEFFSIIR_H_\n');
                     fprintf(fileID, strcat('//********** ',filterType,' FILTERS **********\n'));
