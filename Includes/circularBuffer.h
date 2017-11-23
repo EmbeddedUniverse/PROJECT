@@ -9,6 +9,14 @@ typedef struct{
     bool quarterFlag;
 }circularQBuffer;
 
-circularQBuffer initQBuffer(float *adress,int size);
-bool quarterReached(circularQBuffer myBuffer);
+typedef struct{
+    float* current;
+    float* last;
+    int    size;
+}circularBuffer;
+
+circularQBuffer initQBuffer(float *adress, int size);
 void add2QBuffer(float value, circularQBuffer* buffer);
+
+circularBuffer initCBuffer(float *adress,int size);
+void add2CBuffer(float value, circularQBuffer* buffer);

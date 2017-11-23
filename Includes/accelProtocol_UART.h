@@ -35,7 +35,6 @@ typedef struct{
     short errors;
 }AccelDecodedData;
 
-
 AccelDecodedData convertAccString2Floats(const char* accString);
 
 #endif /* INCLUDES_ACCELPROTOCOL_UART_H_ */
