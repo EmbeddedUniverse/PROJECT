@@ -46,13 +46,30 @@ while index <= subC
     bands(index,2) = sum(fftRes(index,tonalEnd:highEnd)) /  total(index,1);
     bands(index,3) = sum(fftRes(index,highEnd:end)) /  total(index,1);
     
+    avg = mean(total);
     
-    figure()
-    subplot(2,1,1)
-    plot(1:subSize, hammed(index,:))
-    subplot(2,1,2)
-    plot(tFs/subSize*(0:subSize/2), fftRes(index,:))
+    if total(index) < 0.10* total(1)
+        phonem(index) = 0;
+    elseif bands(index, 3) > 0.2
+        phonem(index) = 1;
+    elseif bands(index, 1) > 0.3
+        if bands(index, 2) > 0.3
+            phonem(index) = 2;
+        else
+            phonem(index) = 3;
+        end
+    else
+        phonem(index) = 1;
+    end
+    
+% %     figure()
+% %     subplot(2,1,1)
+% %     plot(1:subSize, hammed(index,:))
+% %     subplot(2,1,2)
+% %     plot(tFs/subSize*(0:subSize/2), fftRes(index,:))
    
     index = index +1;
     start = start+subSize-overlap;
 end
+
+phonem'
