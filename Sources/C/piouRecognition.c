@@ -116,7 +116,6 @@ bool goodSeries()
     }
 
     // There make sure there are no more than 3 consecutive P
-    int firstP_i = ipIndex;
     int nbP = 0;
     while(detectedPhonems[ipIndex] == 'p')
     {
@@ -127,19 +126,35 @@ bool goodSeries()
     }
 
     // Allowing one mistake from P to i transition
-    if(detectedPhonems[ipIndex++])
+    if(detectedPhonems[ipIndex] != 'i')
+        if(detectedPhonems[++ipIndex] != 'i')
+            return false;
 
-    for (; ipIndex < NB_BLOCKS; ++ipIndex)
+    // Allowing up to 4 consecutive i
+    int nbI = 0;
+    while(detectedPhonems[ipIndex] == 'i')
     {
-        if(detectedPhonems[ipIndex] == 'i')
-            break;
+        ++nbI;
+        ++ipIndex;
+        if (nbI > 3)
+            return false;
     }
 
-    for (; ipIndex < NB_BLOCKS; ++ipIndex)
+    // Allowing one mistake between i an u
+    if(detectedPhonems[ipIndex] != 'u')
+        if(detectedPhonems[++ipIndex] != 'u')
+            return false;
+
+    // Allowing up to 8 u
+    int nbU = 0;
+    while(detectedPhonems[ipIndex] == 'u')
     {
-        if(detectedPhonems[ipIndex] == 'u')
-            return true;
+        ++nbU;
+        ++ipIndex;
+        if (nbU > 7)
+            return false;
     }
+
 
     return false;
 }
