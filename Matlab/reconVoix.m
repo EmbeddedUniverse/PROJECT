@@ -4,7 +4,7 @@ close all
 
 buffSize = 8192;
 subSize = 512;
-overlap = 150;
+overlap = 180;
 tFs = 16000;
 
 tonalEnd = round(subSize*(1000/tFs));
@@ -26,6 +26,8 @@ hammed = zeros(subC,subSize);
 fftRes = zeros(subC,subSize/2+1);
 total = zeros(subC,1);
 bands = zeros(subC,3);
+%p = 1, i = 2, ou = 3 , x= 0
+phonem = zeros(subC,1);
 
 index = 1;
 start = 1;
