@@ -22,19 +22,19 @@ CHEBYSHEV = 2;
 %% Specifications of the filters (Can be changed manually)
 %Number of filters (Will calculate the all the coefficiens for the number
 %of filters specified)
-nbFilters = 2;
+nbFilters = 1;
 %Sampling frequency
 fs = 16000;
 %Order N needed to create the waterfall form
 N = 12; %Minimum order 4
 %Ripple in the bandpass according to specs
-ripple_dB = 8;
+ripple_dB = 3;
 %Stopband attenuation
 stopBandAtt_dB = 40;
 %Cutoff frequencies for the filters (Each row is a filter and each column :
 %left side is for high-passing from this frequency and the right side is to
 %low-passing from this frequency.
-fc = [500 900; 4000 6000; 0 0; 0 0; 0 0; 0 0];
+fc = [3100 3900; 0 0; 0 0; 0 0; 0 0; 0 0];
 
 %Flag whether the coefficients printed are for a elliptic filter or a
 %chebyshev filter
@@ -46,6 +46,13 @@ print = 1;
 %Flag : Print a bandpass made directly or bandpass made of a lowpass and a
 %highpass
 printBandpass = 0;
+
+%Frequency cutoff limits visually displayed on frequency response graph 
+lowLimit = fc(1,1);
+maxLowLimit = lowLimit - 100;
+
+highLimit = fc(1,2);
+maxHighLimit = highLimit - 100;
 
 %% Parameter from spec above
 %Nyquist frequency
@@ -138,6 +145,11 @@ for i = 1:nbFilters
             set(lines(2),'color','blue')
             set(lines(3),'color','green')
             set(lines(4),'color','magenta')
+            [o,~] = freqz(bB2,aB2);
+            plot(ones(length(o),1)*lowLimit/fNyq,-(length(o)/2):1:(length(o)/2-1),'-k')
+            plot(ones(length(o),1)*maxLowLimit/fNyq,-(length(o)/2):1:(length(o)/2-1),'-k')
+            plot(ones(length(o),1)*highLimit/fNyq,-(length(o)/2):1:(length(o)/2-1),'-k')
+            plot(ones(length(o),1)*maxHighLimit/fNyq,-(length(o)/2):1:(length(o)/2-1),'-k')
             hold off
             legend('Elliptic','Chebyshev','Elliptic Lowpass+Highpass','Chebyshev Lowpass+Highpass')
             title(strcat('Frequency response of the filter IIR (',num2str(N),'/2)quad for FILTER ',num2str(i)))
@@ -189,7 +201,7 @@ for i = 1:nbFilters
                     else
                         filterType = 'CHEBYSHEV';
                     end
-                    fileID = fopen('..\..\Includes\coeffsIIR.h','w');
+                    fileID = fopen('coeffsIIR.txt','w');
                     fprintf(fileID, '\n\n#ifndef INCLUDES_COEFFSIIR_H_\n');
                     fprintf(fileID, '#define INCLUDES_COEFFSIIR_H_\n');
                     fprintf(fileID, strcat('//********** ',filterType,' FILTERS **********\n'));
@@ -248,7 +260,7 @@ for i = 1:nbFilters
                     else
                         filterType = 'CHEBYSHEV';
                     end
-                    fileID = fopen('..\..\Includes\coeffsIIR.h','w');
+                    fileID = fopen('coeffsIIR.txt','w');
                     fprintf(fileID, '\n\n#ifndef INCLUDES_COEFFSIIR_H_\n');
                     fprintf(fileID, '#define INCLUDES_COEFFSIIR_H_\n');
                     fprintf(fileID, strcat('//********** ',filterType,' FILTERS **********\n'));
