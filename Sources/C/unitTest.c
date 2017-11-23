@@ -158,10 +158,12 @@ void speechRecognitionTest(){
 
     // Verifying good samples are recognized
     int i;
+    short TEST_PEW_BUFFER[BUFFER_LENGTH];
     for (i = 0; i < NB_TEST_PEW_GOOD; ++i)
     {
-        bool detected = speechRecognitionBands(TEST_PEW_GOOD[i]);
-        if (! detected ){
+        convertIn2Q13(TEST_PEW_GOOD[i], TEST_PEW_BUFFER);
+        bool detected = speechRecognitionBands(TEST_PEW_BUFFER);
+        if (!detected){
             printTestResult(test.title, test.author, test.reviser, test.description, test.ID, test.result);
         }
     }
@@ -169,7 +171,8 @@ void speechRecognitionTest(){
     // Verifying bad samples are not recognized
     for (i = 0; i < NB_TEST_PEW_BAD; ++i)
     {
-        bool detected = speechRecognitionBands(TEST_PEW_BAD[i]);
+        convertIn2Q13(TEST_PEW_BAD[i], TEST_PEW_BUFFER);
+        bool detected = speechRecognitionBands(TEST_PEW_BUFFER);
         if (detected){
             printTestResult(test.title, test.author, test.reviser, test.description, test.ID, test.result);
         }
