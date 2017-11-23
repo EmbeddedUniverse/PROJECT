@@ -26,6 +26,8 @@ float harmonicAmplitudes[FFT_BLOCK_SIZE/2];
 float bands [NB_BLOCKS][4];
 short indeces[FFT_BLOCK_SIZE/16];
 
+bool goodSeries();
+
 void PIOU_init()
 {
     // Compute bit reverse indeces
@@ -95,5 +97,33 @@ bool detectPiou(short sample[VOICE_BUFFER_LENGTH])
         start += FFT_BLOCK_SIZE - FFT_BLOCK_OVERLAP;
     }
 
-    return true;
+    return goodSeries();
+}
+
+// Determines if the series of phonem is a pew
+// This can be improved massively
+// Currently it only checks for 1 p, i, and u in that sequence
+bool goodSeries()
+{
+    int ipIndex = 0;
+
+    for (; ipIndex < NB_BLOCKS; ++ipIndex)
+    {
+        if(detectedPhonems[ipIndex] == 'p')
+            break;
+    }
+
+    for (; ipIndex < NB_BLOCKS; ++ipIndex)
+    {
+        if(detectedPhonems[ipIndex] == 'i')
+            break;
+    }
+
+    for (; ipIndex < NB_BLOCKS; ++ipIndex)
+    {
+        if(detectedPhonems[ipIndex] == 'u')
+            return true;
+    }
+
+    return false;
 }
