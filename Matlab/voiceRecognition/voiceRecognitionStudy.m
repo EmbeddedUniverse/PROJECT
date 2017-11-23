@@ -9,8 +9,12 @@ clc
 
 %% Parameters to change ***manually
 % Parameters just below can be changed for analysis's tweaks
-freq_sep = 700; % Minimum freq separation between main peaks (200) (100)
+freq_sep = 300; % Minimum freq separation between main peaks (200) (100)
 nPeaks = 20;    % Number of main peaks per sample to analyze (20)    (5)
+
+%Place helpful visual lines to check if points are between them in figure 1
+lowLimit =6800;
+highLimit = 7800; 
 
 %% Constants folder path names
 Piou = 'piouSamples\CleanedPiou.wav\';
@@ -19,7 +23,7 @@ iiiou = 'piouSamples\iiiou.wav\';
 ouuuu = 'piouSamples\ouuuu.wav\';
 
 %% Sample data load
-[data, Fs] = loadAllWavSamples(Piou);
+[data, Fs] = loadAllWavSamples(Ppppiii);
 
 %% FFT
 [L,nbSamples] = size(data);
@@ -79,18 +83,21 @@ pkFreqArray = sort(pkFreqArray,'descend');
 
 %% Find specific maximum peaks with different colour code for each sample
 figure()
+hold on
+plot(1:1:length(pkFreqArraySamples),ones(length(pkFreqArraySamples),1)*lowLimit,'r',1:1:length(pkFreqArraySamples),ones(length(pkFreqArraySamples),1)*highLimit,'r')
 stem(pkFreqArraySamples')
-title(strcat('Main harmonics of each sample (',num2str(nPeaks),' samples, ',num2str(freq_sep),'Hz of seperation for each peaks)'))
+title(strcat('Main harmonics of each sample (',num2str(nPeaks),' peaks, ',num2str(freq_sep),'Hz of seperation for each peaks)'))
 xlabel('Nth sample')
 ylabel('Frequency (Hz)')
 hold off
+
 
 figure()
 hold on
 for i = 1:length(pkFreqArraySamples)
     stem(pkFreqArraySamples(:,i),ones(length(pkFreqArraySamples(:,i)),1))
 end
-title(strcat('Main harmonics with different colour for each sample (',num2str(nPeaks),' samples, ',num2str(freq_sep),'Hz of seperation for each peaks)'))
+title(strcat('Main harmonics with different colour for each sample (',num2str(nPeaks),' peaks, ',num2str(freq_sep),'Hz of seperation for each peaks)'))
 xlabel('Frequency (Hz)')
 ylabel('Magnitude')
 ylim([0 2])

@@ -18,6 +18,10 @@ int IIR_secOrder(int x, int w[], const short C[]);
 
 void initSpeechRecognition(void){
     //Add all the stuff needed to be initialized first before starting speech recognition functions
+    restartInterVar();
+}
+
+void restartInterVar(void){
     int i;
     for(i=0 ; i < NB_INTER_VAR; i++)
         interVar[i] = 0;
@@ -54,6 +58,7 @@ void convertIn2Q13(float sample[], short sample2Q13[]){
 }
 
 void filter(short sample[], unsigned short nthFilter){
+    restartInterVar();
     int x,y,buffer;
     for(x = 0; x < nbSecondOrder; x++){
         for(y = 0; y < BUFFER_LENGTH; y++){

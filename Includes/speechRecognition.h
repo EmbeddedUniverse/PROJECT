@@ -36,6 +36,7 @@ EXTERN int interVar[NB_INTER_VAR];
 EXTERN bool flagRecognition;
 
 void initSpeechRecognition(void);
+void restartInterVar(void);
 bool speechRecognitionBands(short sample[]);
 bool speechRecognitionBand(short sample[], unsigned short nthFilter);
 void hanning(short sample[]);
