@@ -7,10 +7,10 @@
   .global _vector5
   .global _vector6
   .global _vector7
-  .global _c_int08 ; Serial port interrupt
+  .global _vector8 ; Serial port interrupt
   .global _vector9
   .global _vector10
-  .global _vector11
+  .global _c_int11
   .global _vector12
   .global _vector13
   .global _vector14
@@ -36,8 +36,9 @@ _vec_dummy:
   
 
 
-  .sect ".text:vecs"
-  .align 1024
+
+ .sect ".vectors"
+ .align 1024
   
 _vectors:
 _vector0: VEC_ENTRY _vec_dummy
@@ -48,9 +49,9 @@ _vector4: VEC_ENTRY _vec_dummy
 _vector5: VEC_ENTRY _vec_dummy
 _vector6: VEC_ENTRY _vec_dummy
 _vector7: VEC_ENTRY _vec_dummy
-_vector8: VEC_ENTRY _c_int08
+_vector8: VEC_ENTRY _vec_dummy
 _vector9: VEC_ENTRY _vec_dummy
-_vector11: VEC_ENTRY _vec_dummy
+_vector11: VEC_ENTRY _c_int11
 _vector12: VEC_ENTRY _vec_dummy
 _vector13: VEC_ENTRY _vec_dummy
 _vector14: VEC_ENTRY _vec_dummy

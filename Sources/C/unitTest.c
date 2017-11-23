@@ -166,6 +166,7 @@ void speechRecognitionTest(){
         bool detected = speechRecognition(TEST_PEW_GOOD[i]);
         if (! detected ){
             printTestResult(test.title, test.author, test.reviser, test.description, test.ID, test.result);
+            return;
         }
     }
 
@@ -175,6 +176,7 @@ void speechRecognitionTest(){
         bool detected = speechRecognition(TEST_PEW_BAD[i]);
         if (detected){
             printTestResult(test.title, test.author, test.reviser, test.description, test.ID, test.result);
+            return;
         }
     }
 
