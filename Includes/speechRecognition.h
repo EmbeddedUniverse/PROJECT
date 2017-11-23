@@ -46,4 +46,7 @@ short sat_16bits(int buffer);
 void fft(short sample[]);
 bool recognition(float absFFTResult[]);
 
+
+#undef SPEECHRECOGNITION_MODULE_IMPORT
+#undef EXTERN
 #endif /* INCLUDES_SPEECHRECOGNITION_H_ */

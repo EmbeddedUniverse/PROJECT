@@ -6,7 +6,10 @@
  */
 
 #include <stdio.h>
+#include <dsk6713.h>
+#include <dsk6713_led.h>
 #include "voiceDetector.h"
+#include "piouRecognition.h"
 
 void run(){
 
@@ -14,8 +17,14 @@ void run(){
     printf("\t    RUNNING PROGRAM\n");
     printf("----------------------------------------------\n");
 
+    DSK6713_init();
+    DSK6713_LED_init();
+    int i;
+    for (i = 0; i< 4; ++i)
+        DSK6713_LED_off(i);
 
     VOICE_init();
+    PIOU_init();
 
     while(1)
     {
@@ -23,6 +32,14 @@ void run(){
         {
             //play(voiceSample, VOICE_BUFFER_LENGTH);
             //while(!readyToPlay);
+
+            if (detectPiou(voiceSample))
+            {
+                DSK6713_LED_on(0);
+                DSK6713_waitusec(1000000);
+                DSK6713_LED_off(0);
+            }
+
             VOICE_reset();
         }
     }
