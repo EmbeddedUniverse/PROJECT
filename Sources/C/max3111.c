@@ -143,6 +143,9 @@ const Uint32 MAX3111_Config =
 
 void SPI_init()
 {
+    CSL_init();
+    DSK6713_init();
+
     // Divert McBSP signals to daughter card
     DSK6713_rset(DSK6713_MISC, MCBSP1SEL);
 
@@ -189,7 +192,7 @@ void SPI_init()
     IRQ_globalEnable();
     IRQ_nmiEnable();
 
-    printf ("Success Setting up the MAX3111!\n");
+    printf ("Success Setting up the MAX3111\n");
 }
 
 
