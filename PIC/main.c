@@ -29,7 +29,7 @@ typedef enum state{
     WAIT_KILL,
     END_GAME,        
 }statePIC;
-statePIC myState=IDLE;
+statePIC myState=NEED_RELOAD;
 
 typedef enum gunMode{
     MODE0,
@@ -71,13 +71,7 @@ void main(void) {
     setPinConfig();
     setInterruptConfig();
     
-    
-    while(1){
-    getRandomTarget(nextTarget);
-    activateLEDTarget(nextTarget);
-    }
-    
-    while(true){
+    /*while(true){
         if(rxFlag){
             rxChar = RCREG1; // Read the value in the register       
             rxFlag = false; // Reset the flag
@@ -85,7 +79,7 @@ void main(void) {
             TXREG1 = 0xf0;
             
         }
-    }
+    }*/
     
     while(1){
     switch(myState){
@@ -222,8 +216,9 @@ void setInterruptConfig(){
 void setPinConfig(void){
     // set pin output for each led and target
     ANCON1 = 0x00;
-    TRISA &= 0b11111000; // make RA0 RA1 RA2 as output   
-    TRISC &= 0b00011000; 
+    TRISA &= 0b11111000; // Make RA0 RA1 RA2 as output for mux target
+    TRISC &= 0b00011000; // Make RC0-RC2 and RC5-RC& as output for mux LED
+    TRISD &= 0b11011110; // Make RD0 and RD5 as output for mode LED
     LATA = 0;
     // set interrupt pin for targets 
 }
@@ -285,12 +280,12 @@ void setModeLED(gunModeState Mode){
 }
 
 void toggleGunLED(){
-   /* if (PORTx==0){
-        LATXbits.LXX = 1;
-        LATXbits.LXX = 1;
+    if (LATDbits.LATD0==0){
+        LATDbits.LATD0 = 1;
+        LATDbits.LATD5 = 1;
     }
     else{
-        LATXbits.LXX = 0;
-        LATXbits.LXX = 0;
-    }*/
+        LATDbits.LATD0 = 0;
+        LATDbits.LATD5 = 0;
+    }
 }
