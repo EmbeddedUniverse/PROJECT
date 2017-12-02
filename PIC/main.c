@@ -29,13 +29,13 @@ typedef enum state{
     WAIT_KILL,
     END_GAME,        
 }statePIC;
-statePIC myState=NEED_RELOAD;
+statePIC myState = IDLE;
 
 typedef enum gunMode{
     MODE0,
     MODE1
 }gunModeState;
-gunModeState myModeState= MODE0;
+gunModeState myModeState = MODE0;
 // Global variables
 
 
@@ -71,7 +71,12 @@ void main(void) {
     setPinConfig();
     setInterruptConfig();
     
-    /*while(true){
+    
+    //getRandomTarget(nextTarget);
+    //activateTarget(nextTarget[0]);
+    
+    /*while(1);
+    while(true){
         if(rxFlag){
             rxChar = RCREG1; // Read the value in the register       
             rxFlag = false; // Reset the flag
@@ -115,6 +120,8 @@ void main(void) {
             
             else if (pewFlag && ammoLeft !=0){
                 fireShot();
+                for (int i =0;i<10000;i++){}
+                stopShot();
                 ammoLeft -= 1;
                 pewFlag = false;
                 PIE1bits.RC1IE = 1;
@@ -128,12 +135,12 @@ void main(void) {
                 myState = ACCUMULATE_POINTS;
             }
             
-            stopShot();
+            
             break;
         
         case NEED_RELOAD:
             toggleCounter++;
-            if (toggleCounter==10000){
+            if (toggleCounter==5000){
                 toggleGunLED();
                 toggleCounter=0;
             }
@@ -223,8 +230,8 @@ void setPinConfig(void){
     // set interrupt pin for targets 
 }
 void getRandomTarget(short Target[2]){
-    Target[0] = rand() % 6;
-    Target[1] = rand() % 2;
+    Target[0] = 0;//rand() % 6;
+    Target[1] = 0;//rand() % 2;
 }
 
 
@@ -240,7 +247,7 @@ void changeMode(){
 }
 void activateTarget(short targetNbr){
      //open right target
-    LATA=targetNbr;
+    LATA=targetNbr+2;
 }       // still needs to be implemented
 
 void activateLEDTarget(short targetLED[2]){
