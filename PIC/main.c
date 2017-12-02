@@ -43,6 +43,7 @@ unsigned char rxChar = 0x00;
 unsigned char transferedData = 0x00;
 short nextTarget[2];
 int ammoLeft = 12;
+int toggleCounter = 0;
 
 bool ErrorUART      = false; 
 bool rxFlag         = false; // USART Data Received flag
@@ -50,20 +51,25 @@ bool reloadFlag     = false;
 bool modeFlag       = false; 
 bool pewFlag        = false;
 bool capteurFlag    = false;
+
 // Declarations
 void interrupt rxIsr(void);
 void setUARTconfig(void);
 void setPinConfig(void);
+void setInterruptConfig();
 void getRandomTarget(short Target[2]);
 void activateTarget(short targetNbr);
 void activateLEDTarget(short targetLED[2]);
 void fireShot();
 void stopShot();
-
+void changeMode();
+void setModeLED(gunModeState Mode);
+void toggleGunLED();
 // Main 
 void main(void) {
     setUARTconfig();
     setPinConfig();
+    setInterruptConfig();
     
     while(true){
         if(rxFlag){
@@ -101,39 +107,48 @@ void main(void) {
             }
             
             else if (modeFlag){
-                if (myModeState == MODE1){
-                    myModeState=MODE2;                  
-                } 
-                else{
-                    myModeState=MODE1;
-                }
-
+                changeMode();
+                setModeLED(myModeState);
                 modeFlag=false;
                 PIE1bits.RC1IE = 1;
             }
             
             else if (pewFlag && ammoLeft !=0){
                 fireShot();
-                ammoLeft-=1;
-                pewFlag=false;
+                ammoLeft -= 1;
+                pewFlag = false;
                 PIE1bits.RC1IE = 1;
             }
             else if(ammoLeft==0){
-                myState= NEED_RELOAD;
+                myState = NEED_RELOAD;
             }
             else if(capteurFlag){
-                capteurFlag=false;
-                PIE1bits.RC1IE = 1;
-                myState= ACCUMULATE_POINTS;
+                capteurFlag = false;
+                INTCON3bits.INT1E = 1; 
+                myState = ACCUMULATE_POINTS;
             }
             
             stopShot();
             break;
         
+        case NEED_RELOAD:
+            toggleCounter++;
+            if (toggleCounter==10000){
+                toggleGunLED();
+                toggleCounter=0;
+            }
+            if(reloadFlag){
+                ammoLeft= 12;
+                setModeLED(myModeState);
+                toggleCounter=0;
+                reloadFlag=false;
+                PIE1bits.RC1IE = 1;
+            }
+            break;
+            
         case END_GAME:
             
-            break;
-                   
+            break;                  
     }        
     }
     
@@ -161,6 +176,11 @@ void interrupt rxIsr(void){
             PIE1bits.RC1IE = 0; // Disable the interrupt control
         }
     }
+    if(INTCON3bits.INT1IF && INTCON3bits.INT1E){
+        capteurFlag= true;
+        INTCON3bits.INT1E = 0;
+        INTCON3bits.INT1F = 0;
+    }
 }
 
 void setUARTconfig(void){
@@ -172,21 +192,30 @@ void setUARTconfig(void){
     TXSTA1 = 0x26;      // Binary : 0010 0110 BRGH = 1 SYC = 0
     RCSTA1 = 0x90;      // Binary : 1001 0000 
     SPBRG1 = 0x19;      // Decimal: 25 = 19.23K baude
-   
-    // Initial interrupt configuration
-    IPR1bits.RC1IP = 0; // Set the UART interrupt to low priority
-    PIE1bits.RC1IE = 1; // EUSART Receive Interrupt Enable bit
-    RCONbits.IPEN = 1;
-    INTCONbits.GIE = 1; // Asynchronous mandatory register - USART
-    INTCONbits.PEIE = 1; // Asynchronous mandatory register - USART
-   
-    
     // Send initial signal & console clear
     TXREG1 = 0xAA;
 }
+void setInterruptConfig(){
+// Initial interrupt configuration
+    IPR1bits.RC1IP = 0; // Set the UART interrupt to low priority
+    PIE1bits.RC1IE = 1; // EUSART Receive Interrupt Enable bit
+    
+    
+    RPINR26_27 = 0xC1; // INT1  = RP5 = RA5 
+    
+    TRISAbits.TRISA5 = 1;    
+    INTCON2bits.INTEDG1 = 1;    // interrupt INT1 on rising edge
+    INTCON3bits.INT1F = 0;      // interrupt INT1 flag at 0
+    INTCON3bits.INT1P = 0;      // interrupt INT1 on low priority
+    INTCON3bits.INT1E = 1;      // Enables the INT1 external interrupt 
+    
+    RCONbits.IPEN = 1;
+    INTCONbits.GIE = 1;     // Asynchronous mandatory register - USART
+    INTCONbits.PEIE = 1;    // Asynchronous mandatory register - USART
+}
 
 void getRandomTarget(short Target[2]){
-    Target[0] = rand() % 6 + 1;
+    Target[0] = rand() % 6;
     Target[1] = rand() % 2;
 }
 
@@ -194,81 +223,64 @@ void getRandomTarget(short Target[2]){
 void setPinConfig(void){
     // set pin output for each led and target
     ANCON1 = 0x00;
-    TRISA = TRISA & 0b11111000; // make RA0 RA1 RA2 as output    
+    TRISA &=  0b11111000; // make RA0 RA1 RA2 as output    
     LATA = 0;
     // set interrupt pin for targets 
 }
 
+void changeMode(){
+    if (myModeState == MODE1){
+        myModeState=MODE2;                  
+    }       
+    else{
+        myModeState=MODE1;
+    }
+}
 void activateTarget(short targetNbr){
      //open right target
     LATA=targetNbr;
 }       // still needs to be implemented
 
 void activateLEDTarget(short targetLED[2]){
-    switch (targetLED[0]){
-        
-        case 1:
-            if (targetLED[1]){
-                                    // Target 1 Mode 1
-            }
-            else{
-                                    // Target 1 Mode 2
-            } 
-            break;
-            
-        case 2: 
-            if (targetLED[1]){
-                                    // Target 2 Mode 1
-            }
-            else{
-                                    // Target 2 Mode 2
-            } 
-            break;
-            
-        case 3: 
-            if (targetLED[1]){
-                                    // Target 3 Mode 1
-            }
-            else{
-                                    // Target 3 Mode 2
-            } 
-            break;
-            
-        case 4: 
-            if (targetLED[1]){
-                                    // Target 4 Mode 1
-            }
-            else{
-                                    // Target 4 Mode 2
-            }
-            break;
-            
-        case 5: 
-            if (targetLED[1]){
-                                    // Target 5 Mode 1
-            }
-            else{
-                                    // Target 5 Mode 2
-            }
-            break;
-            
-        case 6: 
-            if (targetLED[1]){
-                                    // Target 6 Mode 1
-            }
-            else{
-                                    // Target 6 Mode 2
-            }
-            break;
-            
-    }        
+    if (targetLED[0]<3){
+        short latchValue=0xF0|(2*targetLED[0]+targetLED[1]);
+        LATC = latchValue;
+    }
+    else{
+        short latchValue=0x0F|((2*(targetLED[0]-3)+targetLED[1])<<4);
+        LATC = latchValue;
+    }
 } // still needs to be implemented
-
+ 
 void fireShot(){
-   
-    // activate laser
+    // LATXbits.LXX = 1; // activate laser
 }                           // still needs to be implemented
 
 void stopShot(){
-    //stop laser
+    // LATXbits.LXX = 0; //stop laser
 }                           // still needs to be implemented
+
+void setModeLED(gunModeState Mode){
+    switch (Mode){
+        case MODE1:
+            //LATXbits.LXX = 1;   //Open LED MODE1
+            //LATXbits.LXX = 0;   //Close LED MODE2
+            break;
+        case MODE2: 
+            //LATXbits.LXX = 1;   //Open LED MODE2
+            //LATXbits.LXX = 0;   //Close LED MODE1
+            break;
+            
+    }
+}
+
+void toggleGunLED(){
+   /* if (PORTx==0){
+        LATXbits.LXX = 1;
+        LATXbits.LXX = 1;
+    }
+    else{
+        LATXbits.LXX = 0;
+        LATXbits.LXX = 0;
+    }*/
+}
