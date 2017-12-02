@@ -79,7 +79,7 @@ void main(void) {
     setInterruptConfig();
     T0CONbits.TMR0ON = 1;
     
-    while(1){    
+    /*while(1){    
         if(timerFlag){
             globalTimer++;
             timerFlag=false;
@@ -88,10 +88,11 @@ void main(void) {
         if(globalTimer==20 ){
             myState= END_GAME;
         } 
-    }
-    //getRandomTarget(nextTarget);
-    //activateTarget(nextTarget[0]);
+    }*/
     
+    getRandomTarget(nextTarget);
+    activateTarget(nextTarget[0]);
+    while(1){};
     
     /*while(1);
     while(true){
@@ -190,6 +191,8 @@ void main(void) {
 }
 
 void interrupt rxIsr(void){
+    
+    // UART interrupt
     if(PIR1bits.RC1IF && PIE1bits.RC1IE) {
         if(RCSTAbits.FERR || RCSTAbits.OERR) {
             ErrorUART= true;
@@ -211,12 +214,15 @@ void interrupt rxIsr(void){
             PIE1bits.RC1IE = 0; // Disable the interrupt control
         }
     }
+    
+    // Target interrupt
     if(INTCON3bits.INT1IF && INTCON3bits.INT1E){
         capteurFlag= true;
         INTCON3bits.INT1E = 0;
         INTCON3bits.INT1F = 0;
     }
     
+    // Timer Interrrupt
     if (INTCONbits.TMR0IF && INTCONbits.TMR0IE ){
         timerFlag = true;
         INTCONbits.TMR0IF = 0;  //timer Flag = 0
