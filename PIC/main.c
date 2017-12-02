@@ -32,10 +32,10 @@ typedef enum state{
 statePIC myState=IDLE;
 
 typedef enum gunMode{
-    MODE1,
-    MODE2
+    MODE0,
+    MODE1
 }gunModeState;
-gunModeState myModeState= MODE1;
+gunModeState myModeState= MODE0;
 // Global variables
 
 
@@ -70,6 +70,12 @@ void main(void) {
     setUARTconfig();
     setPinConfig();
     setInterruptConfig();
+    
+    
+    while(1){
+    getRandomTarget(nextTarget);
+    activateLEDTarget(nextTarget);
+    }
     
     while(true){
         if(rxFlag){
@@ -122,7 +128,7 @@ void main(void) {
             else if(ammoLeft==0){
                 myState = NEED_RELOAD;
             }
-            else if(capteurFlag){
+            else if(capteurFlag && myModeState == nextTarget[1]){
                 capteurFlag = false;
                 INTCON3bits.INT1E = 1; 
                 myState = ACCUMULATE_POINTS;
@@ -213,27 +219,28 @@ void setInterruptConfig(){
     INTCONbits.GIE = 1;     // Asynchronous mandatory register - USART
     INTCONbits.PEIE = 1;    // Asynchronous mandatory register - USART
 }
-
+void setPinConfig(void){
+    // set pin output for each led and target
+    ANCON1 = 0x00;
+    TRISA &= 0b11111000; // make RA0 RA1 RA2 as output   
+    TRISC &= 0b00011000; 
+    LATA = 0;
+    // set interrupt pin for targets 
+}
 void getRandomTarget(short Target[2]){
     Target[0] = rand() % 6;
     Target[1] = rand() % 2;
 }
 
 
-void setPinConfig(void){
-    // set pin output for each led and target
-    ANCON1 = 0x00;
-    TRISA &=  0b11111000; // make RA0 RA1 RA2 as output    
-    LATA = 0;
-    // set interrupt pin for targets 
-}
+
 
 void changeMode(){
-    if (myModeState == MODE1){
-        myModeState=MODE2;                  
+    if (myModeState == MODE0){
+        myModeState=MODE1;                  
     }       
     else{
-        myModeState=MODE1;
+        myModeState=MODE0;
     }
 }
 void activateTarget(short targetNbr){
@@ -242,13 +249,16 @@ void activateTarget(short targetNbr){
 }       // still needs to be implemented
 
 void activateLEDTarget(short targetLED[2]){
+    short ledNBR = 0;
     if (targetLED[0]<3){
-        short latchValue=0xF0|(2*targetLED[0]+targetLED[1]);
-        LATC = latchValue;
+        ledNBR += (2*targetLED[0]+targetLED[1]);
+        ledNBR += 240;
+        LATC = ledNBR;
     }
-    else{
-        short latchValue=0x0F|((2*(targetLED[0]-3)+targetLED[1])<<4);
-        LATC = latchValue;
+    else{  
+        ledNBR += ((2*(targetLED[0]-3)+targetLED[1])<<4);
+        ledNBR += 15;
+        LATC = ledNBR;
     }
 } // still needs to be implemented
  
@@ -262,13 +272,13 @@ void stopShot(){
 
 void setModeLED(gunModeState Mode){
     switch (Mode){
-        case MODE1:
-            //LATXbits.LXX = 1;   //Open LED MODE1
-            //LATXbits.LXX = 0;   //Close LED MODE2
+        case MODE0:
+            LATDbits.LATD0 = 1;   //Open LED MODE0
+            LATDbits.LATD5 = 0;   //Close LED MODE1
             break;
-        case MODE2: 
-            //LATXbits.LXX = 1;   //Open LED MODE2
-            //LATXbits.LXX = 0;   //Close LED MODE1
+        case MODE1: 
+            LATDbits.LATD0 = 1;   //Open LED MODE1
+            LATDbits.LATD5 = 0;   //Close LED MODE0
             break;
             
     }
