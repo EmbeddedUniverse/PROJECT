@@ -134,7 +134,7 @@
  
  void initialisation_PORT(void)
  {
-    OSCCON = OSCCON | 0b01110000; 
+     OSCCON = OSCCON | 0b01110000; 
      TRISDbits.TRISD4 = 0;      // SDO2 output
      TRISDbits.TRISD2 = 0;      // SCK2 output
      TRISDbits.TRISD3 = 0;      // CS output

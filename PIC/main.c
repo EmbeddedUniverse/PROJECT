@@ -127,9 +127,9 @@ void main(void) {
         }
         
         // Affichage 
-        //printPoints(totalPoints);
-        //printRemBullets(ammoLeft);
-        //printRemTime(singleGameTime-globalTimer);
+        printPoints(totalPoints);
+        printRemBullets(ammoLeft);
+        printRemTime(singleGameTime-globalTimer);
         
         
         switch(myState){
@@ -259,7 +259,7 @@ void setUARTconfig(void){
     TXREG1 = 0xAA;
 }
 void setInterruptConfig(void){
-// Initial interrupt configuration
+    // Initial interrupt configuration
     
     //timer
     INTCONbits.TMR0IF = 0;  //timer Flag = 0
