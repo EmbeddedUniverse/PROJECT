@@ -1,5 +1,5 @@
 
-# 1 "main.c"
+# 1 "LCD_Game_Printer.c"
 
 # 26 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\htc.h"
 extern const char __xc8_OPTIM_SPEED;
@@ -16961,509 +16961,61 @@ void printStat(unsigned int stat);
 void printEndGame();
 void waitASec();
 
-# 7 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdlib.h"
-typedef unsigned short wchar_t;
-
-# 15
-typedef struct {
-int rem;
-int quot;
-} div_t;
-typedef struct {
-unsigned rem;
-unsigned quot;
-} udiv_t;
-typedef struct {
-long quot;
-long rem;
-} ldiv_t;
-typedef struct {
-unsigned long quot;
-unsigned long rem;
-} uldiv_t;
-
-# 53
-extern double atof(const char *);
-extern double strtod(const char *, const char **);
-extern int atoi(const char *);
-extern unsigned xtoi(const char *);
-extern long atol(const char *);
-extern long strtol(const char *, char **, int);
-
-extern int rand(void);
-extern void srand(unsigned int);
-extern void * calloc(size_t, size_t);
-extern div_t div(int numer, int denom);
-extern udiv_t udiv(unsigned numer, unsigned denom);
-extern ldiv_t ldiv(long numer, long denom);
-extern uldiv_t uldiv(unsigned long numer,unsigned long denom);
-extern unsigned long _lrotl(unsigned long value, unsigned int shift);
-extern unsigned long _lrotr(unsigned long value, unsigned int shift);
-extern unsigned int _rotl(unsigned int value, unsigned int shift);
-extern unsigned int _rotr(unsigned int value, unsigned int shift);
-
-
-
-
-extern void * malloc(size_t);
-extern void free(void *);
-extern void * realloc(void *, size_t);
-
-# 86
-extern int atexit(void (*)(void));
-extern char * getenv(const char *);
-extern char ** environ;
-extern int system(char *);
-extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
-extern void * bsearch(const void *, void *, size_t, size_t, int(*)(const void *, const void *));
-extern int abs(int);
-extern long labs(long);
-
-extern char * itoa(char * buf, int val, int base);
-extern char * utoa(char * buf, unsigned val, int base);
-
-
-
-
-extern char * ltoa(char * buf, long val, int base);
-extern char * ultoa(char * buf, unsigned long val, int base);
-
-extern char * ftoa(float f, int * status);
-
-# 13 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdint.h"
-typedef signed char int8_t;
-
-# 20
-typedef signed int int16_t;
-
-# 28
-typedef signed short long int int24_t;
-
-# 36
-typedef signed long int int32_t;
-
-# 43
-typedef unsigned char uint8_t;
-
-# 49
-typedef unsigned int uint16_t;
-
-# 56
-typedef unsigned short long int uint24_t;
-
-# 63
-typedef unsigned long int uint32_t;
-
-# 71
-typedef signed char int_least8_t;
-
-# 78
-typedef signed int int_least16_t;
-
-# 90
-typedef signed short long int int_least24_t;
-
-# 98
-typedef signed long int int_least32_t;
-
-# 105
-typedef unsigned char uint_least8_t;
-
-# 111
-typedef unsigned int uint_least16_t;
-
-# 121
-typedef unsigned short long int uint_least24_t;
-
-# 128
-typedef unsigned long int uint_least32_t;
-
-# 137
-typedef signed char int_fast8_t;
-
-# 144
-typedef signed int int_fast16_t;
-
-# 156
-typedef signed short long int int_fast24_t;
-
-# 164
-typedef signed long int int_fast32_t;
-
-# 171
-typedef unsigned char uint_fast8_t;
-
-# 177
-typedef unsigned int uint_fast16_t;
-
-# 187
-typedef unsigned short long int uint_fast24_t;
-
-# 194
-typedef unsigned long int uint_fast32_t;
-
-# 200
-typedef int32_t intmax_t;
-
-
-
-
-typedef uint32_t uintmax_t;
-
-
-
-
-typedef int16_t intptr_t;
-
-
-
-
-typedef uint16_t uintptr_t;
-
-# 12 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdbool.h"
-typedef unsigned char bool;
-
-# 8 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\time.h"
-typedef long time_t;
-struct tm {
-int tm_sec;
-int tm_min;
-int tm_hour;
-int tm_mday;
-int tm_mon;
-int tm_year;
-int tm_wday;
-int tm_yday;
-int tm_isdst;
-};
-
-# 25
-extern int time_zone;
-
-# 30
-extern time_t time(time_t *);
-extern int stime(time_t *);
-
-# 47
-extern char * asctime(const struct tm *) ;
-extern char * ctime(const time_t *) ;
-extern struct tm * gmtime(const time_t *) ;
-extern struct tm * localtime(const time_t *) ;
-extern size_t strftime(char *, size_t, const char *, const struct tm *) ;
-extern time_t mktime(struct tm *);
-
-
-# 25 "main.c"
-#pragma config XINST = OFF
-
-typedef enum state{
-IDLE,
-SELECT_NEW_TARGET,
-ACCUMULATE_POINTS,
-NEED_RELOAD,
-WAIT_KILL,
-END_GAME,
-}statePIC;
-statePIC myState = IDLE;
-
-typedef enum gunMode{
-MODE0,
-MODE1
-}gunModeState;
-gunModeState myModeState = MODE0;
-
-
-
-unsigned char rxChar = 0x00;
-unsigned char transferedData = 0x00;
-short nextTarget[2];
-unsigned int ammoLeft = 12;
-int toggleCounter = 0;
-int globalTimer = 0;
-int singleGameTime = 120;
-int totalPoints = 0;
-
-bool ErrorUART = 0;
-bool rxFlag = 0;
-bool reloadFlag = 0;
-bool modeFlag = 0;
-bool pewFlag = 0;
-bool capteurFlag = 0;
-bool timerFlag = 0;
-bool endFlag = 0;
-
-void interrupt rxIsr(void);
-void setUARTconfig(void);
-void setPinConfig(void);
-void setInterruptConfig();
-void setTimerConfig();
-
-void getRandomTarget(short Target[2]);
-void activateTarget(short targetNbr);
-void activateLEDTarget(short targetLED[2]);
-void fireShot();
-void stopShot();
-void changeMode();
-void setModeLED(gunModeState Mode);
-void toggleGunLED();
-
-
-
-void main(void) {
-setUARTconfig();
-setPinConfig();
-setTimerConfig();
-setInterruptConfig();
-initialisation_LCD();
-printMBED();
-
-T0CONbits.TMR0ON = 1;
-printStartGame();
-
-# 116
-while(!endFlag){
-
-if(timerFlag){
-globalTimer++;
-timerFlag=0;
-INTCONbits.TMR0IE = 1;
+# 4 "LCD_Game_Printer.c"
+void printMBED(){
+moveCursor(1,0);
+putStringLCD("  EMBEDDED UNIVERSE");
+waitASec();
+waitASec();
+clearDisplay();
 }
 
-if(globalTimer==singleGameTime ){
-myState= END_GAME;
+void printStartGame(){
+moveCursor(1,3);
+putStringLCD("S  T  A  R  T !");
+waitASec();
+waitASec();
+clearDisplay();
+putStringLCD("POINTS BULLETS TIME");
 }
 
-# 134
-switch(myState){
-case IDLE :
-
-
-break;
-
-case SELECT_NEW_TARGET:
-getRandomTarget(nextTarget);
-activateTarget(nextTarget[0]);
-activateLEDTarget(nextTarget);
-myState= WAIT_KILL;
-break;
-
-case ACCUMULATE_POINTS:
-totalPoints++;
-myState= SELECT_NEW_TARGET;
-break;
-
-case WAIT_KILL:
-if(reloadFlag){
-ammoLeft= 12;
-reloadFlag=0;
-PIE1bits.RC1IE = 1;
+void printRemBullets(unsigned int nbBullets){
+moveCursor(2,9);
+printStat(nbBullets);
 }
 
-else if (modeFlag){
-changeMode();
-setModeLED(myModeState);
-modeFlag=0;
-PIE1bits.RC1IE = 1;
+void printRemTime(unsigned int nbSeconds){
+moveCursor(2,16);
+printStat(nbSeconds);
 }
 
-else if (pewFlag && ammoLeft !=0){
-fireShot();
-for (int i =0;i<10000;i++){}
-stopShot();
-ammoLeft -= 1;
-pewFlag = 0;
-PIE1bits.RC1IE = 1;
-}
-else if(ammoLeft==0){
-myState = NEED_RELOAD;
-}
-else if(capteurFlag && myModeState == nextTarget[1]){
-capteurFlag = 0;
-INTCON3bits.INT1E = 1;
-myState = ACCUMULATE_POINTS;
+void printPoints(unsigned int nbPoints){
+moveCursor(2,1);
+printStat(nbPoints);
 }
 
-break;
+void printStat(unsigned int stat){
+unsigned char statArray[3];
+sprintf(statArray, "%d", stat);
 
-case NEED_RELOAD:
-toggleCounter++;
-if (toggleCounter==5000){
-toggleGunLED();
-toggleCounter=0;
+if(stat < 100 && stat >= 10){
+putStringLCD(" ");
 }
-if(reloadFlag){
-ammoLeft= 12;
-setModeLED(myModeState);
-toggleCounter=0;
-reloadFlag=0;
-PIE1bits.RC1IE = 1;
-}
-break;
-
-case END_GAME:
-endFlag = 1;
-break;
-}
+else if(stat < 10){
+putStringLCD("  ");
 }
 
+putStringLCD(statArray);
 }
 
-void interrupt rxIsr(void){
-
-
-if(PIR1bits.RC1IF && PIE1bits.RC1IE) {
-if(RCSTAbits.FERR || RCSTAbits.OERR) {
-ErrorUART= 1;
-}
-else {
-rxChar = RCREG1;
-rxFlag=1;
-switch(rxChar){
-case 0xAA:
-reloadFlag=1;
-break;
-case 0xBB:
-modeFlag=1;
-break;
-case 0xCC:
-pewFlag=1;
-break;
-}
-PIE1bits.RC1IE = 0;
-}
+void printEndGame(){
+clearDisplay();
+moveCursor(1,0);
+putStringLCD("E  N  D   G  A  M  E ");
 }
 
-
-if(INTCON3bits.INT1IF && INTCON3bits.INT1E){
-capteurFlag= 1;
-INTCON3bits.INT1E = 0;
-INTCON3bits.INT1F = 0;
+void waitASec(){
+for(int i = 0; i < 20; i++)
+_delay((unsigned long)((50)*(8000000/4000.0)));
 }
 
-
-if (INTCONbits.TMR0IF && INTCONbits.TMR0IE ){
-timerFlag = 1;
-INTCONbits.TMR0IF = 0;
-INTCONbits.TMR0IE = 0;
-}
-}
-
-void setUARTconfig(void){
-
-RPINR0_1 = 0b01100110;
-RPOR26_27 = 0b00010001;
-
-BAUDCON1 = 0x00;
-TXSTA1 = 0x26;
-RCSTA1 = 0x90;
-SPBRG1 = 0x19;
-
-TXREG1 = 0xAA;
-}
-void setInterruptConfig(void){
-
-
-
-INTCONbits.TMR0IF = 0;
-INTCONbits.TMR0IE = 1;
-
-
-IPR1bits.RC1IP = 0;
-PIE1bits.RC1IE = 1;
-
-
-RPINR26_27 = 0xC1;
-TRISAbits.TRISA5 = 1;
-INTCON2bits.INTEDG1 = 1;
-INTCON3bits.INT1F = 0;
-INTCON3bits.INT1P = 0;
-INTCON3bits.INT1E = 1;
-
-RCONbits.IPEN = 1;
-INTCONbits.GIE = 1;
-INTCONbits.PEIE = 1;
-}
-void setPinConfig(void){
-
-ANCON1 = 0x00;
-TRISA &= 0b11111000;
-TRISC &= 0b00011000;
-TRISD &= 0b11011110;
-TRISBbits.TRISB1 = 0;
-LATA = 0;
-
-}
-void setTimerConfig(void){
-T0CONbits.TMR0ON = 0;
-T0CONbits.T08BIT = 0;
-T0CONbits.T0CS = 0;
-T0CONbits.PSA = 0;
-T0CONbits.T0PS= 0b011;
-
-}
-
-void getRandomTarget(short Target[2]){
-Target[0] = 0;
-Target[1] = 0;
-}
-
-void changeMode(){
-if (myModeState == MODE0){
-myModeState=MODE1;
-}
-else{
-myModeState=MODE0;
-}
-}
-
-void activateTarget(short targetNbr){
-
-LATA=targetNbr+2;
-}
-
-void activateLEDTarget(short targetLED[2]){
-short ledNBR = 0;
-if (targetLED[0]<3){
-ledNBR += (2*targetLED[0]+targetLED[1]);
-ledNBR += 240;
-LATC = ledNBR;
-}
-else{
-ledNBR += ((2*(targetLED[0]-3)+targetLED[1])<<4);
-ledNBR += 15;
-LATC = ledNBR;
-}
-}
-
-void fireShot(){
-LATBbits.LATB1 = 1;
-}
-
-void stopShot(){
-LATBbits.LATB1 = 0;
-}
-
-void setModeLED(gunModeState Mode){
-switch (Mode){
-case MODE0:
-LATDbits.LATD0 = 1;
-LATDbits.LATD5 = 0;
-break;
-case MODE1:
-LATDbits.LATD0 = 1;
-LATDbits.LATD5 = 0;
-break;
-
-}
-}
-
-void toggleGunLED(){
-if (LATDbits.LATD0==0){
-LATDbits.LATD0 = 1;
-LATDbits.LATD5 = 1;
-}
-else{
-LATDbits.LATD0 = 0;
-LATDbits.LATD5 = 0;
-}
-}

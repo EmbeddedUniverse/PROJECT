@@ -5,14 +5,17 @@
  * Created on August 29, 2017, 6:51 PM
  */
 
+#include "LCD_Game_Printer.h"
+#include "LCD_SPI.h"
+#include "usart.h" 
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <xc.h>            /* XC8 General Include File */
 #include <stdint.h>        /* For uint8_t definition */
 #include <stdbool.h>       /* For true/false definition */
-#include "usart.h" 
 #include <time.h>//required to use 'srand(time(NULL))'
+
 
 #define _XTAL_FREQ  8000000   // Oscillator frequency for _delay()
 #define reloadCode  0xAA
@@ -42,9 +45,11 @@ gunModeState myModeState = MODE0;
 unsigned char rxChar = 0x00;
 unsigned char transferedData = 0x00;
 short nextTarget[2];
-int ammoLeft = 12;
+unsigned int ammoLeft = 12;
 int toggleCounter = 0;
 int globalTimer = 0;
+int singleGameTime = 10;
+int totalPoints = 0;
 
 bool ErrorUART      = false; 
 bool rxFlag         = false; // USART Data Received flag
@@ -53,7 +58,7 @@ bool modeFlag       = false;
 bool pewFlag        = false;
 bool capteurFlag    = false;
 bool timerFlag      = false;
-
+bool endFlag        = false;
 // Declarations
 void interrupt rxIsr(void);
 void setUARTconfig(void);
@@ -77,8 +82,12 @@ void main(void) {
     setPinConfig();
     setTimerConfig();
     setInterruptConfig();
-    T0CONbits.TMR0ON = 1;
     
+    initialisation_LCD();
+    printMBED();
+    
+    T0CONbits.TMR0ON = 1; // Start Timer
+    printStartGame();
     /*while(1){    
         if(timerFlag){
             globalTimer++;
@@ -88,11 +97,11 @@ void main(void) {
         if(globalTimer==20 ){
             myState= END_GAME;
         } 
-    }*/
+    }
     
     getRandomTarget(nextTarget);
     activateTarget(nextTarget[0]);
-    while(1){};
+    while(!endFlag){};
     
     /*while(1);
     while(true){
@@ -105,7 +114,7 @@ void main(void) {
         }
     }*/
     
-    while(1){
+    while(!endFlag){
         
         if(timerFlag){
             globalTimer++;
@@ -113,9 +122,15 @@ void main(void) {
             INTCONbits.TMR0IE = 1;  //timer enable 
         }
         
-        if(globalTimer==120 ){
+        if(globalTimer==singleGameTime ){
             myState= END_GAME;
         }
+        
+        // Affichage 
+        //printPoints(totalPoints);
+        //printRemBullets(ammoLeft);
+        //printRemTime(singleGameTime-globalTimer);
+        
         
         switch(myState){
             case IDLE :
@@ -131,7 +146,8 @@ void main(void) {
                 break;
 
             case ACCUMULATE_POINTS:
-
+                totalPoints++;
+                myState= SELECT_NEW_TARGET;
                 break;
 
             case WAIT_KILL:
@@ -183,7 +199,7 @@ void main(void) {
                 break;
 
             case END_GAME:
-
+                    endFlag = true;
                 break;                  
         }        
     }

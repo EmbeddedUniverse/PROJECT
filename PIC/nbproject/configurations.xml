@@ -5,6 +5,9 @@
                    displayName="Header Files"
                    projectFiles="true">
       <itemPath>config_bits.h</itemPath>
+      <itemPath>LCD_Game_Printer.h</itemPath>
+      <itemPath>LCD_SPI.h</itemPath>
+      <itemPath>usart.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -14,6 +17,9 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>main.c</itemPath>
+      <itemPath>LCD_Game_Printer.c</itemPath>
+      <itemPath>LCD_SPI.c</itemPath>
+      <itemPath>usart.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -32,7 +38,7 @@
         <targetDevice>PIC18F67J94</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>PICkit3PlatformTool</platformTool>
+        <platformTool>Simulator</platformTool>
         <languageToolchain>XC8</languageToolchain>
         <languageToolchainVersion>1.43</languageToolchainVersion>
         <platform>3</platform>
