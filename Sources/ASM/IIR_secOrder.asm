@@ -1,6 +1,6 @@
 ;****************************************************************************************
 ; APPEL :
-; int IIR_secOrde(int x, int w[], const short C[]);
+; int IIR_secOrder(int x, int w[], const short C[]);
 ;
 ; A4 : Échantillon courant
 ; B4 : Tampon de valeurs intermédiaires

@@ -17,7 +17,8 @@ MEMORY
 {
     IVECS:   o = 00000000h   l = 0x00000400	 /* reset & interrupt vectors     */
     IRAM:    o = 00000400h   l = 0x0002FC00	 /* intended for initialization   */
-    EMIFCE0  o = 0x80000000  l = 0x10000000  /* SDRAM in 6713 DSK */
+    SDRAM	 o = 0x80000000  l = 0x00800000
+    //EMIFCE0  o = 0x80000000  l = 0x10000000  /* SDRAM in 6713 DSK */
     EMIFCE1  o = 0x90000000  l = 0x10000000  /* Flash/CPLD in 6713 DSK */
     EMIFCE2  o = 0xA0000000  l = 0x10000000  /* Daughterboard in 6713 DSK */
     EMIFCE3  o = 0xB0000000  l = 0x10000000  /* Daughterboard in 6713 DSK */
@@ -34,14 +35,14 @@ SECTIONS
     .data          >  IRAM
     .switch        >  IRAM
     .sysmem        >  IRAM
-    .far           >  IRAM
+    .far           >  SDRAM
     .args          >  IRAM
     .ppinfo        >  IRAM
     .ppdata        >  IRAM
   
     /* COFF sections */
     .pinit         >  IRAM
-    .cinit         >  IRAM
+    .cinit         >  SDRAM
   
     /* EABI sections */
     .binit         >  IRAM
