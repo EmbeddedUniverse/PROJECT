@@ -55,15 +55,13 @@ typedef enum{
     Global variables declaration :
 ***************************************************************************/
 
-EXTERN volatile bool flagUART;
-
 /***************************************************************************
     Function prototype :
 ***************************************************************************/
 
 EXTERN void SPI_init();
 EXTERN int MAX3111_init(BaudRate baud);
-EXTERN void sendByteUART(unsigned char data);
+EXTERN bool sendByteUART(unsigned char data);
 EXTERN unsigned char readByteUART();
 
 
