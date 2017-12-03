@@ -12597,7 +12597,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;LCD_Game_Printer.h: 50: void printRemTime(unsigned int nbSeconds);
 [; ;LCD_Game_Printer.h: 51: void printPoints(unsigned int nbPoints);
 [; ;LCD_Game_Printer.h: 52: void printStat(unsigned int stat);
-[; ;LCD_Game_Printer.h: 53: void printEndGame();
+[; ;LCD_Game_Printer.h: 53: void printEndGame(unsigned int nbPoints);
 [; ;LCD_Game_Printer.h: 54: void waitASec();
 "12 LCD_SPI.c
 [v _spi_Send_Read `(uc ~T0 @X0 1 ef1`uc ]

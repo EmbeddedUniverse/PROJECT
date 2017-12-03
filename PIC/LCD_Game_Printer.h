@@ -50,7 +50,7 @@ void printRemBullets(unsigned int nbBullets);
 void printRemTime(unsigned int nbSeconds);
 void printPoints(unsigned int nbPoints);
 void printStat(unsigned int stat);
-void printEndGame();
+void printEndGame(unsigned int nbPoints);
 void waitASec();
 
 #ifdef	__cplusplus

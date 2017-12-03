@@ -16958,7 +16958,7 @@ void printRemBullets(unsigned int nbBullets);
 void printRemTime(unsigned int nbSeconds);
 void printPoints(unsigned int nbPoints);
 void printStat(unsigned int stat);
-void printEndGame();
+void printEndGame(unsigned int nbPoints);
 void waitASec();
 
 # 7 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdlib.h"
@@ -17180,7 +17180,7 @@ short nextTarget[2];
 unsigned int ammoLeft = 12;
 int toggleCounter = 0;
 int globalTimer = 0;
-int singleGameTime = 120;
+int singleGameTime = 5;
 int totalPoints = 0;
 
 bool ErrorUART = 0;
@@ -17214,13 +17214,15 @@ setUARTconfig();
 setPinConfig();
 setTimerConfig();
 setInterruptConfig();
+
 initialisation_LCD();
 printMBED();
 
-T0CONbits.TMR0ON = 1;
-printStartGame();
 
-# 116
+printStartGame();
+T0CONbits.TMR0ON = 1;
+
+# 118
 while(!endFlag){
 
 if(timerFlag){
@@ -17233,7 +17235,12 @@ if(globalTimer==singleGameTime ){
 myState= END_GAME;
 }
 
-# 134
+
+printPoints(totalPoints);
+printRemBullets(ammoLeft);
+printRemTime(singleGameTime-globalTimer);
+
+
 switch(myState){
 case IDLE :
 
@@ -17305,7 +17312,7 @@ endFlag = 1;
 break;
 }
 }
-
+printEndGame(totalPoints);
 }
 
 void interrupt rxIsr(void){
@@ -17395,10 +17402,10 @@ LATA = 0;
 }
 void setTimerConfig(void){
 T0CONbits.TMR0ON = 0;
-T0CONbits.T08BIT = 0;
+T0CONbits.T08BIT = 1;
 T0CONbits.T0CS = 0;
 T0CONbits.PSA = 0;
-T0CONbits.T0PS= 0b011;
+T0CONbits.T0PS= 0b110;
 
 }
 

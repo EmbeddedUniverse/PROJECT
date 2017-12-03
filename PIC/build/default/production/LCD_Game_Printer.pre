@@ -16958,7 +16958,7 @@ void printRemBullets(unsigned int nbBullets);
 void printRemTime(unsigned int nbSeconds);
 void printPoints(unsigned int nbPoints);
 void printStat(unsigned int stat);
-void printEndGame();
+void printEndGame(unsigned int nbPoints);
 void waitASec();
 
 # 4 "LCD_Game_Printer.c"
@@ -17008,10 +17008,16 @@ putStringLCD("  ");
 putStringLCD(statArray);
 }
 
-void printEndGame(){
+void printEndGame(unsigned int nbPoints){
 clearDisplay();
-moveCursor(1,0);
+
+unsigned char statArray[3];
+sprintf(statArray, "%d", nbPoints);
 putStringLCD("E  N  D   G  A  M  E ");
+moveCursor(1,0);
+
+putStringLCD("POINTS ");
+putStringLCD(statArray);
 }
 
 void waitASec(){

@@ -47,10 +47,15 @@ void printStat(unsigned int stat){
    putStringLCD(statArray);
 }
 
-void printEndGame(){
+void printEndGame(unsigned int nbPoints){
     clearDisplay();
     moveCursor(TITLE_ROW,0);
+    unsigned char statArray[3];
+    sprintf(statArray, "%d", nbPoints);
     putStringLCD("E  N  D   G  A  M  E ");
+    moveCursor(3,0);
+    putStringLCD("POINTS   ");
+    putStringLCD(statArray);
 }
 
 void waitASec(){

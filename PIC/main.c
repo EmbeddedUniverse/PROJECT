@@ -48,7 +48,7 @@ short nextTarget[2];
 unsigned int ammoLeft = 12;
 int toggleCounter = 0;
 int globalTimer = 0;
-int singleGameTime = 10;
+int singleGameTime = 121;
 int totalPoints = 0;
 
 bool ErrorUART      = false; 
@@ -86,8 +86,9 @@ void main(void) {
     initialisation_LCD();
     printMBED();
     
-    T0CONbits.TMR0ON = 1; // Start Timer
+    
     printStartGame();
+    T0CONbits.TMR0ON = 1; // Start Timer
     /*while(1){    
         if(timerFlag){
             globalTimer++;
@@ -203,7 +204,10 @@ void main(void) {
                 break;                  
         }        
     }
-    
+    while(1){
+     printEndGame(totalPoints);
+     waitASec();
+    }
 }
 
 void interrupt rxIsr(void){
@@ -293,10 +297,10 @@ void setPinConfig(void){
 }
 void setTimerConfig(void){
     T0CONbits.TMR0ON = 0;   // stop timer 
-    T0CONbits.T08BIT = 0;   // timer on 16 bit;
+    T0CONbits.T08BIT = 1;   // timer on 16 bit;
     T0CONbits.T0CS = 0;     // internal clock; 16 kHz
     T0CONbits.PSA = 0;      // prescaler working
-    T0CONbits.T0PS= 0b011;      // 1:16 prescaler for(1khz) 
+    T0CONbits.T0PS= 0b110;      // 1:16 prescaler for(1khz) 
 
 }
 

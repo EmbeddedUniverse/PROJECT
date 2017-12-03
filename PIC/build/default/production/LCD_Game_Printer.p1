@@ -12477,7 +12477,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;LCD_Game_Printer.h: 50: void printRemTime(unsigned int nbSeconds);
 [; ;LCD_Game_Printer.h: 51: void printPoints(unsigned int nbPoints);
 [; ;LCD_Game_Printer.h: 52: void printStat(unsigned int stat);
-[; ;LCD_Game_Printer.h: 53: void printEndGame();
+[; ;LCD_Game_Printer.h: 53: void printEndGame(unsigned int nbPoints);
 [; ;LCD_Game_Printer.h: 54: void waitASec();
 "4 LCD_Game_Printer.c
 [v _printMBED `(v ~T0 @X0 1 ef ]
@@ -12628,56 +12628,71 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e :UE 1419 ]
 }
 "50
-[v _printEndGame `(v ~T0 @X0 1 ef ]
+[v _printEndGame `(v ~T0 @X0 1 ef1`ui ]
 {
-[; ;LCD_Game_Printer.c: 50: void printEndGame(){
+[; ;LCD_Game_Printer.c: 50: void printEndGame(unsigned int nbPoints){
 [e :U _printEndGame ]
+[v _nbPoints `ui ~T0 @X0 1 r1 ]
 [f ]
 [; ;LCD_Game_Printer.c: 51: clearDisplay();
 "51
 [e ( _clearDisplay ..  ]
-[; ;LCD_Game_Printer.c: 52: moveCursor(1,0);
-"52
-[e ( _moveCursor (2 , -> 1 `i -> 0 `i ]
-[; ;LCD_Game_Printer.c: 53: putStringLCD("E  N  D   G  A  M  E ");
 "53
-[e ( _putStringLCD (1 :s 7C ]
-[; ;LCD_Game_Printer.c: 54: }
+[v _statArray `uc ~T0 @X0 -> 3 `i a ]
+[; ;LCD_Game_Printer.c: 53: unsigned char statArray[3];
+[; ;LCD_Game_Printer.c: 54: sprintf(statArray, "%d", nbPoints);
 "54
+[e ( _sprintf (1 , (. , &U _statArray :s 7C _nbPoints ]
+[; ;LCD_Game_Printer.c: 55: putStringLCD("E  N  D   G  A  M  E ");
+"55
+[e ( _putStringLCD (1 :s 8C ]
+[; ;LCD_Game_Printer.c: 56: moveCursor(1,0);
+"56
+[e ( _moveCursor (2 , -> 1 `i -> 0 `i ]
+[; ;LCD_Game_Printer.c: 58: putStringLCD("POINTS ");
+"58
+[e ( _putStringLCD (1 :s 9C ]
+[; ;LCD_Game_Printer.c: 59: putStringLCD(statArray);
+"59
+[e ( _putStringLCD (1 -> &U _statArray `*Cuc ]
+[; ;LCD_Game_Printer.c: 60: }
+"60
 [e :UE 1423 ]
 }
-"56
+"62
 [v _waitASec `(v ~T0 @X0 1 ef ]
 {
-[; ;LCD_Game_Printer.c: 56: void waitASec(){
+[; ;LCD_Game_Printer.c: 62: void waitASec(){
 [e :U _waitASec ]
 [f ]
-[; ;LCD_Game_Printer.c: 57: for(int i = 0; i < 20; i++)
-"57
+[; ;LCD_Game_Printer.c: 63: for(int i = 0; i < 20; i++)
+"63
 {
 [v _i `i ~T0 @X0 1 a ]
 [e = _i -> 0 `i ]
 [e $ < _i -> 20 `i 1425  ]
 [e $U 1426  ]
-"58
+"64
 [e :U 1425 ]
-[; ;LCD_Game_Printer.c: 58: _delay((unsigned long)((50)*(8000000/4000.0)));
+[; ;LCD_Game_Printer.c: 64: _delay((unsigned long)((50)*(8000000/4000.0)));
 [e ( __delay (1 -> * -> -> 50 `i `d / -> -> 8000000 `l `d .4000.0 `ul ]
-"57
+"63
 [e ++ _i -> 1 `i ]
 [e $ < _i -> 20 `i 1425  ]
 [e :U 1426 ]
-"58
+"64
 }
-[; ;LCD_Game_Printer.c: 59: }
-"59
+[; ;LCD_Game_Printer.c: 65: }
+"65
 [e :UE 1424 ]
 }
 [p f _sprintf 8388736 ]
 [a 4C 37 100 0 ]
+[a 7C 37 100 0 ]
 [a 1C 32 32 69 77 66 69 68 68 69 68 32 85 78 73 86 69 82 83 69 0 ]
 [a 3C 80 79 73 78 84 83 32 66 85 76 76 69 84 83 32 84 73 77 69 0 ]
 [a 2C 83 32 32 84 32 32 65 32 32 82 32 32 84 32 33 0 ]
-[a 7C 69 32 32 78 32 32 68 32 32 32 71 32 32 65 32 32 77 32 32 69 32 0 ]
+[a 9C 80 79 73 78 84 83 32 0 ]
+[a 8C 69 32 32 78 32 32 68 32 32 32 71 32 32 65 32 32 77 32 32 69 32 0 ]
 [a 6C 32 32 0 ]
 [a 5C 32 0 ]
