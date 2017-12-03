@@ -1,14 +1,29 @@
 #include <dsk6713.h>
 #include "communication.h"
-
+#include "max3111.h"
 
 COM_init()
 {
-    void DSK6713_init();
+    int error = 0;
 
-    COM_selectInterface(DEFAULT);
+    DSK6713_init();
+    SPI_init();
 
-    return 0;
+    COM_selectInterface(ACCEL);
+    if (MAX3111_init(BAUD_57600) != 0)
+    {
+        printf("Error Setting up MAX3111_%d\n", (int)ACCEL);
+        error = 1;
+    }
+
+    COM_selectInterface(PIC);
+    if (MAX3111_init(BAUD_9600) != 0)
+    {
+        printf("Error Setting up MAX3111_%d\n", (int)PIC);
+        error = 1;
+    }
+
+    return error;
 }
 
 COM_selectInterface(SPI_Interface interface)

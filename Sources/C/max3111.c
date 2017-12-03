@@ -167,23 +167,6 @@ void SPI_init()
     MCBSP_enableXmt(SPI_PortHandle);
     DSK6713_waitusec(10);
 
-    // Configuring MAX3111 registers
-    MCBSP_write(SPI_PortHandle, SPI_WRITE_CONFIG | MAX3111_Config);
-    DSK6713_waitusec(100);
-    MCBSP_read(SPI_PortHandle);
-    DSK6713_waitusec(100);
-
-    // Check if config is applied
-    MCBSP_write(SPI_PortHandle, SPI_READ_CONFIG);
-    DSK6713_waitusec(100);
-    Uint32 configReturned = MCBSP_read(SPI_PortHandle) & ~SPI_WRITE_CONFIG;
-
-    if (configReturned != MAX3111_Config)
-    {
-        printf ("Error Setting up the MAX3111!\n");
-        return;
-    }
-
     IRQ_enable(IRQ_EVT_EXTINT4);
     GPPOL = 0xFFFF;
     flagUART = false;
@@ -191,10 +174,30 @@ void SPI_init()
     /* enable NMI and GI */
     IRQ_globalEnable();
     IRQ_nmiEnable();
-
-    printf ("Success Setting up the MAX3111\n");
 }
 
+int MAX3111_init(BaudRate baud)
+{
+    Uint32 settings = MAX3111_Config | baud << UART_BAUD_RATE_DIV;
+
+    MCBSP_write(SPI_PortHandle, SPI_WRITE_CONFIG | settings);
+    while(! MCBSP_rrdy(SPI_PortHandle));
+    MCBSP_read(SPI_PortHandle);
+    DSK6713_waitusec(100);
+
+    // Check if config is applied
+    while(! MCBSP_xrdy(SPI_PortHandle));
+    MCBSP_write(SPI_PortHandle, SPI_READ_CONFIG);
+    while(! MCBSP_rrdy(SPI_PortHandle));
+    Uint32 configReturned = MCBSP_read(SPI_PortHandle) & ~SPI_WRITE_CONFIG;
+
+    if (configReturned != settings)
+    {
+        return 1;
+    }
+
+    return 0;
+}
 
 void sendByteUART(unsigned char data)
 {
