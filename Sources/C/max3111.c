@@ -5,7 +5,6 @@
 #include <csl_mcbsp.h>
 #include <dsk6713.h>
 #include <dsk6713_aic23.h>
-#include "addresses.h"
 
 /***************************************************************************
     Include Module Header :
@@ -18,7 +17,6 @@
     Extern content declaration :
 ****************************************************************************/
 
-extern void vectors();   // Vecteurs d'interruption
 
 /****************************************************************************
     Private macros and constants :
@@ -158,51 +156,43 @@ void SPI_init()
     MCBSP_enableSrgr(SPI_PortHandle);
     DSK6713_waitusec(10);
 
-    /* point to the IRQ vector table */
-    IRQ_setVecs(vectors);
-    IRQ_map(IRQ_EVT_EXTINT4, IRQ_EVT_EXTINT4);
 
     /* Wake up the McBSP as receiver */
     MCBSP_enableRcv(SPI_PortHandle);
     MCBSP_enableXmt(SPI_PortHandle);
     DSK6713_waitusec(10);
+}
 
-    // Configuring MAX3111 registers
-    MCBSP_write(SPI_PortHandle, SPI_WRITE_CONFIG | MAX3111_Config);
-    DSK6713_waitusec(100);
+int MAX3111_init(BaudRate baud)
+{
+    Uint32 settings = MAX3111_Config | baud << UART_BAUD_RATE_DIV;
+
+    MCBSP_write(SPI_PortHandle, SPI_WRITE_CONFIG | settings);
+    while(! MCBSP_rrdy(SPI_PortHandle));
     MCBSP_read(SPI_PortHandle);
     DSK6713_waitusec(100);
 
     // Check if config is applied
+    while(! MCBSP_xrdy(SPI_PortHandle));
     MCBSP_write(SPI_PortHandle, SPI_READ_CONFIG);
-    DSK6713_waitusec(100);
+    while(! MCBSP_rrdy(SPI_PortHandle));
     Uint32 configReturned = MCBSP_read(SPI_PortHandle) & ~SPI_WRITE_CONFIG;
 
-    if (configReturned != MAX3111_Config)
+    if (configReturned != settings)
     {
-        printf ("Error Setting up the MAX3111!\n");
-        return;
+        return 1;
     }
 
-    IRQ_enable(IRQ_EVT_EXTINT4);
-    GPPOL = 0xFFFF;
-    flagUART = false;
-
-    /* enable NMI and GI */
-    IRQ_globalEnable();
-    IRQ_nmiEnable();
-
-    printf ("Success Setting up the MAX3111\n");
+    return 0;
 }
 
-
-void sendByteUART(unsigned char data)
+// Returns true when there is data to read on the interface
+bool sendByteUART(unsigned char data)
 {
     while(! MCBSP_xrdy(SPI_PortHandle));
     MCBSP_write(SPI_PortHandle, SPI_WRITE_DATA | data);
     while(! MCBSP_rrdy(SPI_PortHandle));
-    if (MCBSP_read(SPI_PortHandle) & DOUT)
-        flagUART = true;
+    return (MCBSP_read(SPI_PortHandle) & DOUT) != 0;
 }
 
 unsigned char readByteUART()
@@ -213,10 +203,4 @@ unsigned char readByteUART()
     return MCBSP_read(SPI_PortHandle) & 0xFF;
 }
 
-/****************************************************************************
-    ISR :
-****************************************************************************/
 
-void interrupt uart_iterrupt(){
-    flagUART = true;
-}
