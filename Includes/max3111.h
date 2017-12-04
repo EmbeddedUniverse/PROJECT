@@ -32,20 +32,36 @@
     Types declaration here :
 ***************************************************************************/
 
+typedef enum{
+    BAUD_600 = 15,
+    BAUD_1200 = 14,
+    BAUD_2400 = 13,
+    BAUD_4800 = 12,
+    BAUD_9600 = 11,
+    BAUD_19200 = 10,
+    BAUD_38400 = 9,
+    BAUD_76800 = 8,
+    BAUD_1800 = 7,
+    BAUD_3600 = 6,
+    BAUD_7200 = 5,
+    BAUD_14400 = 4,
+    BAUD_28800 = 3,
+    BAUD_57600 = 2,
+    BAUD_115200 = 1,
+    BAUD_230400 = 0
+}BaudRate;
 
 /***************************************************************************
     Global variables declaration :
 ***************************************************************************/
-
-EXTERN volatile bool flagUART;
 
 /***************************************************************************
     Function prototype :
 ***************************************************************************/
 
 EXTERN void SPI_init();
-
-EXTERN void sendByteUART(unsigned char data);
+EXTERN int MAX3111_init(BaudRate baud);
+EXTERN bool sendByteUART(unsigned char data);
 EXTERN unsigned char readByteUART();
 
 
