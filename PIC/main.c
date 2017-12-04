@@ -32,7 +32,7 @@ typedef enum state{
     WAIT_KILL,
     END_GAME,        
 }statePIC;
-statePIC myState = IDLE;
+statePIC myState = SELECT_NEW_TARGET;
 
 typedef enum gunMode{
     MODE0,
@@ -83,31 +83,19 @@ void main(void) {
     setTimerConfig();
     setInterruptConfig();
     
-    //initialisation_LCD();
-    //printMBED();
+   initialisation_LCD();
+   printMBED();
     
+   printStartGame();
+   T0CONbits.TMR0ON = 1; // Start Timer
     
-    //printStartGame();
-    //T0CONbits.TMR0ON = 1; // Start Timer
-    /*while(1){    
-        if(timerFlag){
-            globalTimer++;
-            timerFlag=false;
-            INTCONbits.TMR0IE = 1;  //timer enable 
-        }
-        if(globalTimer==20 ){
-            myState= END_GAME;
-        } 
-    }*/
-    LATCbits.LATC0=1;
-    
-    while(!endFlag){
-    getRandomTarget(nextTarget);
-    activateTarget(nextTarget[0]);
-    activateLEDTarget(nextTarget);
-    while(1){};
+    /*while(!endFlag){
+    fireShot();
+    for (int i =0;i<20000;i++){}
+    stopShot();
+    for (int i =0;i<10000;i++){}
     };
-    
+    /*
    
     while(true){
         if(rxFlag){
@@ -118,7 +106,7 @@ void main(void) {
             __delay_ms(50);
             
         }
-    }
+    }*/
     
     while(!endFlag){
         
@@ -136,8 +124,7 @@ void main(void) {
         printPoints(totalPoints);
         printRemBullets(ammoLeft);
         printRemTime(singleGameTime-globalTimer);
-        
-        
+    
         switch(myState){
             case IDLE :
 
@@ -181,7 +168,7 @@ void main(void) {
                 else if(ammoLeft==0){
                     myState = NEED_RELOAD;
                 }
-                else if(capteurFlag && myModeState == nextTarget[1]){
+                else if(capteurFlag /*&& myModeState == nextTarget[1]*/){
                     capteurFlag = false;
                     INTCON3bits.INT1E = 1; 
                     myState = ACCUMULATE_POINTS;
@@ -191,7 +178,7 @@ void main(void) {
 
             case NEED_RELOAD:
                 toggleCounter++;
-                if (toggleCounter==5000){
+                if (toggleCounter==20){
                     toggleGunLED();
                     toggleCounter=0;
                 }
@@ -313,7 +300,7 @@ void setTimerConfig(void){
 }
 
 void getRandomTarget(short Target[2]){
-    Target[0] = 1;//rand() % 6;
+    Target[0] = rand() % 6;
     Target[1] = rand() % 2;
 }
 
