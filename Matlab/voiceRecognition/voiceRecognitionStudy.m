@@ -9,8 +9,8 @@ clc
 
 %% Parameters to change ***manually
 % Parameters just below can be changed for analysis's tweaks
-freq_sep = 300; % Minimum freq separation between main peaks (200) (100)
-nPeaks = 20;    % Number of main peaks per sample to analyze (20)    (5)
+freq_sep = 0; % Minimum freq separation between main peaks (200) (100)
+nPeaks = 890;    % Number of main peaks per sample to analyze (20)    (5)
 
 %Place helpful visual lines to check if points are between them in figure 1
 lowLimit =6800;
@@ -59,6 +59,7 @@ end
 
 pkFreqArray = zeros(nPeaks*nbSamples,1); %Preallocation for speed
 pkFreqArraySamples = zeros(nPeaks,nbSamples); %Preallocation for speed
+pkArraySamples = zeros(nPeaks,nbSamples); %Preallocation for speed
 for i = 1:nbSamples
     %Uncomment to see each main peaks of the main harmonics of each sample
 %     figure()
@@ -69,6 +70,7 @@ for i = 1:nbSamples
     y = i*nPeaks;
     pkFreqArray(x:y) = pkloc';
     pkFreqArraySamples(:,i) = pkFreqArray(x:y);
+    pkArraySamples(:,i) = pk;
 end
 
 % Sort the frequencies of the main peaks of all the chosen samples

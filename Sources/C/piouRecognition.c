@@ -94,6 +94,19 @@ bool detectPiou(short sample[VOICE_BUFFER_LENGTH])
         else
             detectedPhonems[cblock] = 'p';
 
+
+//        if(bands[cblock][0] < 0.10*bands[0][0])
+//            detectedPhonems[cblock] = '0';
+//        else if(bands[cblock][1] > 0.3 && bands[cblock][2] > 0.3 && bands[cblock][3] > 0.3)
+//            detectedPhonems[cblock] = 'p';
+//        else if(bands[cblock][1] > 0.3 && bands[cblock][2] > 0.3 && bands[cblock][3] > 0.3)
+//            detectedPhonems[cblock] = 'i';
+//        else if(bands[cblock][1] > 0.3 && bands[cblock][2] > 0.3 && bands[cblock][3] > 0.3)
+//            detectedPhonems[cblock] = 'u';
+//        else
+//            detectedPhonems[cblock] = 'p';
+
+
         start += FFT_BLOCK_SIZE - FFT_BLOCK_OVERLAP;
     }
 
