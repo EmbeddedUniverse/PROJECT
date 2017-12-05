@@ -19,6 +19,7 @@ void receiveFromPIC(unsigned char data)
     picMessage = data;
 }
 
+
 void runSetup()
 {
     CSL_init();
@@ -88,8 +89,6 @@ void run(unsigned char ammoCode, unsigned timeCode)
             VOICE_reset();
             clearFIFO(ACCEL);
         }
-
-        //COM_syncRead(PIC, &picMessage);
     }
 
     printf("\n----------------------------------------------\n");
