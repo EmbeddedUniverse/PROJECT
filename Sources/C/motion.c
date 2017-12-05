@@ -68,7 +68,19 @@ bool MOTION_detectReload()
 
 bool MOTION_detectModeChange()
 {
-    return true;
+    copyToTemp(xAccQBuff.last, xAccArray, tempSignalBuffer, ACC_ANALYSIS_SIZE);
+    correlate(corrArray, tempSignalBuffer, REFERENCESIGNALY, ACC_ANALYSIS_SIZE, NUMREFDATA);
+
+    float max = 0;
+    int i;
+    for (i = 0; i < ACC_ANALYSIS_SIZE+NUMREFDATA-1; ++i){
+        if (fabsf(corrArray[i]) > max)
+            max = fabsf(corrArray[i]);
+    }
+
+    xAccQBuff.quarterFlag = false;
+
+    return (max > SHAKE_THRESHOLD);
 }
 
 void handleNextReading(AccelDecodedData reading){

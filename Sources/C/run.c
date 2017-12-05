@@ -37,15 +37,15 @@ void run(){
     {
         if (MOTION_readyToAnalyze())
         {
-            if (MOTION_detectModeChange())
+            if (MOTION_detectReload())
             {
-                COM_send(MODE_CHANGE_CODE, PIC);
+                COM_send(RELOAD_CODE, PIC);
                 DSK6713_LED_on(RELOAD_LED);
             }
             else
                 DSK6713_LED_off(RELOAD_LED);
 
-            if (MOTION_detectReload())
+            if (MOTION_detectModeChange())
             {
                 COM_send(MODE_CHANGE_CODE, PIC);
                 DSK6713_LED_on(CHANGE_MODE_LED);
