@@ -18,9 +18,18 @@
 
 
 #define _XTAL_FREQ  8000000   // Oscillator frequency for _delay()
-#define reloadCode  0xAA
-#define modeCode    0xBB
-#define pewCode     0xCC
+#define reloadCode      0xAA
+#define modeCode        0xBB
+#define pewCode         0xCC
+#define command2Start   0xDD
+
+#define _6Ammo      0x0A
+#define _12Ammo     0x0B
+#define _24Ammo     0x0C
+
+#define _30secTimer   0xA0
+#define _60secTimer   0xB0
+#define _120secTimer  0xC0
 
 #pragma config XINST = OFF 
 
@@ -50,7 +59,7 @@ int toggleCounter = 0;
 int globalTimer = 0;
 int singleGameTime = 121;
 int totalPoints = 0;
-
+int maxAmmo =6;
 bool ErrorUART      = false; 
 bool rxFlag         = false; // USART Data Received flag
 bool reloadFlag     = false;
@@ -59,6 +68,8 @@ bool pewFlag        = false;
 bool capteurFlag    = false;
 bool timerFlag      = false;
 bool endFlag        = false;
+bool startGame      = false;
+
 // Declarations
 void interrupt rxIsr(void);
 void setUARTconfig(void);
@@ -85,10 +96,19 @@ void main(void) {
     
    initialisation_LCD();
    printMBED();
-    
-   printStartGame();
-   T0CONbits.TMR0ON = 1; // Start Timer
-    
+   
+  
+   
+   while(!startGame){
+        if(rxFlag){      
+            rxFlag = false; // Reset the flag
+            PIE1bits.RC1IE = 1; // Re-enable the interrupt control
+                    
+        }
+    }
+    printStartGame();
+    T0CONbits.TMR0ON = 1; // Start Timer
+   
     /*while(!endFlag){
     fireShot();
     for (int i =0;i<20000;i++){}
@@ -145,7 +165,7 @@ void main(void) {
 
             case WAIT_KILL:
                 if(reloadFlag){
-                    ammoLeft= 12;              
+                    ammoLeft= maxAmmo;              
                     reloadFlag=false;
                     PIE1bits.RC1IE = 1;
                 }
@@ -183,7 +203,7 @@ void main(void) {
                     toggleCounter=0;
                 }
                 if(reloadFlag){
-                    ammoLeft= 12;
+                    ammoLeft= maxAmmo;
                     setModeLED(myModeState);
                     toggleCounter=0;
                     reloadFlag=false;
@@ -221,6 +241,27 @@ void interrupt rxIsr(void){
                     break;
                 case pewCode:
                     pewFlag=true;
+                    break;
+                case _6Ammo : 
+                    maxAmmo = 6;
+                    break;
+                case _12Ammo :
+                    maxAmmo = 12;
+                    break;
+                case _24Ammo :
+                    maxAmmo = 24;
+                    break;    
+                case _30secTimer :
+                    singleGameTime = 31;
+                    break;
+                case _60secTimer :
+                    singleGameTime = 61;
+                    break;
+                case _120secTimer :
+                    singleGameTime = 121;
+                    break;
+                case command2Start:
+                    startGame = true;
                     break;
             }
             PIE1bits.RC1IE = 0; // Disable the interrupt control
