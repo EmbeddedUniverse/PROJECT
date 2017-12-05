@@ -24,6 +24,8 @@
 #define HUM_PITCH_INDEX_9 FFT_BLOCK_SIZE*HUM_PITCH_9/VOICE_SAMPLING_FREQ
 #define NB_BLOCKS  (VOICE_BUFFER_LENGTH/(FFT_BLOCK_SIZE-FFT_BLOCK_OVERLAP))-1
 
+#define ERROR_TOLERANCE 0.01
+
 float HAM_WINDOW[FFT_BLOCK_SIZE];
 
 char detectedPhonems[NB_BLOCKS];
@@ -32,6 +34,8 @@ float analysisBlock [FFT_BLOCK_SIZE*2];
 float harmonicAmplitudes[FFT_BLOCK_SIZE/2];
 float bands [NB_BLOCKS][11];
 short indeces[FFT_BLOCK_SIZE/16];
+
+double sumSquareError;
 
 bool goodSeries();
 bool isP(int cblock);
@@ -154,29 +158,34 @@ bool detectPiou(short sample[VOICE_BUFFER_LENGTH])
 
         if(bands[cblock][0] < 0.10*bands[0][0])
             detectedPhonems[cblock] = '0';
-        else if(isTA(cblock))
-            detectedPhonems[cblock] = 'A';
+        else if(isTA(cblock) || isI(cblock))
+            if(isTA(cblock))
+                detectedPhonems[cblock] = 'A';
+            else if(isU(cblock))
+                detectedPhonems[cblock] = 'U';
+            else
+                detectedPhonems[cblock] = 'I';
         else
             detectedPhonems[cblock] = '0';
 
         start += FFT_BLOCK_SIZE - FFT_BLOCK_OVERLAP;
     }
 
-//    int o;
-//    float tabTemp[10];
-//
-//    for(o = 0; o <NB_BLOCKS; o++){
-//        tabTemp[0]=bands[o][1];
-//        tabTemp[1]=bands[o][2];
-//        tabTemp[2]=bands[o][3];
-//        tabTemp[3]=bands[o][4];
-//        tabTemp[4]=bands[o][5];
-//        tabTemp[5]=bands[o][6];
-//        tabTemp[6]=bands[o][7];
-//        tabTemp[7]=bands[o][8];
-//        tabTemp[8]=bands[o][9];
-//        tabTemp[9]=bands[o][10];
-//    }
+    int o;
+    float tabTemp[10];
+
+    for(o = 0; o <NB_BLOCKS; o++){
+        tabTemp[0]=bands[o][1];
+        tabTemp[1]=bands[o][2];
+        tabTemp[2]=bands[o][3];
+        tabTemp[3]=bands[o][4];
+        tabTemp[4]=bands[o][5];
+        tabTemp[5]=bands[o][6];
+        tabTemp[6]=bands[o][7];
+        tabTemp[7]=bands[o][8];
+        tabTemp[8]=bands[o][9];
+        tabTemp[9]=bands[o][10];
+    }
 
 
 
@@ -186,60 +195,68 @@ bool detectPiou(short sample[VOICE_BUFFER_LENGTH])
 // Determines if the series of phonem is a pew
 bool goodSeries()
 {
-    int ipIndex = 0;
+//    int ipIndex = 0;
+//
+//    // There must be a P in the first 3 phonems
+//    for(; ipIndex <= 3; ++ipIndex)
+//    {
+//        if (ipIndex >= 3)
+//            return false;
+//
+//        if (detectedPhonems[ipIndex] == 'p')
+//            break;
+//    }
+//
+//    // There make sure there are no more than 3 consecutive P
+//    int nbP = 0;
+//    while(detectedPhonems[ipIndex] == 'p')
+//    {
+//        ++nbP;
+//        ++ipIndex;
+//        if (nbP > 3)
+//            return false;
+//    }
+//
+//    // Allowing one mistake from P to i transition
+//    if(detectedPhonems[ipIndex] != 'i')
+//        if(detectedPhonems[++ipIndex] != 'i')
+//            return false;
+//
+//    // Allowing up to 4 consecutive i
+//    int nbI = 0;
+//    while(detectedPhonems[ipIndex] == 'i')
+//    {
+//        ++nbI;
+//        ++ipIndex;
+//        if (nbI > 3)
+//            return false;
+//    }
+//
+//    // Allowing one mistake between i an u
+//    if(detectedPhonems[ipIndex] != 'u')
+//        if(detectedPhonems[++ipIndex] != 'u')
+//            return false;
+//
+//    // Allowing up to 8 u
+//    int nbU = 0;
+//    while(detectedPhonems[ipIndex] == 'u')
+//    {
+//        ++nbU;
+//        ++ipIndex;
+//        if (nbU > 7)
+//            return false;
+//    }
 
-    // There must be a P in the first 3 phonems
-    for(; ipIndex <= 3; ++ipIndex)
-    {
-        if (ipIndex >= 3)
-            return false;
+    int index = 0;
 
-        if (detectedPhonems[ipIndex] == 'p')
-            break;
+    // There must be a A in 2 phonems
+    for(; index < NB_BLOCKS-1; ++index)    {
+        if(detectedPhonems[index] == 'A')
+            if(detectedPhonems[index+1] == 'A')
+                return true;
     }
 
-    // There make sure there are no more than 3 consecutive P
-    int nbP = 0;
-    while(detectedPhonems[ipIndex] == 'p')
-    {
-        ++nbP;
-        ++ipIndex;
-        if (nbP > 3)
-            return false;
-    }
-
-    // Allowing one mistake from P to i transition
-    if(detectedPhonems[ipIndex] != 'i')
-        if(detectedPhonems[++ipIndex] != 'i')
-            return false;
-
-    // Allowing up to 4 consecutive i
-    int nbI = 0;
-    while(detectedPhonems[ipIndex] == 'i')
-    {
-        ++nbI;
-        ++ipIndex;
-        if (nbI > 3)
-            return false;
-    }
-
-    // Allowing one mistake between i an u
-    if(detectedPhonems[ipIndex] != 'u')
-        if(detectedPhonems[++ipIndex] != 'u')
-            return false;
-
-    // Allowing up to 8 u
-    int nbU = 0;
-    while(detectedPhonems[ipIndex] == 'u')
-    {
-        ++nbU;
-        ++ipIndex;
-        if (nbU > 7)
-            return false;
-    }
-
-
-    return true;
+    return false;
 }
 
 bool isP(int cblock){
@@ -269,25 +286,15 @@ bool isP(int cblock){
 }
 
 bool isI(int cblock){
-    if(     bands[cblock][1] > (0.157429) &&
-            bands[cblock][1] < (0.488406) &&
-            bands[cblock][2] > (0.080848) &&
-            bands[cblock][2] < (0.360737) &&
-            bands[cblock][3] > (0.033497) &&
+    if(     bands[cblock][1] > (0.157429) && bands[cblock][1] < (0.488406) &&
+            bands[cblock][2] > (0.080848) && bands[cblock][2] < (0.360737) &&
             bands[cblock][3] < (0.109583) &&
-            bands[cblock][4] > (0.035955) &&
             bands[cblock][4] < (0.079256) &&
-            bands[cblock][5] > (0.050621) &&
             bands[cblock][5] < (0.121856) &&
-            bands[cblock][6] > (0.050978) &&
             bands[cblock][6] < (0.120087) &&
-            bands[cblock][7] > (0.028969) &&
             bands[cblock][7] < (0.074192) &&
-            bands[cblock][8] > (0.020119) &&
             bands[cblock][8] < (0.062410) &&
-            bands[cblock][9] > (0.016534) &&
             bands[cblock][9] < (0.059454) &&
-            bands[cblock][10] > (0.024534) &&
             bands[cblock][10] < (0.041437))
         return true;
     else
@@ -295,42 +302,51 @@ bool isI(int cblock){
 }
 
 bool isU(int cblock){
-    if(     bands[cblock][1] > (0.288864) &&
-            bands[cblock][1] < (0.614346) &&
-            bands[cblock][2] > (0.138250) &&
-            bands[cblock][2] < (0.385840) &&
-            bands[cblock][3] > (0.070822) &&
+    if(     bands[cblock][1] > (0.288864) && bands[cblock][1] < (0.614346) &&
+            bands[cblock][2] > (0.138250) && bands[cblock][2] < (0.385840) &&
             bands[cblock][3] < (0.165023) &&
-            bands[cblock][4] > (0.021224) &&
             bands[cblock][4] < (0.079977) &&
-            bands[cblock][5] > (0.009204) &&
             bands[cblock][5] < (0.059757) &&
-            bands[cblock][6] > (0.010839) &&
             bands[cblock][6] < (0.047494) &&
-            bands[cblock][7] > (0.007323) &&
             bands[cblock][7] < (0.025625) &&
-            bands[cblock][8] > (0.006868) &&
             bands[cblock][8] < (0.024093) &&
-            bands[cblock][9] > (0.005583) &&
             bands[cblock][9] < (0.019580) &&
-            bands[cblock][10] > (0.004549) &&
             bands[cblock][10] < (0.014740))
         return true;
     else
         return false;
 }
 
+//bool isTA(int cblock){
+//    if(     bands[cblock][1] > (0.24980376) && bands[cblock][1] < (0.56989167) &&
+//            bands[cblock][2] > (0.02752650) && bands[cblock][2] < (0.23679538) &&
+//            bands[cblock][3] < (0.08720931) &&
+//            bands[cblock][4] < (0.12465798) &&
+//            bands[cblock][5] < (0.10428346) &&
+//            bands[cblock][6] < (0.05677224) &&
+//            bands[cblock][7] < (0.06651647) &&
+//            bands[cblock][8] < (0.08091772) &&
+//            bands[cblock][9] < (0.08169756) &&
+//            bands[cblock][10] < (0.08042542))
+//        return true;
+//    else
+//        return false;
+//}
+
+
 bool isTA(int cblock){
-    if(     bands[cblock][1] > (0.24980376) && bands[cblock][1] < (0.56989167) &&
-            bands[cblock][2] > (0.02752650) && bands[cblock][2] < (0.23679538) &&
-            bands[cblock][3] > (0.02419997) && bands[cblock][3] < (0.08720931) &&
-            bands[cblock][4] > (0.04414845) && bands[cblock][4] < (0.12465798) &&
-            bands[cblock][5] > (0.02148294) && bands[cblock][5] < (0.10428346) &&
-            bands[cblock][6] > (0.01612529) && bands[cblock][6] < (0.05677224) &&
-            bands[cblock][7] > (0.03456740) && bands[cblock][7] < (0.06651647) &&
-            bands[cblock][8] > (0.03682700) && bands[cblock][8] < (0.08091772) &&
-            bands[cblock][9] > (0.03655095) && bands[cblock][9] < (0.08169756) &&
-            bands[cblock][10] > (0.01960060) && bands[cblock][10] < (0.08042542))
+    sumSquareError = ((0.409847712-bands[cblock][1])*(0.409847712-bands[cblock][1]) +
+                    (0.13216094-bands[cblock][2])*(0.13216094-bands[cblock][2]) +
+                    (0.05570464-bands[cblock][3])*(0.05570464-bands[cblock][3]) +
+                    (0.084403212-bands[cblock][4])*(0.084403212-bands[cblock][4]) +
+                    (0.062883199-bands[cblock][5])*(0.062883199-bands[cblock][5]) +
+                    (0.036448766-bands[cblock][6])*(0.036448766-bands[cblock][6]) +
+                    (0.050541932-bands[cblock][7])*(0.050541932-bands[cblock][7]) +
+                    (0.058872362-bands[cblock][8])*(0.058872362-bands[cblock][8]) +
+                    (0.059124256-bands[cblock][9])*(0.059124256-bands[cblock][9]) +
+                    (0.050013011-bands[cblock][10])*(0.050013011-bands[cblock][10]));
+
+    if(sumSquareError < ERROR_TOLERANCE )
         return true;
     else
         return false;

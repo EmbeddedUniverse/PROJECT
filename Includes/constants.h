@@ -37,14 +37,14 @@ Frequency Definitions
 #define FFT_BLOCK_SIZE 512
 #define FFT_BLOCK_OVERLAP 100
 
-#define HUM_PITCH_1 800
-#define HUM_PITCH_2 1600
-#define HUM_PITCH_3 2400
-#define HUM_PITCH_4 3200
-#define HUM_PITCH_5 4000
-#define HUM_PITCH_6 4800
-#define HUM_PITCH_7 5600
-#define HUM_PITCH_8 6400
-#define HUM_PITCH_9 7200
+#define HUM_PITCH_1 200
+#define HUM_PITCH_2 400
+#define HUM_PITCH_3 600
+#define HUM_PITCH_4 800
+#define HUM_PITCH_5 2000
+#define HUM_PITCH_6 3200
+#define HUM_PITCH_7 4400
+#define HUM_PITCH_8 5600
+#define HUM_PITCH_9 6800
 
 #endif /* INCLUDES_CONSTANTS_H_ */
