@@ -124,7 +124,7 @@ const Uint32 MAX3111_Config =
     0   << N_PARITY_BIT_INTERRUPT |
     0   << N_FRAMING_ERROR_INTERRUPT |
     0   << IrDA_MODE |
-    1   << TWO_STOP_BITS |
+    0   << TWO_STOP_BITS |
     0   << PARITY_ENABLE |
     0   << WORD_LENGHT |
     0   << UART_BAUD_RATE_DIV;
@@ -203,4 +203,21 @@ unsigned char readByteUART()
     return MCBSP_read(SPI_PortHandle) & 0xFF;
 }
 
+// Returns the number of flushed frames
+unsigned short flushFIFO()
+{
+    unsigned short c = 0;
 
+    unsigned short data = 0;
+
+    do
+    {
+        while(! MCBSP_xrdy(SPI_PortHandle));
+        MCBSP_write(SPI_PortHandle, SPI_READ_DATA);
+        while(! MCBSP_rrdy(SPI_PortHandle));
+        data = MCBSP_read(SPI_PortHandle);
+        ++c;
+    }while((data & DOUT) != 0);
+
+    return c;
+}

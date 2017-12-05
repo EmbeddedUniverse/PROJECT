@@ -19,5 +19,6 @@ int COM_init();
 int COM_selectInterface(SPI_Interface interface);
 int COM_send(unsigned char data, SPI_Interface interface);
 void COM_setReceiveCallBack(void (*callBack)(unsigned char), SPI_Interface interface);
+void clearFIFO(SPI_Interface interface);
 
 #endif /* INCLUDES_COMMUNICATION_H_ */

@@ -7,6 +7,13 @@
 
 #include <accelProtocol_UART.h>
 
+#define WAITING_FOR_X 0
+
+volatile char accUartBuffer[FRAME_LENGTH];
+int accUartBufferIndex = WAITING_FOR_X;
+
+DecodedCallBack passedCallback;
+
 float bytes2Float_SE(const char*);
 
 AccelDecodedData convertAccString2Floats(const char* accString){
@@ -58,3 +65,23 @@ float bytes2Float_SE(const char* byteArray)
     return (float)number / (float)(1<<29);
 }
 #endif
+
+
+void aggregateAccelBytes(unsigned char newChar)
+{
+    if (accUartBufferIndex == WAITING_FOR_X && newChar != 'x')
+        return;
+
+    accUartBuffer[accUartBufferIndex++] = newChar;
+
+    if (accUartBufferIndex >= FRAME_LENGTH)
+    {
+        accUartBufferIndex = WAITING_FOR_X;
+        passedCallback(convertAccString2Floats((char *)accUartBuffer));
+    }
+}
+
+void setDecodeCallBack(DecodedCallBack callBack)
+{
+    passedCallback = callBack;
+}

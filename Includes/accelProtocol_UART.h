@@ -35,6 +35,12 @@ typedef struct{
     short errors;
 }AccelDecodedData;
 
+// Callback function type
+typedef void (*DecodedCallBack) (AccelDecodedData);
+
 AccelDecodedData convertAccString2Floats(const char* accString);
+
+void aggregateAccelBytes(unsigned char newChar);
+void setDecodeCallBack(DecodedCallBack callBack);
 
 #endif /* INCLUDES_ACCELPROTOCOL_UART_H_ */

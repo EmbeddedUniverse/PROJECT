@@ -16,6 +16,7 @@ COM_init()
     CSL_init();
     DSK6713_init();
     SPI_init();
+    DSK6713_waitusec(100);
 
     COM_selectInterface(ACCEL);
     if (MAX3111_init(BAUD_57600) != 0)
@@ -23,6 +24,8 @@ COM_init()
         printf("Error Setting up MAX3111_%d\n", (int)ACCEL);
         error = 1;
     }
+    else
+        clearFIFO(ACCEL);
 
     COM_selectInterface(PIC);
     if (MAX3111_init(BAUD_9600) != 0)
@@ -30,13 +33,20 @@ COM_init()
         printf("Error Setting up MAX3111_%d\n", (int)PIC);
         error = 1;
     }
+    else
+        clearFIFO(PIC);
 
     /* point to the IRQ vector table */
     IRQ_setVecs(vectors);
     IRQ_map(IRQ_EVT_EXTINT4, IRQ_EVT_EXTINT4);
+    IRQ_map(IRQ_EVT_EXTINT5, IRQ_EVT_EXTINT5);
 
     IRQ_enable(IRQ_EVT_EXTINT4);
+    IRQ_enable(IRQ_EVT_EXTINT5);
     GPPOL = 0xFFFF;
+    GPDIR &= ~(1 << GP4DIR);
+    GPDIR &= ~(1 << GP5DIR);
+
     flagUART = false;
 
     /* enable NMI and GI */
@@ -59,6 +69,7 @@ COM_selectInterface(SPI_Interface interface)
     else
         return 1;
 
+    DSK6713_waitusec(2);
 
     return 0;
 }
@@ -83,6 +94,26 @@ void COM_setReceiveCallBack(void (*callBack)(unsigned char), SPI_Interface inter
     ISR :
 ****************************************************************************/
 
-void interrupt uart_iterrupt(){
-    flagUART = true;
+void interrupt ACC_recvRoutine()
+{
+    COM_selectInterface(ACCEL);
+    unsigned char recvByte = readByteUART();
+
+    if (recvCallBacks[ACCEL] != 0)
+        recvCallBacks[ACCEL](recvByte);
+}
+
+void interrupt PIC_recvRoutine()
+{
+    COM_selectInterface(ACCEL);
+    unsigned char recvByte = readByteUART();
+
+    if (recvCallBacks[PIC] != 0)
+        recvCallBacks[PIC](recvByte);
+}
+
+void clearFIFO(SPI_Interface interface)
+{
+    COM_selectInterface(interface);
+    flushFIFO();
 }
