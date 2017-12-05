@@ -118,25 +118,7 @@ void main(void) {
     printStartGame();
     T0CONbits.TMR0ON = 1; // Start Timer
    
-    /*while(!endFlag){
-    fireShot();
-    for (int i =0;i<20000;i++){}
-    stopShot();
-    for (int i =0;i<10000;i++){}
-    };
-    */
-   
-    /*while(true){
-        
-        if(rxFlag){
-            rxChar = RCREG1; // Read the value in the register       
-            rxFlag = false; // Reset the flag
-            PIE1bits.RC1IE = 1; // Re-enable the interrupt control
-            TXREG1 = 0xAF;
-            __delay_ms(50);
-            
-        }
-    }*/
+    
     //TXREG1=0xEE;
     setModeLED(myModeState);
     totalPoints = 0;
@@ -161,6 +143,7 @@ void main(void) {
         int temp= ammoLeft;
         printRemBullets(ammoLeft);
         ammoLeft= temp;
+        
         switch(myState){
             case IDLE :
                 ammoLeft= maxAmmo;
@@ -182,58 +165,56 @@ void main(void) {
                 break;
 
             case WAIT_KILL:
-                if(reloadFlag){
-                    ammoLeft= maxAmmo;              
-                    reloadFlag=false;
-                    rxFlag = false;
-                    pewFlag = false;
-                    PIE1bits.RC1IE = 1;
+                if(rxFlag){      
+                    rxFlag = false; // Reset the flag
+                    PIE1bits.RC1IE = 1; // Re-enable the interrupt control
+                      
+                    if(reloadFlag){
+                        ammoLeft= maxAmmo;              
+                        reloadFlag=false;
+                    }
+                    else if (modeFlag){
+                        changeMode();
+                        setModeLED(myModeState);
+                        modeFlag=false;
+                    }
+                    else if (pewFlag && ammoLeft !=0){
+                        fireShot();
+                        for (int i =0;i<20000;i++){}
+                        stopShot();
+                        ammoLeft -= 1;
+                        pewFlag = false;    
+                    }
+                    
                 }
-
-                else if (modeFlag){
-                    changeMode();
-                    setModeLED(myModeState);
-                    modeFlag=false;
-                    rxFlag = false;
-                    PIE1bits.RC1IE = 1;
-                }
-
-                else if (pewFlag && ammoLeft !=0){
-                    fireShot();
-                    for (int i =0;i<20000;i++){}
-                    stopShot();
-                    ammoLeft -= 1;
-                    pewFlag = false;
-                    rxFlag = false;
-                    PIE1bits.RC1IE = 1;
-                }
-                else if(ammoLeft==0){
-                    myState = NEED_RELOAD;
-                }
-                else if(capteurFlag && myModeState == nextTarget[1]){
+                
+                if(capteurFlag && myModeState == nextTarget[1]){
                     capteurFlag = false;
                     INTCON3bits.INT1E = 1; 
                     myState = ACCUMULATE_POINTS;
                 }
-
+        
+                if(ammoLeft==0){
+                    myState = NEED_RELOAD;
+                }
                 break;
 
-            case NEED_RELOAD:
-                toggleCounter++;
-                if (toggleCounter==20){
-                    toggleGunLED();
-                    toggleCounter=0;
-                }
-                if(rxFlag){      
-                    rxFlag = false; // Reset the flag
-                    PIE1bits.RC1IE = 1; // Re-enable the interrupt control
-                    if (reloadFlag) {
-                        ammoLeft= maxAmmo;
-                        setModeLED(myModeState);
+                case NEED_RELOAD:
+                    toggleCounter++;
+                    if (toggleCounter==20){
+                        toggleGunLED();
                         toggleCounter=0;
-                        reloadFlag=false;
-                        myState = WAIT_KILL;
-                    }     
+                    }
+                    if(rxFlag){      
+                        rxFlag = false; // Reset the flag
+                        PIE1bits.RC1IE = 1; // Re-enable the interrupt control
+                        if (reloadFlag) {
+                            ammoLeft= maxAmmo;
+                            setModeLED(myModeState);
+                            toggleCounter=0;
+                            reloadFlag=false;
+                            myState = WAIT_KILL;
+                       }     
                 } 
                 break;
 
