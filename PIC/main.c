@@ -58,9 +58,9 @@ short nextTarget[2];
 unsigned int ammoLeft = 24;
 int toggleCounter = 0;
 int globalTimer = 0;
-int singleGameTime = 121;
+int singleGameTime = 10;
 int totalPoints = 0;
-int maxAmmo =6;
+int maxAmmo = 24;
 bool ErrorUART      = false; 
 bool rxFlag         = false; // USART Data Received flag
 bool reloadFlag     = false;
@@ -104,11 +104,11 @@ void main(void) {
         if(rxFlag){      
             rxFlag = false; // Reset the flag
             PIE1bits.RC1IE = 1; // Re-enable the interrupt control
-                    
-        }
+                  
+        } 
     }
     printStartGame();
-    //T0CONbits.TMR0ON = 1; // Start Timer
+    T0CONbits.TMR0ON = 1; // Start Timer
    
     /*while(!endFlag){
     fireShot();
@@ -129,7 +129,7 @@ void main(void) {
             
         }
     }*/
-    TXREG1=0xEE;
+    //TXREG1=0xEE;
     setModeLED(myModeState);
     ammoLeft = maxAmmo;
     while(!endFlag){
@@ -225,7 +225,7 @@ void main(void) {
                     TXREG1=0xEE;
                     while(!startGame){ 
                         printEndGame(totalPoints);
-                        waitASec();
+                         __delay_ms(50);
                         if(rxFlag){      
                             rxFlag = false; // Reset the flag
                             PIE1bits.RC1IE = 1; // Re-enable the interrupt control
@@ -263,12 +263,15 @@ void interrupt rxIsr(void){
                     break;
                 case _6Ammo : 
                     maxAmmo = 6;
+                    ammoLeft = 6;
                     break;
                 case _12Ammo :
                     maxAmmo = 12;
+                    ammoLeft = 12;
                     break;
                 case _24Ammo :
                     maxAmmo = 24;
+                    ammoLeft = 24;
                     break;    
                 case _30secTimer :
                     singleGameTime = 31;
