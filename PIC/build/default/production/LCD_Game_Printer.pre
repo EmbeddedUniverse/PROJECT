@@ -17010,13 +17010,12 @@ putStringLCD(statArray);
 
 void printEndGame(unsigned int nbPoints){
 clearDisplay();
-
+moveCursor(1,0);
 unsigned char statArray[3];
 sprintf(statArray, "%d", nbPoints);
 putStringLCD("E  N  D   G  A  M  E ");
-moveCursor(1,0);
-
-putStringLCD("POINTS ");
+moveCursor(3,0);
+putStringLCD("POINTS   ");
 putStringLCD(statArray);
 }
 

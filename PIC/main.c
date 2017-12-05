@@ -22,6 +22,7 @@
 #define modeCode        0xBB
 #define pewCode         0xCC
 #define command2Start   0xDD
+#define endGame         0xEE
 
 #define _6Ammo      0x0A
 #define _12Ammo     0x0B
@@ -54,7 +55,7 @@ gunModeState myModeState = MODE0;
 unsigned char rxChar = 0x00;
 unsigned char transferedData = 0x00;
 short nextTarget[2];
-unsigned int ammoLeft = 12;
+unsigned int ammoLeft = 24;
 int toggleCounter = 0;
 int globalTimer = 0;
 int singleGameTime = 121;
@@ -94,8 +95,8 @@ void main(void) {
     setTimerConfig();
     setInterruptConfig();
     
-   initialisation_LCD();
-   printMBED();
+    initialisation_LCD();
+    printMBED();
    
   
    
@@ -107,7 +108,7 @@ void main(void) {
         }
     }
     printStartGame();
-    T0CONbits.TMR0ON = 1; // Start Timer
+    //T0CONbits.TMR0ON = 1; // Start Timer
    
     /*while(!endFlag){
     fireShot();
@@ -115,9 +116,10 @@ void main(void) {
     stopShot();
     for (int i =0;i<10000;i++){}
     };
-    /*
+    */
    
-    while(true){
+    /*while(true){
+        
         if(rxFlag){
             rxChar = RCREG1; // Read the value in the register       
             rxFlag = false; // Reset the flag
@@ -127,7 +129,9 @@ void main(void) {
             
         }
     }*/
-    
+    TXREG1=0xEE;
+    setModeLED(myModeState);
+    ammoLeft = maxAmmo;
     while(!endFlag){
         
         if(timerFlag){
@@ -147,15 +151,18 @@ void main(void) {
     
         switch(myState){
             case IDLE :
-
-
+                totalPoints = 0;
+                ammoLeft= maxAmmo;
+                printStartGame();
+                T0CONbits.TMR0ON = 1; // Start Timer
+                myState = SELECT_NEW_TARGET;
                 break;
 
             case SELECT_NEW_TARGET:
                 getRandomTarget(nextTarget);
                 activateTarget(nextTarget[0]);
                 activateLEDTarget(nextTarget);
-                myState= WAIT_KILL;
+                myState = WAIT_KILL;
                 break;
 
             case ACCUMULATE_POINTS:
@@ -179,7 +186,7 @@ void main(void) {
 
                 else if (pewFlag && ammoLeft !=0){
                     fireShot();
-                    for (int i =0;i<10000;i++){}
+                    for (int i =0;i<20000;i++){}
                     stopShot();
                     ammoLeft -= 1;
                     pewFlag = false;
@@ -212,7 +219,19 @@ void main(void) {
                 break;
 
             case END_GAME:
-                    endFlag = true;
+                    //endFlag = true;
+                    startGame = false;
+                    T0CONbits.TMR0ON = 0;
+                    TXREG1=0xEE;
+                    while(!startGame){ 
+                        printEndGame(totalPoints);
+                        waitASec();
+                        if(rxFlag){      
+                            rxFlag = false; // Reset the flag
+                            PIE1bits.RC1IE = 1; // Re-enable the interrupt control
+                        } 
+                    }
+                    myState = IDLE;                   
                 break;                  
         }        
     }
@@ -389,8 +408,8 @@ void setModeLED(gunModeState Mode){
             LATDbits.LATD5 = 0;   //Close LED MODE1
             break;
         case MODE1: 
-            LATDbits.LATD0 = 1;   //Open LED MODE1
-            LATDbits.LATD5 = 0;   //Close LED MODE0
+            LATDbits.LATD0 = 0;   //Open LED MODE1
+            LATDbits.LATD5 = 1;   //Close LED MODE0
             break;
             
     }

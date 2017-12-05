@@ -4,6 +4,11 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/Proprietaire/Documents/GitHub/PROJECT/PIC/main.c</file>
+            <file>file:/C:/Users/Proprietaire/Documents/GitHub/PROJECT/PIC/LCD_SPI.c</file>
+            <file>file:/C:/Program%20Files%20(x86)/Microchip/xc8/v1.43/sources/common/doprnt.c</file>
+            <file>file:/C:/Users/Proprietaire/Documents/GitHub/PROJECT/PIC/LCD_Game_Printer.c</file>
+            <file>file:/C:/Program%20Files%20(x86)/Microchip/xc8/v1.43/sources/common/lwmod.c</file>
+            <file>file:/C:/Program%20Files%20(x86)/Microchip/xc8/v1.43/sources/common/lwdiv.c</file>
         </group>
     </open-files>
 </project-private>

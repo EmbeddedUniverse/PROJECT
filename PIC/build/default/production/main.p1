@@ -1,24 +1,35 @@
 Version 3.2 HI-TECH Software Intermediate Code
-"35 main.c
+"45 main.c
 [c E13814 0 1 2 3 4 5 .. ]
 [n E13814 state IDLE SELECT_NEW_TARGET ACCUMULATE_POINTS NEED_RELOAD WAIT_KILL END_GAME  ]
-"41
+"51
 [c E13823 0 1 .. ]
 [n E13823 gunMode MODE0 MODE1  ]
 [p mainexit ]
-"64
+"76
 [v _setUARTconfig `(v ~T0 @X0 0 ef ]
-"65
+"77
 [v _setPinConfig `(v ~T0 @X0 0 ef ]
-"67
+"79
 [v _setTimerConfig `(v ~T0 @X0 0 ef ]
-"66
+"78
 [v _setInterruptConfig `(v ~T0 @X0 0 ef ]
 "46 LCD_SPI.h
 [v _initialisation_LCD `(v ~T0 @X0 0 ef ]
 "47 LCD_Game_Printer.h
 [v _printMBED `(v ~T0 @X0 0 ef ]
-"48
+"25459 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic18f67j94.h
+[s S1095 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S1095 . TMR1IE TMR2IE TMR1GIE SSP1IE TX1IE RC1IE ADIE PSPIE ]
+"25469
+[s S1096 :4 `uc 1 :1 `uc 1 ]
+[n S1096 . . TXIE ]
+"25458
+[u S1094 `S1095 1 `S1096 1 ]
+[n S1094 . . . ]
+"25474
+[v _PIE1bits `VS1094 ~T0 @X0 0 e@3997 ]
+"48 LCD_Game_Printer.h
 [v _printStartGame `(v ~T0 @X0 0 ef ]
 "29996 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic18f67j94.h
 [s S1334 :3 `uc 1 :1 `uc 1 :2 `uc 1 :1 `uc 1 :1 `uc 1 ]
@@ -51,30 +62,19 @@ Version 3.2 HI-TECH Software Intermediate Code
 [v _printRemBullets `(v ~T0 @X0 0 ef1`ui ]
 "50
 [v _printRemTime `(v ~T0 @X0 0 ef1`ui ]
-"69 main.c
+"81 main.c
 [v _getRandomTarget `(v ~T0 @X0 0 ef1`*s ]
-"70
+"82
 [v _activateTarget `(v ~T0 @X0 0 ef1`s ]
-"71
+"83
 [v _activateLEDTarget `(v ~T0 @X0 0 ef1`*s ]
-"25459 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic18f67j94.h
-[s S1095 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
-[n S1095 . TMR1IE TMR2IE TMR1GIE SSP1IE TX1IE RC1IE ADIE PSPIE ]
-"25469
-[s S1096 :4 `uc 1 :1 `uc 1 ]
-[n S1096 . . TXIE ]
-"25458
-[u S1094 `S1095 1 `S1096 1 ]
-[n S1094 . . . ]
-"25474
-[v _PIE1bits `VS1094 ~T0 @X0 0 e@3997 ]
-"74 main.c
+"86
 [v _changeMode `(v ~T0 @X0 0 ef ]
-"75
+"87
 [v _setModeLED `(v ~T0 @X0 0 ef1`E13823 ]
-"72
+"84
 [v _fireShot `(v ~T0 @X0 0 ef ]
-"73
+"85
 [v _stopShot `(v ~T0 @X0 0 ef ]
 "30620 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic18f67j94.h
 [s S1382 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
@@ -87,10 +87,14 @@ Version 3.2 HI-TECH Software Intermediate Code
 [n S1381 . . . ]
 "30641
 [v _INTCON3bits `VS1381 ~T0 @X0 0 e@4080 ]
-"76 main.c
+"88 main.c
 [v _toggleGunLED `(v ~T0 @X0 0 ef ]
+"26972 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic18f67j94.h
+[v _TXREG1 `Vuc ~T0 @X0 0 e@4013 ]
 "53 LCD_Game_Printer.h
 [v _printEndGame `(v ~T0 @X0 0 ef1`ui ]
+"54
+[v _waitASec `(v ~T0 @X0 0 ef ]
 "25530 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic18f67j94.h
 [s S1098 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
 [n S1098 . TMR1IF TMR2IF TMR1GIF SSP1IF TX1IF RC1IF ADIF PSPIF ]
@@ -136,8 +140,6 @@ Version 3.2 HI-TECH Software Intermediate Code
 [v _RCSTA1 `Vuc ~T0 @X0 0 e@4011 ]
 "27048
 [v _SPBRG1 `Vuc ~T0 @X0 0 e@4015 ]
-"26972
-[v _TXREG1 `Vuc ~T0 @X0 0 e@4013 ]
 "25601
 [s S1101 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
 [n S1101 . TMR1IP TMR2IP TMR1GIP SSP1IP TX1IP RC1IP ADIP PSPIP ]
@@ -205,6 +207,8 @@ Version 3.2 HI-TECH Software Intermediate Code
 [v _TRISA `Vuc ~T0 @X0 0 e@3986 ]
 "24925
 [v _TRISC `Vuc ~T0 @X0 0 e@3988 ]
+"24299
+[v _LATC `Vuc ~T0 @X0 0 e@3979 ]
 "24987
 [v _TRISD `Vuc ~T0 @X0 0 e@3989 ]
 "24869
@@ -217,9 +221,9 @@ Version 3.2 HI-TECH Software Intermediate Code
 [v _TRISBbits `VS1073 ~T0 @X0 0 e@3987 ]
 "24075
 [v _LATA `Vuc ~T0 @X0 0 e@3977 ]
-"24299
-[v _LATC `Vuc ~T0 @X0 0 e@3979 ]
-"24193
+"60 C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdlib.h
+[v _rand `(i ~T0 @X0 0 ef ]
+"24193 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic18f67j94.h
 [s S1054 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
 [n S1054 . LATB0 LATB1 LATB2 LATB3 LATB4 LATB5 LATB6 LATB7 ]
 "24203
@@ -12805,932 +12809,1113 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;time.h: 50: extern struct tm * localtime(const time_t *) ;
 [; ;time.h: 51: extern size_t strftime(char *, size_t, const char *, const struct tm *) ;
 [; ;time.h: 52: extern time_t mktime(struct tm *);
-"25 main.c
+"35 main.c
 [p x XINST=OFF ]
-[; ;main.c: 27: typedef enum state{
-[; ;main.c: 28: IDLE,
-[; ;main.c: 29: SELECT_NEW_TARGET,
-[; ;main.c: 30: ACCUMULATE_POINTS,
-[; ;main.c: 31: NEED_RELOAD,
-[; ;main.c: 32: WAIT_KILL,
-[; ;main.c: 33: END_GAME,
-[; ;main.c: 34: }statePIC;
-"35
+[; ;main.c: 37: typedef enum state{
+[; ;main.c: 38: IDLE,
+[; ;main.c: 39: SELECT_NEW_TARGET,
+[; ;main.c: 40: ACCUMULATE_POINTS,
+[; ;main.c: 41: NEED_RELOAD,
+[; ;main.c: 42: WAIT_KILL,
+[; ;main.c: 43: END_GAME,
+[; ;main.c: 44: }statePIC;
+"45
 [v _myState `E13814 ~T0 @X0 1 e ]
 [i _myState
 . `E13814 0
 ]
-[; ;main.c: 35: statePIC myState = IDLE;
-[; ;main.c: 37: typedef enum gunMode{
-[; ;main.c: 38: MODE0,
-[; ;main.c: 39: MODE1
-[; ;main.c: 40: }gunModeState;
-"41
+[; ;main.c: 45: statePIC myState = IDLE;
+[; ;main.c: 47: typedef enum gunMode{
+[; ;main.c: 48: MODE0,
+[; ;main.c: 49: MODE1
+[; ;main.c: 50: }gunModeState;
+"51
 [v _myModeState `E13823 ~T0 @X0 1 e ]
 [i _myModeState
 . `E13823 0
 ]
-[; ;main.c: 41: gunModeState myModeState = MODE0;
-"45
+[; ;main.c: 51: gunModeState myModeState = MODE0;
+"55
 [v _rxChar `uc ~T0 @X0 1 e ]
 [i _rxChar
 -> -> 0 `i `uc
 ]
-[; ;main.c: 45: unsigned char rxChar = 0x00;
-"46
+[; ;main.c: 55: unsigned char rxChar = 0x00;
+"56
 [v _transferedData `uc ~T0 @X0 1 e ]
 [i _transferedData
 -> -> 0 `i `uc
 ]
-[; ;main.c: 46: unsigned char transferedData = 0x00;
-"47
+[; ;main.c: 56: unsigned char transferedData = 0x00;
+"57
 [v _nextTarget `s ~T0 @X0 -> 2 `i e ]
-[; ;main.c: 47: short nextTarget[2];
-"48
+[; ;main.c: 57: short nextTarget[2];
+"58
 [v _ammoLeft `ui ~T0 @X0 1 e ]
 [i _ammoLeft
 -> -> 12 `i `ui
 ]
-[; ;main.c: 48: unsigned int ammoLeft = 12;
-"49
+[; ;main.c: 58: unsigned int ammoLeft = 12;
+"59
 [v _toggleCounter `i ~T0 @X0 1 e ]
 [i _toggleCounter
 -> 0 `i
 ]
-[; ;main.c: 49: int toggleCounter = 0;
-"50
+[; ;main.c: 59: int toggleCounter = 0;
+"60
 [v _globalTimer `i ~T0 @X0 1 e ]
 [i _globalTimer
 -> 0 `i
 ]
-[; ;main.c: 50: int globalTimer = 0;
-"51
+[; ;main.c: 60: int globalTimer = 0;
+"61
 [v _singleGameTime `i ~T0 @X0 1 e ]
 [i _singleGameTime
--> 5 `i
+-> 121 `i
 ]
-[; ;main.c: 51: int singleGameTime = 5;
-"52
+[; ;main.c: 61: int singleGameTime = 121;
+"62
 [v _totalPoints `i ~T0 @X0 1 e ]
 [i _totalPoints
 -> 0 `i
 ]
-[; ;main.c: 52: int totalPoints = 0;
-"54
+[; ;main.c: 62: int totalPoints = 0;
+"63
+[v _maxAmmo `i ~T0 @X0 1 e ]
+[i _maxAmmo
+-> 6 `i
+]
+[; ;main.c: 63: int maxAmmo =6;
+"64
 [v _ErrorUART `uc ~T0 @X0 1 e ]
 [i _ErrorUART
 -> -> 0 `i `uc
 ]
-[; ;main.c: 54: bool ErrorUART = 0;
-"55
+[; ;main.c: 64: bool ErrorUART = 0;
+"65
 [v _rxFlag `uc ~T0 @X0 1 e ]
 [i _rxFlag
 -> -> 0 `i `uc
 ]
-[; ;main.c: 55: bool rxFlag = 0;
-"56
+[; ;main.c: 65: bool rxFlag = 0;
+"66
 [v _reloadFlag `uc ~T0 @X0 1 e ]
 [i _reloadFlag
 -> -> 0 `i `uc
 ]
-[; ;main.c: 56: bool reloadFlag = 0;
-"57
+[; ;main.c: 66: bool reloadFlag = 0;
+"67
 [v _modeFlag `uc ~T0 @X0 1 e ]
 [i _modeFlag
 -> -> 0 `i `uc
 ]
-[; ;main.c: 57: bool modeFlag = 0;
-"58
+[; ;main.c: 67: bool modeFlag = 0;
+"68
 [v _pewFlag `uc ~T0 @X0 1 e ]
 [i _pewFlag
 -> -> 0 `i `uc
 ]
-[; ;main.c: 58: bool pewFlag = 0;
-"59
+[; ;main.c: 68: bool pewFlag = 0;
+"69
 [v _capteurFlag `uc ~T0 @X0 1 e ]
 [i _capteurFlag
 -> -> 0 `i `uc
 ]
-[; ;main.c: 59: bool capteurFlag = 0;
-"60
+[; ;main.c: 69: bool capteurFlag = 0;
+"70
 [v _timerFlag `uc ~T0 @X0 1 e ]
 [i _timerFlag
 -> -> 0 `i `uc
 ]
-[; ;main.c: 60: bool timerFlag = 0;
-"61
+[; ;main.c: 70: bool timerFlag = 0;
+"71
 [v _endFlag `uc ~T0 @X0 1 e ]
 [i _endFlag
 -> -> 0 `i `uc
 ]
-[; ;main.c: 61: bool endFlag = 0;
-[; ;main.c: 63: void interrupt rxIsr(void);
-[; ;main.c: 64: void setUARTconfig(void);
-[; ;main.c: 65: void setPinConfig(void);
-[; ;main.c: 66: void setInterruptConfig();
-[; ;main.c: 67: void setTimerConfig();
-[; ;main.c: 69: void getRandomTarget(short Target[2]);
-[; ;main.c: 70: void activateTarget(short targetNbr);
-[; ;main.c: 71: void activateLEDTarget(short targetLED[2]);
-[; ;main.c: 72: void fireShot();
-[; ;main.c: 73: void stopShot();
-[; ;main.c: 74: void changeMode();
-[; ;main.c: 75: void setModeLED(gunModeState Mode);
-[; ;main.c: 76: void toggleGunLED();
+[; ;main.c: 71: bool endFlag = 0;
+"72
+[v _startGame `uc ~T0 @X0 1 e ]
+[i _startGame
+-> -> 0 `i `uc
+]
+[; ;main.c: 72: bool startGame = 0;
+[; ;main.c: 75: void interrupt rxIsr(void);
+[; ;main.c: 76: void setUARTconfig(void);
+[; ;main.c: 77: void setPinConfig(void);
+[; ;main.c: 78: void setInterruptConfig();
+[; ;main.c: 79: void setTimerConfig();
+[; ;main.c: 81: void getRandomTarget(short Target[2]);
+[; ;main.c: 82: void activateTarget(short targetNbr);
+[; ;main.c: 83: void activateLEDTarget(short targetLED[2]);
+[; ;main.c: 84: void fireShot();
+[; ;main.c: 85: void stopShot();
+[; ;main.c: 86: void changeMode();
+[; ;main.c: 87: void setModeLED(gunModeState Mode);
+[; ;main.c: 88: void toggleGunLED();
 [v $root$_main `(v ~T0 @X0 0 e ]
-"80
+"92
 [v _main `(v ~T0 @X0 1 ef ]
 {
-[; ;main.c: 80: void main(void) {
+[; ;main.c: 92: void main(void) {
 [e :U _main ]
 [f ]
-[; ;main.c: 81: setUARTconfig();
-"81
+[; ;main.c: 93: setUARTconfig();
+"93
 [e ( _setUARTconfig ..  ]
-[; ;main.c: 82: setPinConfig();
-"82
+[; ;main.c: 94: setPinConfig();
+"94
 [e ( _setPinConfig ..  ]
-[; ;main.c: 83: setTimerConfig();
-"83
+[; ;main.c: 95: setTimerConfig();
+"95
 [e ( _setTimerConfig ..  ]
-[; ;main.c: 84: setInterruptConfig();
-"84
+[; ;main.c: 96: setInterruptConfig();
+"96
 [e ( _setInterruptConfig ..  ]
-[; ;main.c: 86: initialisation_LCD();
-"86
+[; ;main.c: 98: initialisation_LCD();
+"98
 [e ( _initialisation_LCD ..  ]
-[; ;main.c: 87: printMBED();
-"87
+[; ;main.c: 99: printMBED();
+"99
 [e ( _printMBED ..  ]
-[; ;main.c: 90: printStartGame();
-"90
-[e ( _printStartGame ..  ]
-[; ;main.c: 91: T0CONbits.TMR0ON = 1;
-"91
-[e = . . _T0CONbits 0 4 -> -> 1 `i `uc ]
-[; ;main.c: 118: while(!endFlag){
-"118
+[; ;main.c: 103: while(!startGame){
+"103
 [e $U 1420  ]
 [e :U 1421 ]
 {
-[; ;main.c: 120: if(timerFlag){
-"120
-[e $ ! != -> _timerFlag `i -> -> -> 0 `i `uc `i 1423  ]
+[; ;main.c: 104: if(rxFlag){
+"104
+[e $ ! != -> _rxFlag `i -> -> -> 0 `i `uc `i 1423  ]
 {
-[; ;main.c: 121: globalTimer++;
-"121
-[e ++ _globalTimer -> 1 `i ]
-[; ;main.c: 122: timerFlag=0;
-"122
-[e = _timerFlag -> -> 0 `i `uc ]
-[; ;main.c: 123: INTCONbits.TMR0IE = 1;
-"123
-[e = . . _INTCONbits 0 5 -> -> 1 `i `uc ]
-"124
+[; ;main.c: 105: rxFlag = 0;
+"105
+[e = _rxFlag -> -> 0 `i `uc ]
+[; ;main.c: 106: PIE1bits.RC1IE = 1;
+"106
+[e = . . _PIE1bits 0 5 -> -> 1 `i `uc ]
+"108
 }
 [e :U 1423 ]
-[; ;main.c: 124: }
-[; ;main.c: 126: if(globalTimer==singleGameTime ){
-"126
-[e $ ! == _globalTimer _singleGameTime 1424  ]
-{
-[; ;main.c: 127: myState= END_GAME;
-"127
-[e = _myState . `E13814 5 ]
-"128
+"109
 }
-[e :U 1424 ]
-[; ;main.c: 128: }
-[; ;main.c: 131: printPoints(totalPoints);
-"131
-[e ( _printPoints (1 -> _totalPoints `ui ]
-[; ;main.c: 132: printRemBullets(ammoLeft);
-"132
-[e ( _printRemBullets (1 _ammoLeft ]
-[; ;main.c: 133: printRemTime(singleGameTime-globalTimer);
+[e :U 1420 ]
+"103
+[e $ ! != -> _startGame `i -> -> -> 0 `i `uc `i 1421  ]
+[e :U 1422 ]
+[; ;main.c: 108: }
+[; ;main.c: 109: }
+[; ;main.c: 110: printStartGame();
+"110
+[e ( _printStartGame ..  ]
+[; ;main.c: 111: T0CONbits.TMR0ON = 1;
+"111
+[e = . . _T0CONbits 0 4 -> -> 1 `i `uc ]
+[; ;main.c: 133: while(!endFlag){
 "133
-[e ( _printRemTime (1 -> - _singleGameTime _globalTimer `ui ]
-[; ;main.c: 136: switch(myState){
+[e $U 1424  ]
+[e :U 1425 ]
+{
+[; ;main.c: 135: if(timerFlag){
+"135
+[e $ ! != -> _timerFlag `i -> -> -> 0 `i `uc `i 1427  ]
+{
+[; ;main.c: 136: globalTimer++;
 "136
-[e $U 1426  ]
-{
-[; ;main.c: 137: case IDLE :
+[e ++ _globalTimer -> 1 `i ]
+[; ;main.c: 137: timerFlag=0;
 "137
+[e = _timerFlag -> -> 0 `i `uc ]
+[; ;main.c: 138: INTCONbits.TMR0IE = 1;
+"138
+[e = . . _INTCONbits 0 5 -> -> 1 `i `uc ]
+"139
+}
 [e :U 1427 ]
-[; ;main.c: 140: break;
-"140
-[e $U 1425  ]
-[; ;main.c: 142: case SELECT_NEW_TARGET:
+[; ;main.c: 139: }
+[; ;main.c: 141: if(globalTimer==singleGameTime ){
+"141
+[e $ ! == _globalTimer _singleGameTime 1428  ]
+{
+[; ;main.c: 142: myState= END_GAME;
 "142
-[e :U 1428 ]
-[; ;main.c: 143: getRandomTarget(nextTarget);
+[e = _myState . `E13814 5 ]
 "143
-[e ( _getRandomTarget (1 &U _nextTarget ]
-[; ;main.c: 144: activateTarget(nextTarget[0]);
-"144
-[e ( _activateTarget (1 *U + &U _nextTarget * -> -> -> 0 `i `ui `ux -> -> # *U &U _nextTarget `ui `ux ]
-[; ;main.c: 145: activateLEDTarget(nextTarget);
-"145
-[e ( _activateLEDTarget (1 &U _nextTarget ]
-[; ;main.c: 146: myState= WAIT_KILL;
+}
+[e :U 1428 ]
+[; ;main.c: 143: }
+[; ;main.c: 146: printPoints(totalPoints);
 "146
-[e = _myState . `E13814 4 ]
-[; ;main.c: 147: break;
+[e ( _printPoints (1 -> _totalPoints `ui ]
+[; ;main.c: 147: printRemBullets(ammoLeft);
 "147
-[e $U 1425  ]
-[; ;main.c: 149: case ACCUMULATE_POINTS:
-"149
-[e :U 1429 ]
-[; ;main.c: 150: totalPoints++;
+[e ( _printRemBullets (1 _ammoLeft ]
+[; ;main.c: 148: printRemTime(singleGameTime-globalTimer);
+"148
+[e ( _printRemTime (1 -> - _singleGameTime _globalTimer `ui ]
+[; ;main.c: 150: switch(myState){
 "150
-[e ++ _totalPoints -> 1 `i ]
-[; ;main.c: 151: myState= SELECT_NEW_TARGET;
+[e $U 1430  ]
+{
+[; ;main.c: 151: case IDLE :
 "151
-[e = _myState . `E13814 1 ]
-[; ;main.c: 152: break;
-"152
-[e $U 1425  ]
-[; ;main.c: 154: case WAIT_KILL:
-"154
-[e :U 1430 ]
-[; ;main.c: 155: if(reloadFlag){
-"155
-[e $ ! != -> _reloadFlag `i -> -> -> 0 `i `uc `i 1431  ]
-{
-[; ;main.c: 156: ammoLeft= 12;
-"156
-[e = _ammoLeft -> -> 12 `i `ui ]
-[; ;main.c: 157: reloadFlag=0;
-"157
-[e = _reloadFlag -> -> 0 `i `uc ]
-[; ;main.c: 158: PIE1bits.RC1IE = 1;
-"158
-[e = . . _PIE1bits 0 5 -> -> 1 `i `uc ]
-"159
-}
-[; ;main.c: 159: }
-[e $U 1432  ]
-"161
 [e :U 1431 ]
-[; ;main.c: 161: else if (modeFlag){
-[e $ ! != -> _modeFlag `i -> -> -> 0 `i `uc `i 1433  ]
-{
-[; ;main.c: 162: changeMode();
+[; ;main.c: 152: totalPoints = 0;
+"152
+[e = _totalPoints -> 0 `i ]
+[; ;main.c: 153: ammoLeft= maxAmmo;
+"153
+[e = _ammoLeft -> _maxAmmo `ui ]
+[; ;main.c: 154: printStartGame();
+"154
+[e ( _printStartGame ..  ]
+[; ;main.c: 155: T0CONbits.TMR0ON = 1;
+"155
+[e = . . _T0CONbits 0 4 -> -> 1 `i `uc ]
+[; ;main.c: 156: myState = SELECT_NEW_TARGET;
+"156
+[e = _myState . `E13814 1 ]
+[; ;main.c: 157: break;
+"157
+[e $U 1429  ]
+[; ;main.c: 159: case SELECT_NEW_TARGET:
+"159
+[e :U 1432 ]
+[; ;main.c: 160: getRandomTarget(nextTarget);
+"160
+[e ( _getRandomTarget (1 &U _nextTarget ]
+[; ;main.c: 161: activateTarget(nextTarget[0]);
+"161
+[e ( _activateTarget (1 *U + &U _nextTarget * -> -> -> 0 `i `ui `ux -> -> # *U &U _nextTarget `ui `ux ]
+[; ;main.c: 162: activateLEDTarget(nextTarget);
 "162
-[e ( _changeMode ..  ]
-[; ;main.c: 163: setModeLED(myModeState);
+[e ( _activateLEDTarget (1 &U _nextTarget ]
+[; ;main.c: 163: myState = WAIT_KILL;
 "163
-[e ( _setModeLED (1 _myModeState ]
-[; ;main.c: 164: modeFlag=0;
+[e = _myState . `E13814 4 ]
+[; ;main.c: 164: break;
 "164
-[e = _modeFlag -> -> 0 `i `uc ]
-[; ;main.c: 165: PIE1bits.RC1IE = 1;
-"165
-[e = . . _PIE1bits 0 5 -> -> 1 `i `uc ]
+[e $U 1429  ]
+[; ;main.c: 166: case ACCUMULATE_POINTS:
 "166
-}
-[; ;main.c: 166: }
-[e $U 1434  ]
-"168
 [e :U 1433 ]
-[; ;main.c: 168: else if (pewFlag && ammoLeft !=0){
-[e $ ! && != -> _pewFlag `i -> -> -> 0 `i `uc `i != _ammoLeft -> -> 0 `i `ui 1435  ]
-{
-[; ;main.c: 169: fireShot();
+[; ;main.c: 167: totalPoints++;
+"167
+[e ++ _totalPoints -> 1 `i ]
+[; ;main.c: 168: myState= SELECT_NEW_TARGET;
+"168
+[e = _myState . `E13814 1 ]
+[; ;main.c: 169: break;
 "169
+[e $U 1429  ]
+[; ;main.c: 171: case WAIT_KILL:
+"171
+[e :U 1434 ]
+[; ;main.c: 172: if(reloadFlag){
+"172
+[e $ ! != -> _reloadFlag `i -> -> -> 0 `i `uc `i 1435  ]
+{
+[; ;main.c: 173: ammoLeft= maxAmmo;
+"173
+[e = _ammoLeft -> _maxAmmo `ui ]
+[; ;main.c: 174: reloadFlag=0;
+"174
+[e = _reloadFlag -> -> 0 `i `uc ]
+[; ;main.c: 175: PIE1bits.RC1IE = 1;
+"175
+[e = . . _PIE1bits 0 5 -> -> 1 `i `uc ]
+"176
+}
+[; ;main.c: 176: }
+[e $U 1436  ]
+"178
+[e :U 1435 ]
+[; ;main.c: 178: else if (modeFlag){
+[e $ ! != -> _modeFlag `i -> -> -> 0 `i `uc `i 1437  ]
+{
+[; ;main.c: 179: changeMode();
+"179
+[e ( _changeMode ..  ]
+[; ;main.c: 180: setModeLED(myModeState);
+"180
+[e ( _setModeLED (1 _myModeState ]
+[; ;main.c: 181: modeFlag=0;
+"181
+[e = _modeFlag -> -> 0 `i `uc ]
+[; ;main.c: 182: PIE1bits.RC1IE = 1;
+"182
+[e = . . _PIE1bits 0 5 -> -> 1 `i `uc ]
+"183
+}
+[; ;main.c: 183: }
+[e $U 1438  ]
+"185
+[e :U 1437 ]
+[; ;main.c: 185: else if (pewFlag && ammoLeft !=0){
+[e $ ! && != -> _pewFlag `i -> -> -> 0 `i `uc `i != _ammoLeft -> -> 0 `i `ui 1439  ]
+{
+[; ;main.c: 186: fireShot();
+"186
 [e ( _fireShot ..  ]
-[; ;main.c: 170: for (int i =0;i<10000;i++){}
-"170
+[; ;main.c: 187: for (int i =0;i<10000;i++){}
+"187
 {
 [v _i `i ~T0 @X0 1 a ]
 [e = _i -> 0 `i ]
-[e $ < _i -> 10000 `i 1436  ]
-[e $U 1437  ]
-[e :U 1436 ]
+[e $ < _i -> 10000 `i 1440  ]
+[e $U 1441  ]
+[e :U 1440 ]
 {
 }
 [e ++ _i -> 1 `i ]
-[e $ < _i -> 10000 `i 1436  ]
-[e :U 1437 ]
-}
-[; ;main.c: 171: stopShot();
-"171
-[e ( _stopShot ..  ]
-[; ;main.c: 172: ammoLeft -= 1;
-"172
-[e =- _ammoLeft -> -> 1 `i `ui ]
-[; ;main.c: 173: pewFlag = 0;
-"173
-[e = _pewFlag -> -> 0 `i `uc ]
-[; ;main.c: 174: PIE1bits.RC1IE = 1;
-"174
-[e = . . _PIE1bits 0 5 -> -> 1 `i `uc ]
-"175
-}
-[; ;main.c: 175: }
-[e $U 1439  ]
-"176
-[e :U 1435 ]
-[; ;main.c: 176: else if(ammoLeft==0){
-[e $ ! == _ammoLeft -> -> 0 `i `ui 1440  ]
-{
-[; ;main.c: 177: myState = NEED_RELOAD;
-"177
-[e = _myState . `E13814 3 ]
-"178
-}
-[; ;main.c: 178: }
-[e $U 1441  ]
-"179
-[e :U 1440 ]
-[; ;main.c: 179: else if(capteurFlag && myModeState == nextTarget[1]){
-[e $ ! && != -> _capteurFlag `i -> -> -> 0 `i `uc `i == -> _myModeState `i -> *U + &U _nextTarget * -> -> -> 1 `i `ui `ux -> -> # *U &U _nextTarget `ui `ux `i 1442  ]
-{
-[; ;main.c: 180: capteurFlag = 0;
-"180
-[e = _capteurFlag -> -> 0 `i `uc ]
-[; ;main.c: 181: INTCON3bits.INT1E = 1;
-"181
-[e = . . _INTCON3bits 1 3 -> -> 1 `i `uc ]
-[; ;main.c: 182: myState = ACCUMULATE_POINTS;
-"182
-[e = _myState . `E13814 2 ]
-"183
-}
-[e :U 1442 ]
-"185
+[e $ < _i -> 10000 `i 1440  ]
 [e :U 1441 ]
-[e :U 1439 ]
-[e :U 1434 ]
-[e :U 1432 ]
-[; ;main.c: 183: }
-[; ;main.c: 185: break;
-[e $U 1425  ]
-[; ;main.c: 187: case NEED_RELOAD:
-"187
-[e :U 1443 ]
-[; ;main.c: 188: toggleCounter++;
+}
+[; ;main.c: 188: stopShot();
 "188
-[e ++ _toggleCounter -> 1 `i ]
-[; ;main.c: 189: if (toggleCounter==5000){
+[e ( _stopShot ..  ]
+[; ;main.c: 189: ammoLeft -= 1;
 "189
-[e $ ! == _toggleCounter -> 5000 `i 1444  ]
-{
-[; ;main.c: 190: toggleGunLED();
+[e =- _ammoLeft -> -> 1 `i `ui ]
+[; ;main.c: 190: pewFlag = 0;
 "190
-[e ( _toggleGunLED ..  ]
-[; ;main.c: 191: toggleCounter=0;
+[e = _pewFlag -> -> 0 `i `uc ]
+[; ;main.c: 191: PIE1bits.RC1IE = 1;
 "191
-[e = _toggleCounter -> 0 `i ]
+[e = . . _PIE1bits 0 5 -> -> 1 `i `uc ]
 "192
 }
-[e :U 1444 ]
 [; ;main.c: 192: }
-[; ;main.c: 193: if(reloadFlag){
+[e $U 1443  ]
 "193
-[e $ ! != -> _reloadFlag `i -> -> -> 0 `i `uc `i 1445  ]
+[e :U 1439 ]
+[; ;main.c: 193: else if(ammoLeft==0){
+[e $ ! == _ammoLeft -> -> 0 `i `ui 1444  ]
 {
-[; ;main.c: 194: ammoLeft= 12;
+[; ;main.c: 194: myState = NEED_RELOAD;
 "194
-[e = _ammoLeft -> -> 12 `i `ui ]
-[; ;main.c: 195: setModeLED(myModeState);
+[e = _myState . `E13814 3 ]
 "195
-[e ( _setModeLED (1 _myModeState ]
-[; ;main.c: 196: toggleCounter=0;
+}
+[; ;main.c: 195: }
+[e $U 1445  ]
 "196
-[e = _toggleCounter -> 0 `i ]
-[; ;main.c: 197: reloadFlag=0;
+[e :U 1444 ]
+[; ;main.c: 196: else if(capteurFlag ){
+[e $ ! != -> _capteurFlag `i -> -> -> 0 `i `uc `i 1446  ]
+{
+[; ;main.c: 197: capteurFlag = 0;
 "197
-[e = _reloadFlag -> -> 0 `i `uc ]
-[; ;main.c: 198: PIE1bits.RC1IE = 1;
+[e = _capteurFlag -> -> 0 `i `uc ]
+[; ;main.c: 198: INTCON3bits.INT1E = 1;
 "198
-[e = . . _PIE1bits 0 5 -> -> 1 `i `uc ]
+[e = . . _INTCON3bits 1 3 -> -> 1 `i `uc ]
+[; ;main.c: 199: myState = ACCUMULATE_POINTS;
 "199
-}
-[e :U 1445 ]
-[; ;main.c: 199: }
-[; ;main.c: 200: break;
+[e = _myState . `E13814 2 ]
 "200
-[e $U 1425  ]
-[; ;main.c: 202: case END_GAME:
-"202
+}
 [e :U 1446 ]
-[; ;main.c: 203: endFlag = 1;
-"203
-[e = _endFlag -> -> 1 `i `uc ]
-[; ;main.c: 204: break;
+"202
+[e :U 1445 ]
+[e :U 1443 ]
+[e :U 1438 ]
+[e :U 1436 ]
+[; ;main.c: 200: }
+[; ;main.c: 202: break;
+[e $U 1429  ]
+[; ;main.c: 204: case NEED_RELOAD:
 "204
-[e $U 1425  ]
+[e :U 1447 ]
+[; ;main.c: 205: toggleCounter++;
 "205
-}
-[; ;main.c: 205: }
-[e $U 1425  ]
-"136
-[e :U 1426 ]
-[e [\ _myState , $ . `E13814 0 1427
- , $ . `E13814 1 1428
- , $ . `E13814 2 1429
- , $ . `E13814 4 1430
- , $ . `E13814 3 1443
- , $ . `E13814 5 1446
- 1425 ]
-"205
-[e :U 1425 ]
+[e ++ _toggleCounter -> 1 `i ]
+[; ;main.c: 206: if (toggleCounter==20){
 "206
-}
-[e :U 1420 ]
-"118
-[e $ ! != -> _endFlag `i -> -> -> 0 `i `uc `i 1421  ]
-[e :U 1422 ]
-[; ;main.c: 206: }
-[; ;main.c: 207: printEndGame(totalPoints);
+[e $ ! == _toggleCounter -> 20 `i 1448  ]
+{
+[; ;main.c: 207: toggleGunLED();
 "207
-[e ( _printEndGame (1 -> _totalPoints `ui ]
-[; ;main.c: 208: }
+[e ( _toggleGunLED ..  ]
+[; ;main.c: 208: toggleCounter=0;
 "208
+[e = _toggleCounter -> 0 `i ]
+"209
+}
+[e :U 1448 ]
+[; ;main.c: 209: }
+[; ;main.c: 210: if(reloadFlag){
+"210
+[e $ ! != -> _reloadFlag `i -> -> -> 0 `i `uc `i 1449  ]
+{
+[; ;main.c: 211: ammoLeft= maxAmmo;
+"211
+[e = _ammoLeft -> _maxAmmo `ui ]
+[; ;main.c: 212: setModeLED(myModeState);
+"212
+[e ( _setModeLED (1 _myModeState ]
+[; ;main.c: 213: toggleCounter=0;
+"213
+[e = _toggleCounter -> 0 `i ]
+[; ;main.c: 214: reloadFlag=0;
+"214
+[e = _reloadFlag -> -> 0 `i `uc ]
+[; ;main.c: 215: PIE1bits.RC1IE = 1;
+"215
+[e = . . _PIE1bits 0 5 -> -> 1 `i `uc ]
+"216
+}
+[e :U 1449 ]
+[; ;main.c: 216: }
+[; ;main.c: 217: break;
+"217
+[e $U 1429  ]
+[; ;main.c: 219: case END_GAME:
+"219
+[e :U 1450 ]
+[; ;main.c: 221: startGame = 0;
+"221
+[e = _startGame -> -> 0 `i `uc ]
+[; ;main.c: 222: T0CONbits.TMR0ON = 0;
+"222
+[e = . . _T0CONbits 0 4 -> -> 0 `i `uc ]
+[; ;main.c: 223: TXREG1=0xEE;
+"223
+[e = _TXREG1 -> -> 238 `i `uc ]
+[; ;main.c: 224: while(!startGame){
+"224
+[e $U 1451  ]
+[e :U 1452 ]
+{
+[; ;main.c: 225: printEndGame(totalPoints);
+"225
+[e ( _printEndGame (1 -> _totalPoints `ui ]
+[; ;main.c: 226: waitASec();
+"226
+[e ( _waitASec ..  ]
+[; ;main.c: 227: if(rxFlag){
+"227
+[e $ ! != -> _rxFlag `i -> -> -> 0 `i `uc `i 1454  ]
+{
+[; ;main.c: 228: rxFlag = 0;
+"228
+[e = _rxFlag -> -> 0 `i `uc ]
+[; ;main.c: 229: PIE1bits.RC1IE = 1;
+"229
+[e = . . _PIE1bits 0 5 -> -> 1 `i `uc ]
+"230
+}
+[e :U 1454 ]
+"231
+}
+[e :U 1451 ]
+"224
+[e $ ! != -> _startGame `i -> -> -> 0 `i `uc `i 1452  ]
+[e :U 1453 ]
+[; ;main.c: 230: }
+[; ;main.c: 231: }
+[; ;main.c: 232: myState = IDLE;
+"232
+[e = _myState . `E13814 0 ]
+[; ;main.c: 233: break;
+"233
+[e $U 1429  ]
+"234
+}
+[; ;main.c: 234: }
+[e $U 1429  ]
+"150
+[e :U 1430 ]
+[e [\ _myState , $ . `E13814 0 1431
+ , $ . `E13814 1 1432
+ , $ . `E13814 2 1433
+ , $ . `E13814 4 1434
+ , $ . `E13814 3 1447
+ , $ . `E13814 5 1450
+ 1429 ]
+"234
+[e :U 1429 ]
+"235
+}
+[e :U 1424 ]
+"133
+[e $ ! != -> _endFlag `i -> -> -> 0 `i `uc `i 1425  ]
+[e :U 1426 ]
+[; ;main.c: 235: }
+[; ;main.c: 236: while(1){
+"236
+[e :U 1456 ]
+{
+[; ;main.c: 237: printEndGame(totalPoints);
+"237
+[e ( _printEndGame (1 -> _totalPoints `ui ]
+[; ;main.c: 238: waitASec();
+"238
+[e ( _waitASec ..  ]
+"239
+}
+[e :U 1455 ]
+"236
+[e $U 1456  ]
+[e :U 1457 ]
+[; ;main.c: 239: }
+[; ;main.c: 240: }
+"240
 [e :UE 1419 ]
 }
 [v $root$_rxIsr `(v ~T0 @X0 0 e ]
-[v F13846 `(v ~T0 @X0 1 tf ]
-"210
-[v _rxIsr `IF13846 ~T0 @X0 1 e ]
+[v F13848 `(v ~T0 @X0 1 tf ]
+"242
+[v _rxIsr `IF13848 ~T0 @X0 1 e ]
 {
-[; ;main.c: 210: void interrupt rxIsr(void){
+[; ;main.c: 242: void interrupt rxIsr(void){
 [e :U _rxIsr ]
 [f ]
-[; ;main.c: 213: if(PIR1bits.RC1IF && PIE1bits.RC1IE) {
-"213
-[e $ ! && != -> . . _PIR1bits 0 5 `i -> -> -> 0 `i `Vuc `i != -> . . _PIE1bits 0 5 `i -> -> -> 0 `i `Vuc `i 1448  ]
-{
-[; ;main.c: 214: if(RCSTAbits.FERR || RCSTAbits.OERR) {
-"214
-[e $ ! || != -> . . _RCSTAbits 0 2 `i -> -> -> 0 `i `Vuc `i != -> . . _RCSTAbits 0 1 `i -> -> -> 0 `i `Vuc `i 1449  ]
-{
-[; ;main.c: 215: ErrorUART= 1;
-"215
-[e = _ErrorUART -> -> 1 `i `uc ]
-"216
-}
-[; ;main.c: 216: }
-[e $U 1450  ]
-"217
-[e :U 1449 ]
-[; ;main.c: 217: else {
-{
-[; ;main.c: 218: rxChar = RCREG1;
-"218
-[e = _rxChar _RCREG1 ]
-[; ;main.c: 219: rxFlag=1;
-"219
-[e = _rxFlag -> -> 1 `i `uc ]
-[; ;main.c: 220: switch(rxChar){
-"220
-[e $U 1452  ]
-{
-[; ;main.c: 221: case 0xAA:
-"221
-[e :U 1453 ]
-[; ;main.c: 222: reloadFlag=1;
-"222
-[e = _reloadFlag -> -> 1 `i `uc ]
-[; ;main.c: 223: break;
-"223
-[e $U 1451  ]
-[; ;main.c: 224: case 0xBB:
-"224
-[e :U 1454 ]
-[; ;main.c: 225: modeFlag=1;
-"225
-[e = _modeFlag -> -> 1 `i `uc ]
-[; ;main.c: 226: break;
-"226
-[e $U 1451  ]
-[; ;main.c: 227: case 0xCC:
-"227
-[e :U 1455 ]
-[; ;main.c: 228: pewFlag=1;
-"228
-[e = _pewFlag -> -> 1 `i `uc ]
-[; ;main.c: 229: break;
-"229
-[e $U 1451  ]
-"230
-}
-[; ;main.c: 230: }
-[e $U 1451  ]
-"220
-[e :U 1452 ]
-[e [\ _rxChar , $ -> -> 170 `i `uc 1453
- , $ -> -> 187 `i `uc 1454
- , $ -> -> 204 `i `uc 1455
- 1451 ]
-"230
-[e :U 1451 ]
-[; ;main.c: 231: PIE1bits.RC1IE = 0;
-"231
-[e = . . _PIE1bits 0 5 -> -> 0 `i `uc ]
-"232
-}
-[e :U 1450 ]
-"233
-}
-[e :U 1448 ]
-[; ;main.c: 232: }
-[; ;main.c: 233: }
-[; ;main.c: 236: if(INTCON3bits.INT1IF && INTCON3bits.INT1E){
-"236
-[e $ ! && != -> . . _INTCON3bits 0 0 `i -> -> -> 0 `i `Vuc `i != -> . . _INTCON3bits 1 3 `i -> -> -> 0 `i `Vuc `i 1456  ]
-{
-[; ;main.c: 237: capteurFlag= 1;
-"237
-[e = _capteurFlag -> -> 1 `i `uc ]
-[; ;main.c: 238: INTCON3bits.INT1E = 0;
-"238
-[e = . . _INTCON3bits 1 3 -> -> 0 `i `uc ]
-[; ;main.c: 239: INTCON3bits.INT1F = 0;
-"239
-[e = . . _INTCON3bits 1 0 -> -> 0 `i `uc ]
-"240
-}
-[e :U 1456 ]
-[; ;main.c: 240: }
-[; ;main.c: 243: if (INTCONbits.TMR0IF && INTCONbits.TMR0IE ){
-"243
-[e $ ! && != -> . . _INTCONbits 0 2 `i -> -> -> 0 `i `Vuc `i != -> . . _INTCONbits 0 5 `i -> -> -> 0 `i `Vuc `i 1457  ]
-{
-[; ;main.c: 244: timerFlag = 1;
-"244
-[e = _timerFlag -> -> 1 `i `uc ]
-[; ;main.c: 245: INTCONbits.TMR0IF = 0;
+[; ;main.c: 245: if(PIR1bits.RC1IF && PIE1bits.RC1IE) {
 "245
-[e = . . _INTCONbits 0 2 -> -> 0 `i `uc ]
-[; ;main.c: 246: INTCONbits.TMR0IE = 0;
-"246
-[e = . . _INTCONbits 0 5 -> -> 0 `i `uc ]
-"247
-}
-[e :U 1457 ]
-[; ;main.c: 247: }
-[; ;main.c: 248: }
-"248
-[e :UE 1447 ]
-}
-"250
-[v _setUARTconfig `(v ~T0 @X0 1 ef ]
+[e $ ! && != -> . . _PIR1bits 0 5 `i -> -> -> 0 `i `Vuc `i != -> . . _PIE1bits 0 5 `i -> -> -> 0 `i `Vuc `i 1459  ]
 {
-[; ;main.c: 250: void setUARTconfig(void){
-[e :U _setUARTconfig ]
-[f ]
-[; ;main.c: 252: RPINR0_1 = 0b01100110;
+[; ;main.c: 246: if(RCSTAbits.FERR || RCSTAbits.OERR) {
+"246
+[e $ ! || != -> . . _RCSTAbits 0 2 `i -> -> -> 0 `i `Vuc `i != -> . . _RCSTAbits 0 1 `i -> -> -> 0 `i `Vuc `i 1460  ]
+{
+[; ;main.c: 247: ErrorUART= 1;
+"247
+[e = _ErrorUART -> -> 1 `i `uc ]
+"248
+}
+[; ;main.c: 248: }
+[e $U 1461  ]
+"249
+[e :U 1460 ]
+[; ;main.c: 249: else {
+{
+[; ;main.c: 250: rxChar = RCREG1;
+"250
+[e = _rxChar _RCREG1 ]
+[; ;main.c: 251: rxFlag=1;
+"251
+[e = _rxFlag -> -> 1 `i `uc ]
+[; ;main.c: 252: switch(rxChar){
 "252
-[e = _RPINR0_1 -> -> 102 `i `uc ]
-[; ;main.c: 253: RPOR26_27 = 0b00010001;
+[e $U 1463  ]
+{
+[; ;main.c: 253: case 0xAA:
 "253
-[e = _RPOR26_27 -> -> 17 `i `uc ]
-[; ;main.c: 255: BAUDCON1 = 0x00;
+[e :U 1464 ]
+[; ;main.c: 254: reloadFlag=1;
+"254
+[e = _reloadFlag -> -> 1 `i `uc ]
+[; ;main.c: 255: break;
 "255
-[e = _BAUDCON1 -> -> 0 `i `uc ]
-[; ;main.c: 256: TXSTA1 = 0x26;
+[e $U 1462  ]
+[; ;main.c: 256: case 0xBB:
 "256
-[e = _TXSTA1 -> -> 38 `i `uc ]
-[; ;main.c: 257: RCSTA1 = 0x90;
+[e :U 1465 ]
+[; ;main.c: 257: modeFlag=1;
 "257
-[e = _RCSTA1 -> -> 144 `i `uc ]
-[; ;main.c: 258: SPBRG1 = 0x19;
+[e = _modeFlag -> -> 1 `i `uc ]
+[; ;main.c: 258: break;
 "258
-[e = _SPBRG1 -> -> 25 `i `uc ]
-[; ;main.c: 260: TXREG1 = 0xAA;
+[e $U 1462  ]
+[; ;main.c: 259: case 0xCC:
+"259
+[e :U 1466 ]
+[; ;main.c: 260: pewFlag=1;
 "260
-[e = _TXREG1 -> -> 170 `i `uc ]
-[; ;main.c: 261: }
+[e = _pewFlag -> -> 1 `i `uc ]
+[; ;main.c: 261: break;
 "261
+[e $U 1462  ]
+[; ;main.c: 262: case 0x0A :
+"262
+[e :U 1467 ]
+[; ;main.c: 263: maxAmmo = 6;
+"263
+[e = _maxAmmo -> 6 `i ]
+[; ;main.c: 264: break;
+"264
+[e $U 1462  ]
+[; ;main.c: 265: case 0x0B :
+"265
+[e :U 1468 ]
+[; ;main.c: 266: maxAmmo = 12;
+"266
+[e = _maxAmmo -> 12 `i ]
+[; ;main.c: 267: break;
+"267
+[e $U 1462  ]
+[; ;main.c: 268: case 0x0C :
+"268
+[e :U 1469 ]
+[; ;main.c: 269: maxAmmo = 24;
+"269
+[e = _maxAmmo -> 24 `i ]
+[; ;main.c: 270: break;
+"270
+[e $U 1462  ]
+[; ;main.c: 271: case 0xA0 :
+"271
+[e :U 1470 ]
+[; ;main.c: 272: singleGameTime = 31;
+"272
+[e = _singleGameTime -> 31 `i ]
+[; ;main.c: 273: break;
+"273
+[e $U 1462  ]
+[; ;main.c: 274: case 0xB0 :
+"274
+[e :U 1471 ]
+[; ;main.c: 275: singleGameTime = 61;
+"275
+[e = _singleGameTime -> 61 `i ]
+[; ;main.c: 276: break;
+"276
+[e $U 1462  ]
+[; ;main.c: 277: case 0xC0 :
+"277
+[e :U 1472 ]
+[; ;main.c: 278: singleGameTime = 121;
+"278
+[e = _singleGameTime -> 121 `i ]
+[; ;main.c: 279: break;
+"279
+[e $U 1462  ]
+[; ;main.c: 280: case 0xDD:
+"280
+[e :U 1473 ]
+[; ;main.c: 281: startGame = 1;
+"281
+[e = _startGame -> -> 1 `i `uc ]
+[; ;main.c: 282: break;
+"282
+[e $U 1462  ]
+"283
+}
+[; ;main.c: 283: }
+[e $U 1462  ]
+"252
+[e :U 1463 ]
+[e [\ _rxChar , $ -> -> 170 `i `uc 1464
+ , $ -> -> 187 `i `uc 1465
+ , $ -> -> 204 `i `uc 1466
+ , $ -> -> 10 `i `uc 1467
+ , $ -> -> 11 `i `uc 1468
+ , $ -> -> 12 `i `uc 1469
+ , $ -> -> 160 `i `uc 1470
+ , $ -> -> 176 `i `uc 1471
+ , $ -> -> 192 `i `uc 1472
+ , $ -> -> 221 `i `uc 1473
+ 1462 ]
+"283
+[e :U 1462 ]
+[; ;main.c: 284: PIE1bits.RC1IE = 0;
+"284
+[e = . . _PIE1bits 0 5 -> -> 0 `i `uc ]
+"285
+}
+[e :U 1461 ]
+"286
+}
+[e :U 1459 ]
+[; ;main.c: 285: }
+[; ;main.c: 286: }
+[; ;main.c: 289: if(INTCON3bits.INT1IF && INTCON3bits.INT1E){
+"289
+[e $ ! && != -> . . _INTCON3bits 0 0 `i -> -> -> 0 `i `Vuc `i != -> . . _INTCON3bits 1 3 `i -> -> -> 0 `i `Vuc `i 1474  ]
+{
+[; ;main.c: 290: capteurFlag= 1;
+"290
+[e = _capteurFlag -> -> 1 `i `uc ]
+[; ;main.c: 291: INTCON3bits.INT1E = 0;
+"291
+[e = . . _INTCON3bits 1 3 -> -> 0 `i `uc ]
+[; ;main.c: 292: INTCON3bits.INT1F = 0;
+"292
+[e = . . _INTCON3bits 1 0 -> -> 0 `i `uc ]
+"293
+}
+[e :U 1474 ]
+[; ;main.c: 293: }
+[; ;main.c: 296: if (INTCONbits.TMR0IF && INTCONbits.TMR0IE ){
+"296
+[e $ ! && != -> . . _INTCONbits 0 2 `i -> -> -> 0 `i `Vuc `i != -> . . _INTCONbits 0 5 `i -> -> -> 0 `i `Vuc `i 1475  ]
+{
+[; ;main.c: 297: timerFlag = 1;
+"297
+[e = _timerFlag -> -> 1 `i `uc ]
+[; ;main.c: 298: INTCONbits.TMR0IF = 0;
+"298
+[e = . . _INTCONbits 0 2 -> -> 0 `i `uc ]
+[; ;main.c: 299: INTCONbits.TMR0IE = 0;
+"299
+[e = . . _INTCONbits 0 5 -> -> 0 `i `uc ]
+"300
+}
+[e :U 1475 ]
+[; ;main.c: 300: }
+[; ;main.c: 301: }
+"301
 [e :UE 1458 ]
 }
-"262
+"303
+[v _setUARTconfig `(v ~T0 @X0 1 ef ]
+{
+[; ;main.c: 303: void setUARTconfig(void){
+[e :U _setUARTconfig ]
+[f ]
+[; ;main.c: 305: RPINR0_1 = 0b01100110;
+"305
+[e = _RPINR0_1 -> -> 102 `i `uc ]
+[; ;main.c: 306: RPOR26_27 = 0b00010001;
+"306
+[e = _RPOR26_27 -> -> 17 `i `uc ]
+[; ;main.c: 308: BAUDCON1 = 0x00;
+"308
+[e = _BAUDCON1 -> -> 0 `i `uc ]
+[; ;main.c: 309: TXSTA1 = 0x26;
+"309
+[e = _TXSTA1 -> -> 38 `i `uc ]
+[; ;main.c: 310: RCSTA1 = 0x90;
+"310
+[e = _RCSTA1 -> -> 144 `i `uc ]
+[; ;main.c: 311: SPBRG1 = 0x19;
+"311
+[e = _SPBRG1 -> -> 25 `i `uc ]
+[; ;main.c: 313: TXREG1 = 0xAA;
+"313
+[e = _TXREG1 -> -> 170 `i `uc ]
+[; ;main.c: 314: }
+"314
+[e :UE 1476 ]
+}
+"315
 [v _setInterruptConfig `(v ~T0 @X0 1 ef ]
 {
-[; ;main.c: 262: void setInterruptConfig(void){
+[; ;main.c: 315: void setInterruptConfig(void){
 [e :U _setInterruptConfig ]
 [f ]
-[; ;main.c: 266: INTCONbits.TMR0IF = 0;
-"266
+[; ;main.c: 319: INTCONbits.TMR0IF = 0;
+"319
 [e = . . _INTCONbits 0 2 -> -> 0 `i `uc ]
-[; ;main.c: 267: INTCONbits.TMR0IE = 1;
-"267
+[; ;main.c: 320: INTCONbits.TMR0IE = 1;
+"320
 [e = . . _INTCONbits 0 5 -> -> 1 `i `uc ]
-[; ;main.c: 270: IPR1bits.RC1IP = 0;
-"270
+[; ;main.c: 323: IPR1bits.RC1IP = 0;
+"323
 [e = . . _IPR1bits 0 5 -> -> 0 `i `uc ]
-[; ;main.c: 271: PIE1bits.RC1IE = 1;
-"271
+[; ;main.c: 324: PIE1bits.RC1IE = 1;
+"324
 [e = . . _PIE1bits 0 5 -> -> 1 `i `uc ]
-[; ;main.c: 274: RPINR26_27 = 0xC1;
-"274
+[; ;main.c: 327: RPINR26_27 = 0xC1;
+"327
 [e = _RPINR26_27 -> -> 193 `i `uc ]
-[; ;main.c: 275: TRISAbits.TRISA5 = 1;
-"275
+[; ;main.c: 328: TRISAbits.TRISA5 = 1;
+"328
 [e = . . _TRISAbits 0 5 -> -> 1 `i `uc ]
-[; ;main.c: 276: INTCON2bits.INTEDG1 = 1;
-"276
+[; ;main.c: 329: INTCON2bits.INTEDG1 = 1;
+"329
 [e = . . _INTCON2bits 1 5 -> -> 1 `i `uc ]
-[; ;main.c: 277: INTCON3bits.INT1F = 0;
-"277
+[; ;main.c: 330: INTCON3bits.INT1F = 0;
+"330
 [e = . . _INTCON3bits 1 0 -> -> 0 `i `uc ]
-[; ;main.c: 278: INTCON3bits.INT1P = 0;
-"278
+[; ;main.c: 331: INTCON3bits.INT1P = 0;
+"331
 [e = . . _INTCON3bits 1 6 -> -> 0 `i `uc ]
-[; ;main.c: 279: INTCON3bits.INT1E = 1;
-"279
-[e = . . _INTCON3bits 1 3 -> -> 1 `i `uc ]
-[; ;main.c: 281: RCONbits.IPEN = 1;
-"281
+[; ;main.c: 334: RCONbits.IPEN = 1;
+"334
 [e = . . _RCONbits 6 7 -> -> 1 `i `uc ]
-[; ;main.c: 282: INTCONbits.GIE = 1;
-"282
+[; ;main.c: 335: INTCONbits.GIE = 1;
+"335
 [e = . . _INTCONbits 1 7 -> -> 1 `i `uc ]
-[; ;main.c: 283: INTCONbits.PEIE = 1;
-"283
+[; ;main.c: 336: INTCONbits.PEIE = 1;
+"336
 [e = . . _INTCONbits 1 6 -> -> 1 `i `uc ]
-[; ;main.c: 284: }
-"284
-[e :UE 1459 ]
+[; ;main.c: 337: }
+"337
+[e :UE 1477 ]
 }
-"285
+"338
 [v _setPinConfig `(v ~T0 @X0 1 ef ]
 {
-[; ;main.c: 285: void setPinConfig(void){
+[; ;main.c: 338: void setPinConfig(void){
 [e :U _setPinConfig ]
 [f ]
-[; ;main.c: 287: ANCON1 = 0x00;
-"287
+[; ;main.c: 340: ANCON1 = 0x00;
+"340
 [e = _ANCON1 -> -> 0 `i `uc ]
-[; ;main.c: 288: TRISA &= 0b11111000;
-"288
+[; ;main.c: 341: TRISA &= 0b11111000;
+"341
 [e =& _TRISA -> -> 248 `i `uc ]
-[; ;main.c: 289: TRISC &= 0b00011000;
-"289
-[e =& _TRISC -> -> 24 `i `uc ]
-[; ;main.c: 290: TRISD &= 0b11011110;
-"290
+[; ;main.c: 342: TRISC &= 0b00000011;
+"342
+[e =& _TRISC -> -> 3 `i `uc ]
+[; ;main.c: 345: LATC = 0xFF;
+"345
+[e = _LATC -> -> 255 `i `uc ]
+[; ;main.c: 346: TRISD &= 0b11011110;
+"346
 [e =& _TRISD -> -> 222 `i `uc ]
-[; ;main.c: 291: TRISBbits.TRISB1 = 0;
-"291
+[; ;main.c: 347: TRISBbits.TRISB1 = 0;
+"347
 [e = . . _TRISBbits 0 1 -> -> 0 `i `uc ]
-[; ;main.c: 292: LATA = 0;
-"292
+[; ;main.c: 348: LATA = 0;
+"348
 [e = _LATA -> -> 0 `i `uc ]
-[; ;main.c: 294: }
-"294
-[e :UE 1460 ]
+[; ;main.c: 350: }
+"350
+[e :UE 1478 ]
 }
-"295
+"351
 [v _setTimerConfig `(v ~T0 @X0 1 ef ]
 {
-[; ;main.c: 295: void setTimerConfig(void){
+[; ;main.c: 351: void setTimerConfig(void){
 [e :U _setTimerConfig ]
 [f ]
-[; ;main.c: 296: T0CONbits.TMR0ON = 0;
-"296
+[; ;main.c: 352: T0CONbits.TMR0ON = 0;
+"352
 [e = . . _T0CONbits 0 4 -> -> 0 `i `uc ]
-[; ;main.c: 297: T0CONbits.T08BIT = 1;
-"297
+[; ;main.c: 353: T0CONbits.T08BIT = 1;
+"353
 [e = . . _T0CONbits 0 3 -> -> 1 `i `uc ]
-[; ;main.c: 298: T0CONbits.T0CS = 0;
-"298
+[; ;main.c: 354: T0CONbits.T0CS = 0;
+"354
 [e = . . _T0CONbits 0 2 -> -> 0 `i `uc ]
-[; ;main.c: 299: T0CONbits.PSA = 0;
-"299
+[; ;main.c: 355: T0CONbits.PSA = 0;
+"355
 [e = . . _T0CONbits 0 1 -> -> 0 `i `uc ]
-[; ;main.c: 300: T0CONbits.T0PS= 0b110;
-"300
+[; ;main.c: 356: T0CONbits.T0PS= 0b110;
+"356
 [e = . . _T0CONbits 0 0 -> -> 6 `i `uc ]
-[; ;main.c: 302: }
-"302
-[e :UE 1461 ]
+[; ;main.c: 358: }
+"358
+[e :UE 1479 ]
 }
-"304
+"360
 [v _getRandomTarget `(v ~T0 @X0 1 ef1`*s ]
 {
-[; ;main.c: 304: void getRandomTarget(short Target[2]){
+[; ;main.c: 360: void getRandomTarget(short Target[2]){
 [e :U _getRandomTarget ]
 [v _Target `*s ~T0 @X0 1 r1 ]
 [f ]
-[; ;main.c: 305: Target[0] = 0;
-"305
-[e = *U + _Target * -> -> 0 `i `x -> -> # *U _Target `i `x -> -> 0 `i `s ]
-[; ;main.c: 306: Target[1] = 0;
-"306
-[e = *U + _Target * -> -> 1 `i `x -> -> # *U _Target `i `x -> -> 0 `i `s ]
-[; ;main.c: 307: }
-"307
-[e :UE 1462 ]
+[; ;main.c: 361: Target[0] = rand() % 6;
+"361
+[e = *U + _Target * -> -> 0 `i `x -> -> # *U _Target `i `x -> % ( _rand ..  -> 6 `i `s ]
+[; ;main.c: 362: Target[1] = rand() % 2;
+"362
+[e = *U + _Target * -> -> 1 `i `x -> -> # *U _Target `i `x -> % ( _rand ..  -> 2 `i `s ]
+[; ;main.c: 363: }
+"363
+[e :UE 1480 ]
 }
-"309
+"365
 [v _changeMode `(v ~T0 @X0 1 ef ]
 {
-[; ;main.c: 309: void changeMode(){
+[; ;main.c: 365: void changeMode(){
 [e :U _changeMode ]
 [f ]
-[; ;main.c: 310: if (myModeState == MODE0){
-"310
-[e $ ! == -> _myModeState `i -> . `E13823 0 `i 1464  ]
+[; ;main.c: 366: if (myModeState == MODE0){
+"366
+[e $ ! == -> _myModeState `i -> . `E13823 0 `i 1482  ]
 {
-[; ;main.c: 311: myModeState=MODE1;
-"311
+[; ;main.c: 367: myModeState=MODE1;
+"367
 [e = _myModeState . `E13823 1 ]
-"312
+"368
 }
-[; ;main.c: 312: }
-[e $U 1465  ]
-"313
-[e :U 1464 ]
-[; ;main.c: 313: else{
+[; ;main.c: 368: }
+[e $U 1483  ]
+"369
+[e :U 1482 ]
+[; ;main.c: 369: else{
 {
-[; ;main.c: 314: myModeState=MODE0;
-"314
+[; ;main.c: 370: myModeState=MODE0;
+"370
 [e = _myModeState . `E13823 0 ]
-"315
+"371
 }
-[e :U 1465 ]
-[; ;main.c: 315: }
-[; ;main.c: 316: }
-"316
-[e :UE 1463 ]
+[e :U 1483 ]
+[; ;main.c: 371: }
+[; ;main.c: 372: }
+"372
+[e :UE 1481 ]
 }
-"318
+"374
 [v _activateTarget `(v ~T0 @X0 1 ef1`s ]
 {
-[; ;main.c: 318: void activateTarget(short targetNbr){
+[; ;main.c: 374: void activateTarget(short targetNbr){
 [e :U _activateTarget ]
 [v _targetNbr `s ~T0 @X0 1 r1 ]
 [f ]
-[; ;main.c: 320: LATA=targetNbr+2;
-"320
+[; ;main.c: 376: LATA=targetNbr+2;
+"376
 [e = _LATA -> + -> _targetNbr `i -> 2 `i `uc ]
-[; ;main.c: 321: }
-"321
-[e :UE 1466 ]
+[; ;main.c: 377: INTCON3bits.INT1E = 1;
+"377
+[e = . . _INTCON3bits 1 3 -> -> 1 `i `uc ]
+[; ;main.c: 378: }
+"378
+[e :UE 1484 ]
 }
-"323
+"380
 [v _activateLEDTarget `(v ~T0 @X0 1 ef1`*s ]
 {
-[; ;main.c: 323: void activateLEDTarget(short targetLED[2]){
+[; ;main.c: 380: void activateLEDTarget(short targetLED[2]){
 [e :U _activateLEDTarget ]
 [v _targetLED `*s ~T0 @X0 1 r1 ]
 [f ]
-"324
+"381
 [v _ledNBR `s ~T0 @X0 1 a ]
-[; ;main.c: 324: short ledNBR = 0;
+[; ;main.c: 381: short ledNBR = 0;
 [e = _ledNBR -> -> 0 `i `s ]
-[; ;main.c: 325: if (targetLED[0]<3){
-"325
-[e $ ! < -> *U + _targetLED * -> -> 0 `i `x -> -> # *U _targetLED `i `x `i -> 3 `i 1468  ]
+[; ;main.c: 382: if (targetLED[0]<3){
+"382
+[e $ ! < -> *U + _targetLED * -> -> 0 `i `x -> -> # *U _targetLED `i `x `i -> 3 `i 1486  ]
 {
-[; ;main.c: 326: ledNBR += (2*targetLED[0]+targetLED[1]);
-"326
-[e =+ _ledNBR -> + * -> 2 `i -> *U + _targetLED * -> -> 0 `i `x -> -> # *U _targetLED `i `x `i -> *U + _targetLED * -> -> 1 `i `x -> -> # *U _targetLED `i `x `i `s ]
-[; ;main.c: 327: ledNBR += 240;
-"327
-[e =+ _ledNBR -> -> 240 `i `s ]
-[; ;main.c: 328: LATC = ledNBR;
-"328
+[; ;main.c: 383: ledNBR += (2*targetLED[0]+targetLED[1]<<2);
+"383
+[e =+ _ledNBR -> << + * -> 2 `i -> *U + _targetLED * -> -> 0 `i `x -> -> # *U _targetLED `i `x `i -> *U + _targetLED * -> -> 1 `i `x -> -> # *U _targetLED `i `x `i -> 2 `i `s ]
+[; ;main.c: 384: ledNBR += 227;
+"384
+[e =+ _ledNBR -> -> 227 `i `s ]
+[; ;main.c: 385: LATC = ledNBR;
+"385
 [e = _LATC -> _ledNBR `uc ]
-"329
+"386
 }
-[; ;main.c: 329: }
-[e $U 1469  ]
-"330
-[e :U 1468 ]
-[; ;main.c: 330: else{
+[; ;main.c: 386: }
+[e $U 1487  ]
+"387
+[e :U 1486 ]
+[; ;main.c: 387: else{
 {
-[; ;main.c: 331: ledNBR += ((2*(targetLED[0]-3)+targetLED[1])<<4);
-"331
-[e =+ _ledNBR -> << + * -> 2 `i - -> *U + _targetLED * -> -> 0 `i `x -> -> # *U _targetLED `i `x `i -> 3 `i -> *U + _targetLED * -> -> 1 `i `x -> -> # *U _targetLED `i `x `i -> 4 `i `s ]
-[; ;main.c: 332: ledNBR += 15;
-"332
-[e =+ _ledNBR -> -> 15 `i `s ]
-[; ;main.c: 333: LATC = ledNBR;
-"333
+[; ;main.c: 388: ledNBR += ((2*(targetLED[0]-3)+targetLED[1])<<5);
+"388
+[e =+ _ledNBR -> << + * -> 2 `i - -> *U + _targetLED * -> -> 0 `i `x -> -> # *U _targetLED `i `x `i -> 3 `i -> *U + _targetLED * -> -> 1 `i `x -> -> # *U _targetLED `i `x `i -> 5 `i `s ]
+[; ;main.c: 389: ledNBR += 31;
+"389
+[e =+ _ledNBR -> -> 31 `i `s ]
+[; ;main.c: 390: LATC = ledNBR;
+"390
 [e = _LATC -> _ledNBR `uc ]
-"334
+"391
 }
-[e :U 1469 ]
-[; ;main.c: 334: }
-[; ;main.c: 335: }
-"335
-[e :UE 1467 ]
+[e :U 1487 ]
+[; ;main.c: 391: }
+[; ;main.c: 392: }
+"392
+[e :UE 1485 ]
 }
-"337
+"394
 [v _fireShot `(v ~T0 @X0 1 ef ]
 {
-[; ;main.c: 337: void fireShot(){
+[; ;main.c: 394: void fireShot(){
 [e :U _fireShot ]
 [f ]
-[; ;main.c: 338: LATBbits.LATB1 = 1;
-"338
+[; ;main.c: 395: LATBbits.LATB1 = 1;
+"395
 [e = . . _LATBbits 0 1 -> -> 1 `i `uc ]
-[; ;main.c: 339: }
-"339
-[e :UE 1470 ]
+[; ;main.c: 396: }
+"396
+[e :UE 1488 ]
 }
-"341
+"398
 [v _stopShot `(v ~T0 @X0 1 ef ]
 {
-[; ;main.c: 341: void stopShot(){
+[; ;main.c: 398: void stopShot(){
 [e :U _stopShot ]
 [f ]
-[; ;main.c: 342: LATBbits.LATB1 = 0;
-"342
+[; ;main.c: 399: LATBbits.LATB1 = 0;
+"399
 [e = . . _LATBbits 0 1 -> -> 0 `i `uc ]
-[; ;main.c: 343: }
-"343
-[e :UE 1471 ]
+[; ;main.c: 400: }
+"400
+[e :UE 1489 ]
 }
-"345
+"402
 [v _setModeLED `(v ~T0 @X0 1 ef1`E13823 ]
 {
-[; ;main.c: 345: void setModeLED(gunModeState Mode){
+[; ;main.c: 402: void setModeLED(gunModeState Mode){
 [e :U _setModeLED ]
 [v _Mode `E13823 ~T0 @X0 1 r1 ]
 [f ]
-[; ;main.c: 346: switch (Mode){
-"346
-[e $U 1474  ]
+[; ;main.c: 403: switch (Mode){
+"403
+[e $U 1492  ]
 {
-[; ;main.c: 347: case MODE0:
-"347
-[e :U 1475 ]
-[; ;main.c: 348: LATDbits.LATD0 = 1;
-"348
+[; ;main.c: 404: case MODE0:
+"404
+[e :U 1493 ]
+[; ;main.c: 405: LATDbits.LATD0 = 1;
+"405
 [e = . . _LATDbits 0 0 -> -> 1 `i `uc ]
-[; ;main.c: 349: LATDbits.LATD5 = 0;
-"349
+[; ;main.c: 406: LATDbits.LATD5 = 0;
+"406
 [e = . . _LATDbits 0 5 -> -> 0 `i `uc ]
-[; ;main.c: 350: break;
-"350
-[e $U 1473  ]
-[; ;main.c: 351: case MODE1:
-"351
-[e :U 1476 ]
-[; ;main.c: 352: LATDbits.LATD0 = 1;
-"352
+[; ;main.c: 407: break;
+"407
+[e $U 1491  ]
+[; ;main.c: 408: case MODE1:
+"408
+[e :U 1494 ]
+[; ;main.c: 409: LATDbits.LATD0 = 1;
+"409
 [e = . . _LATDbits 0 0 -> -> 1 `i `uc ]
-[; ;main.c: 353: LATDbits.LATD5 = 0;
-"353
+[; ;main.c: 410: LATDbits.LATD5 = 0;
+"410
 [e = . . _LATDbits 0 5 -> -> 0 `i `uc ]
-[; ;main.c: 354: break;
-"354
-[e $U 1473  ]
-"356
+[; ;main.c: 411: break;
+"411
+[e $U 1491  ]
+"413
 }
-[; ;main.c: 356: }
-[e $U 1473  ]
-"346
-[e :U 1474 ]
-[e [\ _Mode , $ . `E13823 0 1475
- , $ . `E13823 1 1476
- 1473 ]
-"356
-[e :U 1473 ]
-[; ;main.c: 357: }
-"357
-[e :UE 1472 ]
+[; ;main.c: 413: }
+[e $U 1491  ]
+"403
+[e :U 1492 ]
+[e [\ _Mode , $ . `E13823 0 1493
+ , $ . `E13823 1 1494
+ 1491 ]
+"413
+[e :U 1491 ]
+[; ;main.c: 414: }
+"414
+[e :UE 1490 ]
 }
-"359
+"416
 [v _toggleGunLED `(v ~T0 @X0 1 ef ]
 {
-[; ;main.c: 359: void toggleGunLED(){
+[; ;main.c: 416: void toggleGunLED(){
 [e :U _toggleGunLED ]
 [f ]
-[; ;main.c: 360: if (LATDbits.LATD0==0){
-"360
-[e $ ! == -> . . _LATDbits 0 0 `i -> 0 `i 1478  ]
+[; ;main.c: 417: if (LATDbits.LATD0==0){
+"417
+[e $ ! == -> . . _LATDbits 0 0 `i -> 0 `i 1496  ]
 {
-[; ;main.c: 361: LATDbits.LATD0 = 1;
-"361
+[; ;main.c: 418: LATDbits.LATD0 = 1;
+"418
 [e = . . _LATDbits 0 0 -> -> 1 `i `uc ]
-[; ;main.c: 362: LATDbits.LATD5 = 1;
-"362
+[; ;main.c: 419: LATDbits.LATD5 = 1;
+"419
 [e = . . _LATDbits 0 5 -> -> 1 `i `uc ]
-"363
+"420
 }
-[; ;main.c: 363: }
-[e $U 1479  ]
-"364
-[e :U 1478 ]
-[; ;main.c: 364: else{
+[; ;main.c: 420: }
+[e $U 1497  ]
+"421
+[e :U 1496 ]
+[; ;main.c: 421: else{
 {
-[; ;main.c: 365: LATDbits.LATD0 = 0;
-"365
+[; ;main.c: 422: LATDbits.LATD0 = 0;
+"422
 [e = . . _LATDbits 0 0 -> -> 0 `i `uc ]
-[; ;main.c: 366: LATDbits.LATD5 = 0;
-"366
+[; ;main.c: 423: LATDbits.LATD5 = 0;
+"423
 [e = . . _LATDbits 0 5 -> -> 0 `i `uc ]
-"367
+"424
 }
-[e :U 1479 ]
-[; ;main.c: 367: }
-[; ;main.c: 368: }
-"368
-[e :UE 1477 ]
+[e :U 1497 ]
+[; ;main.c: 424: }
+[; ;main.c: 425: }
+"425
+[e :UE 1495 ]
 }

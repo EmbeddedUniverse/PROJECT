@@ -17153,7 +17153,7 @@ extern size_t strftime(char *, size_t, const char *, const struct tm *) ;
 extern time_t mktime(struct tm *);
 
 
-# 25 "main.c"
+# 35 "main.c"
 #pragma config XINST = OFF
 
 typedef enum state{
@@ -17180,9 +17180,9 @@ short nextTarget[2];
 unsigned int ammoLeft = 12;
 int toggleCounter = 0;
 int globalTimer = 0;
-int singleGameTime = 5;
+int singleGameTime = 121;
 int totalPoints = 0;
-
+int maxAmmo =6;
 bool ErrorUART = 0;
 bool rxFlag = 0;
 bool reloadFlag = 0;
@@ -17191,6 +17191,8 @@ bool pewFlag = 0;
 bool capteurFlag = 0;
 bool timerFlag = 0;
 bool endFlag = 0;
+bool startGame = 0;
+
 
 void interrupt rxIsr(void);
 void setUARTconfig(void);
@@ -17219,10 +17221,18 @@ initialisation_LCD();
 printMBED();
 
 
+
+while(!startGame){
+if(rxFlag){
+rxFlag = 0;
+PIE1bits.RC1IE = 1;
+
+}
+}
 printStartGame();
 T0CONbits.TMR0ON = 1;
 
-# 118
+# 133
 while(!endFlag){
 
 if(timerFlag){
@@ -17240,18 +17250,20 @@ printPoints(totalPoints);
 printRemBullets(ammoLeft);
 printRemTime(singleGameTime-globalTimer);
 
-
 switch(myState){
 case IDLE :
-
-
+totalPoints = 0;
+ammoLeft= maxAmmo;
+printStartGame();
+T0CONbits.TMR0ON = 1;
+myState = SELECT_NEW_TARGET;
 break;
 
 case SELECT_NEW_TARGET:
 getRandomTarget(nextTarget);
 activateTarget(nextTarget[0]);
 activateLEDTarget(nextTarget);
-myState= WAIT_KILL;
+myState = WAIT_KILL;
 break;
 
 case ACCUMULATE_POINTS:
@@ -17261,7 +17273,7 @@ break;
 
 case WAIT_KILL:
 if(reloadFlag){
-ammoLeft= 12;
+ammoLeft= maxAmmo;
 reloadFlag=0;
 PIE1bits.RC1IE = 1;
 }
@@ -17284,7 +17296,7 @@ PIE1bits.RC1IE = 1;
 else if(ammoLeft==0){
 myState = NEED_RELOAD;
 }
-else if(capteurFlag && myModeState == nextTarget[1]){
+else if(capteurFlag ){
 capteurFlag = 0;
 INTCON3bits.INT1E = 1;
 myState = ACCUMULATE_POINTS;
@@ -17294,12 +17306,12 @@ break;
 
 case NEED_RELOAD:
 toggleCounter++;
-if (toggleCounter==5000){
+if (toggleCounter==20){
 toggleGunLED();
 toggleCounter=0;
 }
 if(reloadFlag){
-ammoLeft= 12;
+ammoLeft= maxAmmo;
 setModeLED(myModeState);
 toggleCounter=0;
 reloadFlag=0;
@@ -17308,11 +17320,26 @@ PIE1bits.RC1IE = 1;
 break;
 
 case END_GAME:
-endFlag = 1;
+
+startGame = 0;
+T0CONbits.TMR0ON = 0;
+TXREG1=0xEE;
+while(!startGame){
+printEndGame(totalPoints);
+waitASec();
+if(rxFlag){
+rxFlag = 0;
+PIE1bits.RC1IE = 1;
+}
+}
+myState = IDLE;
 break;
 }
 }
+while(1){
 printEndGame(totalPoints);
+waitASec();
+}
 }
 
 void interrupt rxIsr(void){
@@ -17334,6 +17361,27 @@ modeFlag=1;
 break;
 case 0xCC:
 pewFlag=1;
+break;
+case 0x0A :
+maxAmmo = 6;
+break;
+case 0x0B :
+maxAmmo = 12;
+break;
+case 0x0C :
+maxAmmo = 24;
+break;
+case 0xA0 :
+singleGameTime = 31;
+break;
+case 0xB0 :
+singleGameTime = 61;
+break;
+case 0xC0 :
+singleGameTime = 121;
+break;
+case 0xDD:
+startGame = 1;
 break;
 }
 PIE1bits.RC1IE = 0;
@@ -17384,7 +17432,7 @@ TRISAbits.TRISA5 = 1;
 INTCON2bits.INTEDG1 = 1;
 INTCON3bits.INT1F = 0;
 INTCON3bits.INT1P = 0;
-INTCON3bits.INT1E = 1;
+
 
 RCONbits.IPEN = 1;
 INTCONbits.GIE = 1;
@@ -17394,7 +17442,10 @@ void setPinConfig(void){
 
 ANCON1 = 0x00;
 TRISA &= 0b11111000;
-TRISC &= 0b00011000;
+TRISC &= 0b00000011;
+
+
+LATC = 0xFF;
 TRISD &= 0b11011110;
 TRISBbits.TRISB1 = 0;
 LATA = 0;
@@ -17410,8 +17461,8 @@ T0CONbits.T0PS= 0b110;
 }
 
 void getRandomTarget(short Target[2]){
-Target[0] = 0;
-Target[1] = 0;
+Target[0] = rand() % 6;
+Target[1] = rand() % 2;
 }
 
 void changeMode(){
@@ -17426,18 +17477,19 @@ myModeState=MODE0;
 void activateTarget(short targetNbr){
 
 LATA=targetNbr+2;
+INTCON3bits.INT1E = 1;
 }
 
 void activateLEDTarget(short targetLED[2]){
 short ledNBR = 0;
 if (targetLED[0]<3){
-ledNBR += (2*targetLED[0]+targetLED[1]);
-ledNBR += 240;
+ledNBR += (2*targetLED[0]+targetLED[1]<<2);
+ledNBR += 227;
 LATC = ledNBR;
 }
 else{
-ledNBR += ((2*(targetLED[0]-3)+targetLED[1])<<4);
-ledNBR += 15;
+ledNBR += ((2*(targetLED[0]-3)+targetLED[1])<<5);
+ledNBR += 31;
 LATC = ledNBR;
 }
 }
