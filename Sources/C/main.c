@@ -28,8 +28,8 @@ main(void){
         scanf("%d", &command);
 
         if(command == 1)
-            //run();
-            runMenu();
+            run();
+            //runMenu();
         else if(command == 2)
             test();
         else if(command == 3)

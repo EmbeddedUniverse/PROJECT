@@ -65,6 +65,7 @@ void run(){
                 DSK6713_LED_off(FIRE_LED);
 
             VOICE_reset();
+            clearFIFO(ACCEL);
         }
     }
 }
