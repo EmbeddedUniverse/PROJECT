@@ -39,4 +39,8 @@ Frequency Definitions
 #define HUM_LOWPITCH 1000
 #define HUM_HIGHPITCH 5000
 
+
+#define ACC_ANALYSIS_SIZE 128
+#define ACC_BUFF_SIZE 2*ACC_ANALYSIS_SIZE
+
 #endif /* INCLUDES_CONSTANTS_H_ */
