@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "test.h"
 #include "run.h"
-
+#include "Menu.h"
 
 
 int clean_stdin()
@@ -28,7 +28,8 @@ main(void){
         scanf("%d", &command);
 
         if(command == 1)
-            run();
+            //run();
+            runMenu();
         else if(command == 2)
             test();
         else if(command == 3)
