@@ -1,15 +1,6 @@
 
 #include "Menu.h"
 
-unsigned char _6Ammo = 0xA;
-unsigned char _12Ammo = 0xB;
-unsigned char _24Ammo = 0xC;
-
-unsigned char _30secTimer  = 0xA0;
-unsigned char _60secTimer  = 0xB0;
-unsigned char _120secTimer = 0xC0;
-
-
 
 
 void runMenu(void){
