@@ -18,9 +18,19 @@
 
 
 #define _XTAL_FREQ  8000000   // Oscillator frequency for _delay()
-#define reloadCode  0xAA
-#define modeCode    0xBB
-#define pewCode     0xCC
+#define reloadCode      0xAA
+#define modeCode        0xBB
+#define pewCode         0xCC
+#define command2Start   0xDD
+#define endGame         0xEE
+
+#define _6Ammo      0x0A
+#define _12Ammo     0x0B
+#define _24Ammo     0x0C
+
+#define _30secTimer   0xA0
+#define _60secTimer   0xB0
+#define _120secTimer  0xC0
 
 #pragma config XINST = OFF 
 
@@ -32,7 +42,7 @@ typedef enum state{
     WAIT_KILL,
     END_GAME,        
 }statePIC;
-statePIC myState = IDLE;
+statePIC myState = SELECT_NEW_TARGET;
 
 typedef enum gunMode{
     MODE0,
@@ -45,11 +55,16 @@ gunModeState myModeState = MODE0;
 unsigned char rxChar = 0x00;
 unsigned char transferedData = 0x00;
 short nextTarget[2];
-unsigned int ammoLeft = 12;
-int toggleCounter = 0;
-int globalTimer = 0;
-int singleGameTime = 121;
-int totalPoints = 0;
+unsigned int ammoLeft = 24;
+unsigned int totalPoints;
+unsigned int maxAmmo = 24;
+
+unsigned short toggleCounter = 0;
+unsigned int globalTimer = 0;
+unsigned int singleGameTime = 121;
+unsigned int reloadTime = 0;
+
+
 
 bool ErrorUART      = false; 
 bool rxFlag         = false; // USART Data Received flag
@@ -59,6 +74,9 @@ bool pewFlag        = false;
 bool capteurFlag    = false;
 bool timerFlag      = false;
 bool endFlag        = false;
+bool startGame      = false;
+bool realStart      = false;
+
 // Declarations
 void interrupt rxIsr(void);
 void setUARTconfig(void);
@@ -85,36 +103,26 @@ void main(void) {
     
     initialisation_LCD();
     printMBED();
-    
-    
-    printStartGame();
-    T0CONbits.TMR0ON = 1; // Start Timer
-    /*while(1){    
-        if(timerFlag){
-            globalTimer++;
-            timerFlag=false;
-            INTCONbits.TMR0IE = 1;  //timer enable 
-        }
-        if(globalTimer==20 ){
-            myState= END_GAME;
-        } 
-    }
-    
-    getRandomTarget(nextTarget);
-    activateTarget(nextTarget[0]);
-    while(!endFlag){};
-    
-    /*while(1);
-    while(true){
-        if(rxFlag){
-            rxChar = RCREG1; // Read the value in the register       
+   
+  
+   
+   while(!realStart){
+        if(rxFlag){      
             rxFlag = false; // Reset the flag
             PIE1bits.RC1IE = 1; // Re-enable the interrupt control
-            TXREG1 = 0xf0;
-            
-        }
-    }*/
+            if (startGame) {
+            realStart=true;
+            }     
+        } 
+    }
+    printStartGame();
+    T0CONbits.TMR0ON = 1; // Start Timer
+   
     
+    //TXREG1=0xEE;
+    setModeLED(myModeState);
+    totalPoints = 0;
+    ammoLeft = maxAmmo;
     while(!endFlag){
         
         if(timerFlag){
@@ -128,22 +136,27 @@ void main(void) {
         }
         
         // Affichage 
+        unsigned int remainingTime = singleGameTime-globalTimer;
+        printRemTime(remainingTime);
+        globalTimer = singleGameTime - remainingTime;
         printPoints(totalPoints);
+        int temp= ammoLeft;
         printRemBullets(ammoLeft);
-        printRemTime(singleGameTime-globalTimer);
-        
+        ammoLeft= temp;
         
         switch(myState){
             case IDLE :
-
-
+                ammoLeft= maxAmmo;
+                printStartGame();
+                T0CONbits.TMR0ON = 1; // Start Timer
+                myState = SELECT_NEW_TARGET;
                 break;
 
             case SELECT_NEW_TARGET:
                 getRandomTarget(nextTarget);
                 activateTarget(nextTarget[0]);
                 activateLEDTarget(nextTarget);
-                myState= WAIT_KILL;
+                myState = WAIT_KILL;
                 break;
 
             case ACCUMULATE_POINTS:
@@ -152,55 +165,75 @@ void main(void) {
                 break;
 
             case WAIT_KILL:
-                if(reloadFlag){
-                    ammoLeft= 12;              
-                    reloadFlag=false;
-                    PIE1bits.RC1IE = 1;
+                if(rxFlag){      
+                    rxFlag = false; // Reset the flag
+                    PIE1bits.RC1IE = 1; // Re-enable the interrupt control
+                      
+                    if(reloadFlag){
+                        ammoLeft= maxAmmo;              
+                        reloadFlag=false;
+                    }
+                    else if (modeFlag){
+                        changeMode();
+                        setModeLED(myModeState);
+                        modeFlag=false;
+                    }
+                    else if (pewFlag && ammoLeft !=0){
+                        fireShot();
+                        for (int i =0;i<20000;i++){}
+                        stopShot();
+                        ammoLeft -= 1;
+                        pewFlag = false;    
+                    }
+                    
                 }
-
-                else if (modeFlag){
-                    changeMode();
-                    setModeLED(myModeState);
-                    modeFlag=false;
-                    PIE1bits.RC1IE = 1;
-                }
-
-                else if (pewFlag && ammoLeft !=0){
-                    fireShot();
-                    for (int i =0;i<10000;i++){}
-                    stopShot();
-                    ammoLeft -= 1;
-                    pewFlag = false;
-                    PIE1bits.RC1IE = 1;
-                }
-                else if(ammoLeft==0){
-                    myState = NEED_RELOAD;
-                }
-                else if(capteurFlag && myModeState == nextTarget[1]){
+                
+                if(capteurFlag && myModeState == nextTarget[1]){
                     capteurFlag = false;
                     INTCON3bits.INT1E = 1; 
                     myState = ACCUMULATE_POINTS;
                 }
-
+        
+                if(ammoLeft==0){
+                    myState = NEED_RELOAD;
+                }
                 break;
 
-            case NEED_RELOAD:
-                toggleCounter++;
-                if (toggleCounter==5000){
-                    toggleGunLED();
-                    toggleCounter=0;
-                }
-                if(reloadFlag){
-                    ammoLeft= 12;
-                    setModeLED(myModeState);
-                    toggleCounter=0;
-                    reloadFlag=false;
-                    PIE1bits.RC1IE = 1;
-                }
+                case NEED_RELOAD:
+                    toggleCounter++;
+                    if (toggleCounter==20){
+                        toggleGunLED();
+                        toggleCounter=0;
+                    }
+                    if(rxFlag){      
+                        rxFlag = false; // Reset the flag
+                        PIE1bits.RC1IE = 1; // Re-enable the interrupt control
+                        if (reloadFlag) {
+                            ammoLeft= maxAmmo;
+                            setModeLED(myModeState);
+                            toggleCounter=0;
+                            reloadFlag=false;
+                            myState = WAIT_KILL;
+                       }     
+                } 
                 break;
 
             case END_GAME:
-                    endFlag = true;
+                    //endFlag = true;
+                    startGame = false;
+                    T0CONbits.TMR0ON = 0;
+                   
+                    TXREG1=0xEE;
+                    while(!startGame){ 
+                        printEndGame(totalPoints);
+                         __delay_ms(50);
+                        if(rxFlag){      
+                            rxFlag = false; // Reset the flag
+                            PIE1bits.RC1IE = 1; // Re-enable the interrupt control
+                        } 
+                    }
+                    myState = IDLE; 
+                    totalPoints = 0;
                 break;                  
         }        
     }
@@ -230,6 +263,30 @@ void interrupt rxIsr(void){
                 case pewCode:
                     pewFlag=true;
                     break;
+                case _6Ammo : 
+                    maxAmmo = 6;
+                    ammoLeft = 6;
+                    break;
+                case _12Ammo :
+                    maxAmmo = 12;
+                    ammoLeft = 12;
+                    break;
+                case _24Ammo :
+                    maxAmmo = 24;
+                    ammoLeft = 24;
+                    break;    
+                case _30secTimer :
+                    singleGameTime = 31;
+                    break;
+                case _60secTimer :
+                    singleGameTime = 61;
+                    break;
+                case _120secTimer :
+                    singleGameTime = 121;
+                    break;
+                case command2Start:
+                    startGame = true;
+                    break;
             }
             PIE1bits.RC1IE = 0; // Disable the interrupt control
         }
@@ -258,7 +315,7 @@ void setUARTconfig(void){
     BAUDCON1 = 0x00;    // BRG16 = 0
     TXSTA1 = 0x26;      // Binary : 0010 0110 BRGH = 1 SYC = 0
     RCSTA1 = 0x90;      // Binary : 1001 0000 
-    SPBRG1 = 0x19;      // Decimal: 25 = 19.23K baude
+    SPBRG1 = 0x19;      // Decimal: 25 = 9.600K baude
     // Send initial signal & console clear
     TXREG1 = 0xAA;
 }
@@ -279,7 +336,7 @@ void setInterruptConfig(void){
     INTCON2bits.INTEDG1 = 1;    // interrupt INT1 on rising edge
     INTCON3bits.INT1F = 0;      // interrupt INT1 flag at 0
     INTCON3bits.INT1P = 0;      // interrupt INT1 on low priority
-    INTCON3bits.INT1E = 1;      // Enables the INT1 external interrupt 
+         // Enables the INT1 external interrupt 
     
     RCONbits.IPEN = 1;
     INTCONbits.GIE = 1;     // Asynchronous mandatory register - USART
@@ -289,7 +346,10 @@ void setPinConfig(void){
     // set pin output for each led and target
     ANCON1 = 0x00;
     TRISA &= 0b11111000;    // Make RA0 RA1 RA2 as output for mux target
-    TRISC &= 0b00011000;    // Make RC0-RC2 and RC5-RC& as output for mux LED
+    TRISC &= 0b00000011;
+   
+    // Make RC0-RC2 and RC5-RC& as output for mux LED
+    LATC = 0xFF;
     TRISD &= 0b11011110;    // Make RD0 and RD5 as output for mode LED
     TRISBbits.TRISB1 = 0;   // Make RB1 as firing shot; 
     LATA = 0;
@@ -305,34 +365,38 @@ void setTimerConfig(void){
 }
 
 void getRandomTarget(short Target[2]){
-    Target[0] = 0;//rand() % 6;
-    Target[1] = 0;//rand() % 2;
+    Target[0] = rand() % 6;
+    Target[1] = rand() % 2;
 }
 
 void changeMode(){
-    if (myModeState == MODE0){
-        myModeState=MODE1;                  
-    }       
-    else{
-        myModeState=MODE0;
+    if (globalTimer>(reloadTime+1)){
+        if (myModeState == MODE0){
+            myModeState=MODE1;                  
+        }       
+        else{
+            myModeState=MODE0;
+        }
+        reloadTime = globalTimer;
     }
 }
 
 void activateTarget(short targetNbr){
      //open right target
     LATA=targetNbr+2;
+    INTCON3bits.INT1E = 1; 
 }     
 
 void activateLEDTarget(short targetLED[2]){
     short ledNBR = 0;
     if (targetLED[0]<3){
-        ledNBR += (2*targetLED[0]+targetLED[1]);
-        ledNBR += 240;
+        ledNBR += (2*targetLED[0]+targetLED[1]<<2);
+        ledNBR += 227;
         LATC = ledNBR;
     }
     else{  
-        ledNBR += ((2*(targetLED[0]-3)+targetLED[1])<<4);
-        ledNBR += 15;
+        ledNBR += ((2*(targetLED[0]-3)+targetLED[1])<<5);
+        ledNBR += 31;
         LATC = ledNBR;
     }
 }
@@ -352,8 +416,8 @@ void setModeLED(gunModeState Mode){
             LATDbits.LATD5 = 0;   //Close LED MODE1
             break;
         case MODE1: 
-            LATDbits.LATD0 = 1;   //Open LED MODE1
-            LATDbits.LATD5 = 0;   //Close LED MODE0
+            LATDbits.LATD0 = 0;   //Open LED MODE1
+            LATDbits.LATD5 = 1;   //Close LED MODE0
             break;
             
     }

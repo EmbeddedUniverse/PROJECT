@@ -8,14 +8,14 @@
 
 // CONFIG1H
 #pragma config BOREN = ON       // Brown-Out Reset Enable (Controlled with SBOREN bit, disabled in Deep Sleep)
-#pragma config BORV = 3         // Brown-out Reset Voltage (1.8V)
+#pragma config BORV = 1         // Brown-out Reset Voltage (1.8V)
 #pragma config CP0 = OFF        // Code Protect (Program memory is not code-protected)
 
 // CONFIG2L
 #pragma config FOSC = PRIPLL    // Oscillator (Fast RC Oscillator with Postscaler (FRCDIV))
 #pragma config SOSCSEL = LOW    // T1OSC/SOSC Power Selection Bits (Low Power T1OSC/SOSC circuit selected)
 #pragma config CLKOEN = OFF      // Clock Out Enable Bit (CLKO output enabled on the RA6 pin)
-#pragma config IESO = OFF        // Internal External Oscillator Switch Over Mode (Enabled)
+#pragma config IESO = ON       // Internal External Oscillator Switch Over Mode (Enabled)
 
 // CONFIG2H
 #pragma config PLLDIV = DIV2   // PLL Frequency Multiplier Select bits (No PLL used - PLLGO bit not available to user)
