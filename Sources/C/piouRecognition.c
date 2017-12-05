@@ -37,6 +37,7 @@ bool goodSeries();
 bool isP(int cblock);
 bool isI(int cblock);
 bool isU(int cblock);
+bool isTA(int cblock);
 
 void PIOU_init()
 {
@@ -125,19 +126,19 @@ bool detectPiou(short sample[VOICE_BUFFER_LENGTH])
 
         //printf("%f\t%f\t%f\t%f\t\r\n", bands[cblock][0], bands[cblock][1], bands[cblock][2], bands[cblock][3]);
 
-        if(bands[cblock][0] < 0.10*bands[0][0])
-            detectedPhonems[cblock] = '0';
-        else if (isP(cblock))
-            detectedPhonems[cblock] = 'p';
-        else if (isI(cblock) || isU(cblock))
-        {
-            if (isI(cblock))
-                detectedPhonems[cblock] = 'i';
-            else
-                detectedPhonems[cblock] = 'u';
-        }
-        else
-            detectedPhonems[cblock] = 'p';
+//        if(bands[cblock][0] < 0.10*bands[0][0])
+//            detectedPhonems[cblock] = '0';
+//        else if (isP(cblock))
+//            detectedPhonems[cblock] = 'p';
+//        else if (isI(cblock) || isU(cblock))
+//        {
+//            if (isI(cblock))
+//                detectedPhonems[cblock] = 'i';
+//            else
+//                detectedPhonems[cblock] = 'u';
+//        }
+//        else
+//            detectedPhonems[cblock] = 'p';
 
 
 //        if(bands[cblock][0] < 0.10*bands[0][0])
@@ -151,9 +152,33 @@ bool detectPiou(short sample[VOICE_BUFFER_LENGTH])
 //        else
 //            detectedPhonems[cblock] = '0';
 
+        if(bands[cblock][0] < 0.10*bands[0][0])
+            detectedPhonems[cblock] = '0';
+        else if(isTA(cblock))
+            detectedPhonems[cblock] = 'A';
+        else
+            detectedPhonems[cblock] = '0';
 
         start += FFT_BLOCK_SIZE - FFT_BLOCK_OVERLAP;
     }
+
+//    int o;
+//    float tabTemp[10];
+//
+//    for(o = 0; o <NB_BLOCKS; o++){
+//        tabTemp[0]=bands[o][1];
+//        tabTemp[1]=bands[o][2];
+//        tabTemp[2]=bands[o][3];
+//        tabTemp[3]=bands[o][4];
+//        tabTemp[4]=bands[o][5];
+//        tabTemp[5]=bands[o][6];
+//        tabTemp[6]=bands[o][7];
+//        tabTemp[7]=bands[o][8];
+//        tabTemp[8]=bands[o][9];
+//        tabTemp[9]=bands[o][10];
+//    }
+
+
 
     return goodSeries();
 }
@@ -290,6 +315,22 @@ bool isU(int cblock){
             bands[cblock][9] < (0.019580) &&
             bands[cblock][10] > (0.004549) &&
             bands[cblock][10] < (0.014740))
+        return true;
+    else
+        return false;
+}
+
+bool isTA(int cblock){
+    if(     bands[cblock][1] > (0.24980376) && bands[cblock][1] < (0.56989167) &&
+            bands[cblock][2] > (0.02752650) && bands[cblock][2] < (0.23679538) &&
+            bands[cblock][3] > (0.02419997) && bands[cblock][3] < (0.08720931) &&
+            bands[cblock][4] > (0.04414845) && bands[cblock][4] < (0.12465798) &&
+            bands[cblock][5] > (0.02148294) && bands[cblock][5] < (0.10428346) &&
+            bands[cblock][6] > (0.01612529) && bands[cblock][6] < (0.05677224) &&
+            bands[cblock][7] > (0.03456740) && bands[cblock][7] < (0.06651647) &&
+            bands[cblock][8] > (0.03682700) && bands[cblock][8] < (0.08091772) &&
+            bands[cblock][9] > (0.03655095) && bands[cblock][9] < (0.08169756) &&
+            bands[cblock][10] > (0.01960060) && bands[cblock][10] < (0.08042542))
         return true;
     else
         return false;

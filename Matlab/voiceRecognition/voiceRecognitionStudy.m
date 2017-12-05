@@ -21,9 +21,10 @@ Piou = 'piouSamples\CleanedPiou.wav\';
 Ppppiii = 'piouSamples\Ppppiii.wav\';
 iiiou = 'piouSamples\iiiou.wav\';
 ouuuu = 'piouSamples\ouuuu.wav\';
+TA = 'TASamples\'
 
 %% Sample data load
-[data, Fs] = loadAllWavSamples(ouuuu);
+[data, Fs] = loadAllWavSamples(TA);
 
 %% FFT
 [L,nbSamples] = size(data);
