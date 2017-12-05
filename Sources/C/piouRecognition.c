@@ -13,8 +13,15 @@
 #define FIR_K -0.5
 #endif
 
-#define HUM_LOWPITCH_INDEX FFT_BLOCK_SIZE*HUM_LOWPITCH/VOICE_SAMPLING_FREQ
-#define HUM_HIGHPITCH_INDEX FFT_BLOCK_SIZE*HUM_HIGHPITCH/VOICE_SAMPLING_FREQ
+#define HUM_PITCH_INDEX_1 FFT_BLOCK_SIZE*HUM_PITCH_1/VOICE_SAMPLING_FREQ
+#define HUM_PITCH_INDEX_2 FFT_BLOCK_SIZE*HUM_PITCH_2/VOICE_SAMPLING_FREQ
+#define HUM_PITCH_INDEX_3 FFT_BLOCK_SIZE*HUM_PITCH_3/VOICE_SAMPLING_FREQ
+#define HUM_PITCH_INDEX_4 FFT_BLOCK_SIZE*HUM_PITCH_4/VOICE_SAMPLING_FREQ
+#define HUM_PITCH_INDEX_5 FFT_BLOCK_SIZE*HUM_PITCH_5/VOICE_SAMPLING_FREQ
+#define HUM_PITCH_INDEX_6 FFT_BLOCK_SIZE*HUM_PITCH_6/VOICE_SAMPLING_FREQ
+#define HUM_PITCH_INDEX_7 FFT_BLOCK_SIZE*HUM_PITCH_7/VOICE_SAMPLING_FREQ
+#define HUM_PITCH_INDEX_8 FFT_BLOCK_SIZE*HUM_PITCH_8/VOICE_SAMPLING_FREQ
+#define HUM_PITCH_INDEX_9 FFT_BLOCK_SIZE*HUM_PITCH_9/VOICE_SAMPLING_FREQ
 #define NB_BLOCKS  (VOICE_BUFFER_LENGTH/(FFT_BLOCK_SIZE-FFT_BLOCK_OVERLAP))-1
 
 float HAM_WINDOW[FFT_BLOCK_SIZE];
@@ -23,7 +30,7 @@ char detectedPhonems[NB_BLOCKS];
 #pragma DATA_ALIGN(analysisBlock, FFT_BLOCK_SIZE*4)
 float analysisBlock [FFT_BLOCK_SIZE*2];
 float harmonicAmplitudes[FFT_BLOCK_SIZE/2];
-float bands [NB_BLOCKS][4];
+float bands [NB_BLOCKS][11];
 short indeces[FFT_BLOCK_SIZE/16];
 
 bool goodSeries();
@@ -70,16 +77,51 @@ bool detectPiou(short sample[VOICE_BUFFER_LENGTH])
         bands[cblock][1] = 0.0;
         bands[cblock][2] = 0.0;
         bands[cblock][3] = 0.0;
-        for (i = 0; i < HUM_LOWPITCH_INDEX; ++i)
+        bands[cblock][4] = 0.0;
+        bands[cblock][5] = 0.0;
+        bands[cblock][6] = 0.0;
+        bands[cblock][7] = 0.0;
+        bands[cblock][8] = 0.0;
+        bands[cblock][9] = 0.0;
+        bands[cblock][10] = 0.0;
+
+        for (i = 0; i < HUM_PITCH_INDEX_1; ++i)
             bands[cblock][1] += harmonicAmplitudes[i];
-        for (i = HUM_LOWPITCH_INDEX; i < HUM_HIGHPITCH_INDEX; ++i)
+        for (i = HUM_PITCH_INDEX_1; i < HUM_PITCH_INDEX_2; ++i)
             bands[cblock][2] += harmonicAmplitudes[i];
-        for (i = HUM_HIGHPITCH_INDEX; i < FFT_BLOCK_SIZE / 2; ++i)
+        for (i = HUM_PITCH_INDEX_2; i < HUM_PITCH_INDEX_3; ++i)
              bands[cblock][3] += harmonicAmplitudes[i];
-        bands[cblock][0] = bands[cblock][1] + bands[cblock][2] + bands[cblock][3];
+        for (i = HUM_PITCH_INDEX_3; i < HUM_PITCH_INDEX_4; ++i)
+             bands[cblock][4] += harmonicAmplitudes[i];
+        for (i = HUM_PITCH_INDEX_4; i < HUM_PITCH_INDEX_5; ++i)
+             bands[cblock][5] += harmonicAmplitudes[i];
+        for (i = HUM_PITCH_INDEX_5; i < HUM_PITCH_INDEX_6; ++i)
+             bands[cblock][6] += harmonicAmplitudes[i];
+        for (i = HUM_PITCH_INDEX_6; i < HUM_PITCH_INDEX_7; ++i)
+             bands[cblock][7] += harmonicAmplitudes[i];
+        for (i = HUM_PITCH_INDEX_7; i < HUM_PITCH_INDEX_8; ++i)
+             bands[cblock][8] += harmonicAmplitudes[i];
+        for (i = HUM_PITCH_INDEX_8; i < HUM_PITCH_INDEX_9; ++i)
+             bands[cblock][9] += harmonicAmplitudes[i];
+        for (i = HUM_PITCH_INDEX_9; i < FFT_BLOCK_SIZE / 2; ++i)
+             bands[cblock][10] += harmonicAmplitudes[i];
+
+        bands[cblock][0] = bands[cblock][1] + bands[cblock][2] +
+                            bands[cblock][3] + bands[cblock][4] +
+                            bands[cblock][5] + bands[cblock][6] +
+                            bands[cblock][7] + bands[cblock][8] +
+                            bands[cblock][9] + bands[cblock][10];
+
         bands[cblock][1] /= bands[cblock][0];
         bands[cblock][2] /= bands[cblock][0];
         bands[cblock][3] /= bands[cblock][0];
+        bands[cblock][4] /= bands[cblock][0];
+        bands[cblock][5] /= bands[cblock][0];
+        bands[cblock][6] /= bands[cblock][0];
+        bands[cblock][7] /= bands[cblock][0];
+        bands[cblock][8] /= bands[cblock][0];
+        bands[cblock][9] /= bands[cblock][0];
+        bands[cblock][10] /= bands[cblock][0];
 
         //printf("%f\t%f\t%f\t%f\t\r\n", bands[cblock][0], bands[cblock][1], bands[cblock][2], bands[cblock][3]);
 
@@ -176,36 +218,78 @@ bool goodSeries()
 }
 
 bool isP(int cblock){
-    if(     bands[cblock][1] > (0.22609) &&
-            bands[cblock][1] < (0.51263) &&
-            bands[cblock][2] > (0.23325) &&
-            bands[cblock][2] < (0.39039) &&
-            bands[cblock][3] > (0.17528) &&
-            bands[cblock][3] < (0.46236))
+    if(     bands[cblock][1] > (0.152039) &&
+            bands[cblock][1] < (0.395098) &&
+            bands[cblock][2] > (0.080106) &&
+            bands[cblock][2] < (0.272798) &&
+            bands[cblock][3] > (0.028439) &&
+            bands[cblock][3] < (0.065082) &&
+            bands[cblock][4] > (0.025390) &&
+            bands[cblock][4] < (0.039798) &&
+            bands[cblock][5] > (0.029348) &&
+            bands[cblock][5] < (0.072512) &&
+            bands[cblock][6] > (0.033610) &&
+            bands[cblock][6] < (0.122305) &&
+            bands[cblock][7] > (0.058029) &&
+            bands[cblock][7] < (0.127883) &&
+            bands[cblock][8] > (0.044471) &&
+            bands[cblock][8] < (0.124299) &&
+            bands[cblock][9] > (0.044722) &&
+            bands[cblock][9] < (0.135231) &&
+            bands[cblock][10] > (0.026882) &&
+            bands[cblock][10] < (0.121957))
         return true;
     else
         return false;
 }
 
 bool isI(int cblock){
-    if(     bands[cblock][1] > (0.353934) &&
-            bands[cblock][1] < (0.577778) &&
-            bands[cblock][2] > (0.301467) &&
-            bands[cblock][2] < (0.485965) &&
-            bands[cblock][3] > (0.077785) &&
-            bands[cblock][3] < (0.203071))
+    if(     bands[cblock][1] > (0.157429) &&
+            bands[cblock][1] < (0.488406) &&
+            bands[cblock][2] > (0.080848) &&
+            bands[cblock][2] < (0.360737) &&
+            bands[cblock][3] > (0.033497) &&
+            bands[cblock][3] < (0.109583) &&
+            bands[cblock][4] > (0.035955) &&
+            bands[cblock][4] < (0.079256) &&
+            bands[cblock][5] > (0.050621) &&
+            bands[cblock][5] < (0.121856) &&
+            bands[cblock][6] > (0.050978) &&
+            bands[cblock][6] < (0.120087) &&
+            bands[cblock][7] > (0.028969) &&
+            bands[cblock][7] < (0.074192) &&
+            bands[cblock][8] > (0.020119) &&
+            bands[cblock][8] < (0.062410) &&
+            bands[cblock][9] > (0.016534) &&
+            bands[cblock][9] < (0.059454) &&
+            bands[cblock][10] > (0.024534) &&
+            bands[cblock][10] < (0.041437))
         return true;
     else
         return false;
 }
 
 bool isU(int cblock){
-    if(     bands[cblock][1] > (0.496524) &&
-            bands[cblock][1] < (0.703182) &&
-            bands[cblock][2] > (0.264503) &&
-            bands[cblock][2] < (0.439299) &&
-            bands[cblock][3] > (0.02631) &&
-            bands[cblock][3] < (0.070182))
+    if(     bands[cblock][1] > (0.288864) &&
+            bands[cblock][1] < (0.614346) &&
+            bands[cblock][2] > (0.138250) &&
+            bands[cblock][2] < (0.385840) &&
+            bands[cblock][3] > (0.070822) &&
+            bands[cblock][3] < (0.165023) &&
+            bands[cblock][4] > (0.021224) &&
+            bands[cblock][4] < (0.079977) &&
+            bands[cblock][5] > (0.009204) &&
+            bands[cblock][5] < (0.059757) &&
+            bands[cblock][6] > (0.010839) &&
+            bands[cblock][6] < (0.047494) &&
+            bands[cblock][7] > (0.007323) &&
+            bands[cblock][7] < (0.025625) &&
+            bands[cblock][8] > (0.006868) &&
+            bands[cblock][8] < (0.024093) &&
+            bands[cblock][9] > (0.005583) &&
+            bands[cblock][9] < (0.019580) &&
+            bands[cblock][10] > (0.004549) &&
+            bands[cblock][10] < (0.014740))
         return true;
     else
         return false;
