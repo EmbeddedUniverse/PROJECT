@@ -11,6 +11,8 @@
     #define EXTERN extern
 #endif
 
+#define UNCERTAINTY_PERC 0.01
+
 bool detectPiou(short sample[VOICE_BUFFER_LENGTH]);
 void PIOU_init();
 

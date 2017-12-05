@@ -9,8 +9,8 @@ clc
 
 %% Parameters to change ***manually
 % Parameters just below can be changed for analysis's tweaks
-freq_sep = 0; % Minimum freq separation between main peaks (200) (100)
-nPeaks = 890;    % Number of main peaks per sample to analyze (20)    (5)
+freq_sep = 10; % Minimum freq separation between main peaks (200) (100)
+nPeaks = 5;    % Number of main peaks per sample to analyze (20)    (5)
 
 %Place helpful visual lines to check if points are between them in figure 1
 lowLimit =6800;
@@ -23,7 +23,7 @@ iiiou = 'piouSamples\iiiou.wav\';
 ouuuu = 'piouSamples\ouuuu.wav\';
 
 %% Sample data load
-[data, Fs] = loadAllWavSamples(Ppppiii);
+[data, Fs] = loadAllWavSamples(ouuuu);
 
 %% FFT
 [L,nbSamples] = size(data);
@@ -53,13 +53,21 @@ end
 
 %% Find specific maximum peaks (Only the harmonics strong enough in magnitude  for recognition)
 absFFTArray = fftArray;
+PKabsFFTArraySamples = zeros(length(fftArray),nbSamples); %Preallocation for speed
+FREQabsFFTArraySamples = zeros(length(fftArray),nbSamples); %Preallocation for speed
+
 for i = 1:nbSamples
     absFFTArray(:,2*i) = abs(fftArray(:,2*i));
+    PKabsFFTArraySamples(:,i) = absFFTArray(:,2*i);
+    FREQabsFFTArraySamples(:,i) = absFFTArray(:,2*i-1);
 end
 
 pkFreqArray = zeros(nPeaks*nbSamples,1); %Preallocation for speed
 pkFreqArraySamples = zeros(nPeaks,nbSamples); %Preallocation for speed
 pkArraySamples = zeros(nPeaks,nbSamples); %Preallocation for speed
+
+
+
 for i = 1:nbSamples
     %Uncomment to see each main peaks of the main harmonics of each sample
 %     figure()

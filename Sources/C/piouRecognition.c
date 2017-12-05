@@ -27,6 +27,9 @@ float bands [NB_BLOCKS][4];
 short indeces[FFT_BLOCK_SIZE/16];
 
 bool goodSeries();
+bool isP(int cblock);
+bool isI(int cblock);
+bool isU(int cblock);
 
 void PIOU_init()
 {
@@ -82,11 +85,11 @@ bool detectPiou(short sample[VOICE_BUFFER_LENGTH])
 
         if(bands[cblock][0] < 0.10*bands[0][0])
             detectedPhonems[cblock] = '0';
-        else if (bands[cblock][3] > 0.2)
+        else if (isP(cblock))
             detectedPhonems[cblock] = 'p';
-        else if (bands[cblock][1] > 0.3)
+        else if (isI(cblock) || isU(cblock))
         {
-            if (bands[cblock][2] > 0.2)
+            if (isI(cblock))
                 detectedPhonems[cblock] = 'i';
             else
                 detectedPhonems[cblock] = 'u';
@@ -97,14 +100,14 @@ bool detectPiou(short sample[VOICE_BUFFER_LENGTH])
 
 //        if(bands[cblock][0] < 0.10*bands[0][0])
 //            detectedPhonems[cblock] = '0';
-//        else if(bands[cblock][1] > 0.3 && bands[cblock][2] > 0.3 && bands[cblock][3] > 0.3)
-//            detectedPhonems[cblock] = 'p';
-//        else if(bands[cblock][1] > 0.3 && bands[cblock][2] > 0.3 && bands[cblock][3] > 0.3)
-//            detectedPhonems[cblock] = 'i';
-//        else if(bands[cblock][1] > 0.3 && bands[cblock][2] > 0.3 && bands[cblock][3] > 0.3)
+//        else if(isU(cblock))
 //            detectedPhonems[cblock] = 'u';
-//        else
+//        else if(isI(cblock))
+//            detectedPhonems[cblock] = 'i';
+//        else if(isP(cblock))
 //            detectedPhonems[cblock] = 'p';
+//        else
+//            detectedPhonems[cblock] = '0';
 
 
         start += FFT_BLOCK_SIZE - FFT_BLOCK_OVERLAP;
@@ -170,4 +173,40 @@ bool goodSeries()
 
 
     return true;
+}
+
+bool isP(int cblock){
+    if(     bands[cblock][1] > (0.22609) &&
+            bands[cblock][1] < (0.51263) &&
+            bands[cblock][2] > (0.23325) &&
+            bands[cblock][2] < (0.39039) &&
+            bands[cblock][3] > (0.17528) &&
+            bands[cblock][3] < (0.46236))
+        return true;
+    else
+        return false;
+}
+
+bool isI(int cblock){
+    if(     bands[cblock][1] > (0.353934) &&
+            bands[cblock][1] < (0.577778) &&
+            bands[cblock][2] > (0.301467) &&
+            bands[cblock][2] < (0.485965) &&
+            bands[cblock][3] > (0.077785) &&
+            bands[cblock][3] < (0.203071))
+        return true;
+    else
+        return false;
+}
+
+bool isU(int cblock){
+    if(     bands[cblock][1] > (0.496524) &&
+            bands[cblock][1] < (0.703182) &&
+            bands[cblock][2] > (0.264503) &&
+            bands[cblock][2] < (0.439299) &&
+            bands[cblock][3] > (0.02631) &&
+            bands[cblock][3] < (0.070182))
+        return true;
+    else
+        return false;
 }
