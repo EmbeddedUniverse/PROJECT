@@ -13,5 +13,6 @@
 #define GPDIR *(unsigned int*) 0x01B00004
 #define GP4DIR 4
 #define GP5DIR 5
+#define GP6DIR 6
 
 #endif /* INCLUDES_ADDRESSES_H_ */

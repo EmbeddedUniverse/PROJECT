@@ -11,5 +11,6 @@
 #define INCLUDES_RUN_H_
 
 void run(unsigned char ammoCode, unsigned timeCode);
+void runSetup();
 
 #endif /* INCLUDES_RUN_H_ */

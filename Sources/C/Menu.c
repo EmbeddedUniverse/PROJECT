@@ -49,17 +49,17 @@ void choisirNbrBalle(unsigned char *ammoCode){
     switch(command){
         case 1:
             printf("\n\n-------6 munitions selectionnées------\n\n");
-            *ammoCode = _6Ammo;
+            COM_send(_6Ammo,PIC);
             break;
 
         case 2:
             printf("\n\n-------12 munitions selectionnées------\n\n");
-            *ammoCode = _12Ammo;
+            COM_send(_12Ammo,PIC);
             break;
 
         case 3:
             printf("\n\n-------24 munitions selectionnées------\n\n");
-            *ammoCode = _24Ammo;
+            COM_send(_24Ammo,PIC);
             break;
 
     }
@@ -77,17 +77,17 @@ void choisrTemps(unsigned char *timeCode){
         switch(command){
             case 1:
                 printf("\n\n-------30 secondes selectionnées------\n\n");
-                *timeCode = _30secTimer;
+                COM_send(_30secTimer,PIC);
                 break;
 
             case 2:
                 printf("\n\n-------60 secondes selectionnées------\n\n");
-                *timeCode = _60secTimer;
+                COM_send(_60secTimer,PIC);
                 break;
 
             case 3:
                 printf("\n\n-------120 secondes selectionnées------\n\n");
-                *timeCode = _120secTimer;
+                COM_send(_120secTimer,PIC);
                 break;
 
         }

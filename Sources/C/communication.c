@@ -6,7 +6,8 @@
 extern void vectors();   // Vecteurs d'interruption
 
 volatile bool flagUART;
-volatile ReceiveCallBack recvCallBacks[MAX3111_DEVICE_COUNT] = {0,0};
+volatile ReceiveCallBack accelCallBack = 0;
+volatile ReceiveCallBack picCallBack = 0;
 
 
 COM_init()
@@ -39,13 +40,13 @@ COM_init()
     /* point to the IRQ vector table */
     IRQ_setVecs(vectors);
     IRQ_map(IRQ_EVT_EXTINT4, IRQ_EVT_EXTINT4);
-    IRQ_map(IRQ_EVT_EXTINT5, IRQ_EVT_EXTINT5);
+    IRQ_map(IRQ_EVT_EXTINT6, IRQ_EVT_EXTINT6);
 
     IRQ_enable(IRQ_EVT_EXTINT4);
-    IRQ_enable(IRQ_EVT_EXTINT5);
+    IRQ_enable(IRQ_EVT_EXTINT6);
     GPPOL = 0xFFFF;
     GPDIR &= ~(1 << GP4DIR);
-    GPDIR &= ~(1 << GP5DIR);
+    GPDIR &= ~(1 << GP6DIR);
 
     flagUART = false;
 
@@ -87,7 +88,10 @@ COM_send(unsigned char data, SPI_Interface interface)
 
 void COM_setReceiveCallBack(void (*callBack)(unsigned char), SPI_Interface interface)
 {
-    recvCallBacks[(int)interface] = (ReceiveCallBack)callBack;
+    if (interface == PIC)
+        picCallBack = callBack;
+    else if (interface == ACCEL)
+        accelCallBack = callBack;
 }
 
 bool COM_syncRead(SPI_Interface interface, unsigned char *receivedValue)
@@ -106,8 +110,8 @@ void interrupt ACC_recvRoutine()
     COM_selectInterface(ACCEL);
     unsigned char recvByte = readByteUART();
 
-    if (recvCallBacks[ACCEL] != 0)
-        recvCallBacks[ACCEL](recvByte);
+    if (accelCallBack != 0)
+        accelCallBack(recvByte);
 }
 
 void interrupt PIC_recvRoutine()
@@ -115,8 +119,8 @@ void interrupt PIC_recvRoutine()
     COM_selectInterface(PIC);
     unsigned char recvByte = readByteUART();
 
-    if (recvCallBacks[PIC] != 0)
-        recvCallBacks[PIC](recvByte);
+    if (picCallBack != 0)
+        picCallBack(recvByte);
 }
 
 void clearFIFO(SPI_Interface interface)

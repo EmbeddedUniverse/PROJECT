@@ -28,12 +28,16 @@ main(void){
         scanf("%d", &command);
 
         if(command == 1)
+        {
+            runSetup();
+
             while (true)
             {
                 unsigned char ammoCode = _24Ammo, timeCode = _120secTimer;
                 runMenu(&ammoCode, &timeCode);
                 run(ammoCode, timeCode);
             }
+        }
         else if(command == 2)
             test();
         else if(command == 3)

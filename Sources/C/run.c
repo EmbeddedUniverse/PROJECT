@@ -19,12 +19,8 @@ void receiveFromPIC(unsigned char data)
     picMessage = data;
 }
 
-void run(unsigned char ammoCode, unsigned timeCode)
+void runSetup()
 {
-    printf("\n----------------------------------------------\n");
-    printf("\t    STARTING GAME\n");
-    printf("----------------------------------------------\n");
-
     CSL_init();
     DSK6713_init();
 
@@ -35,15 +31,19 @@ void run(unsigned char ammoCode, unsigned timeCode)
 
     VOICE_init();
     PIOU_init();
+    COM_init();
+}
+
+void run(unsigned char ammoCode, unsigned timeCode)
+{
+    printf("\n----------------------------------------------\n");
+    printf("\t    STARTING GAME\n");
+    printf("----------------------------------------------\n");
+
 
     COM_setReceiveCallBack(aggregateAccelBytes, ACCEL);
     COM_setReceiveCallBack(receiveFromPIC, PIC);
-    COM_init();
 
-//    COM_send(ammoCode, PIC);
-//    DSK6713_waitusec(10000);
-//    COM_send(timeCode, PIC);
-//    DSK6713_waitusec(10000);
     COM_send(START_CODE, PIC);
     DSK6713_waitusec(1000);
 
@@ -52,6 +52,7 @@ void run(unsigned char ammoCode, unsigned timeCode)
     picMessage = 0;
 
     clearFIFO(PIC);
+    clearFIFO(ACCEL);
 
     while(picMessage != END_CODE)
     {
@@ -94,5 +95,8 @@ void run(unsigned char ammoCode, unsigned timeCode)
     printf("\n----------------------------------------------\n");
     printf("\t    GAME  OVER\n");
     printf("----------------------------------------------\n");
+
+    COM_setReceiveCallBack(0, ACCEL);
+    COM_setReceiveCallBack(0, PIC);
 }
 
