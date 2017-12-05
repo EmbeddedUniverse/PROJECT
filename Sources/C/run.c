@@ -12,12 +12,20 @@
 #define CHANGE_MODE_LED 1
 #define FIRE_LED 2
 
-void run(){
+unsigned char picMessage;
 
+void receiveFromPIC(unsigned char data)
+{
+    picMessage = data;
+}
+
+void run(unsigned char ammoCode, unsigned timeCode)
+{
     printf("\n----------------------------------------------\n");
-    printf("\t    RUNNING PROGRAM\n");
+    printf("\t    STARTING GAME\n");
     printf("----------------------------------------------\n");
 
+    CSL_init();
     DSK6713_init();
 
     DSK6713_LED_init();
@@ -29,11 +37,23 @@ void run(){
     PIOU_init();
 
     COM_setReceiveCallBack(aggregateAccelBytes, ACCEL);
+    COM_setReceiveCallBack(receiveFromPIC, PIC);
     COM_init();
+
+//    COM_send(ammoCode, PIC);
+//    DSK6713_waitusec(10000);
+//    COM_send(timeCode, PIC);
+//    DSK6713_waitusec(10000);
+    COM_send(START_CODE, PIC);
+    DSK6713_waitusec(1000);
 
     MOTION_init();
 
-    while(1)
+    picMessage = 0;
+
+    clearFIFO(PIC);
+
+    while(picMessage != END_CODE)
     {
         if (MOTION_readyToAnalyze())
         {
@@ -67,5 +87,12 @@ void run(){
             VOICE_reset();
             clearFIFO(ACCEL);
         }
+
+        //COM_syncRead(PIC, &picMessage);
     }
+
+    printf("\n----------------------------------------------\n");
+    printf("\t    GAME  OVER\n");
+    printf("----------------------------------------------\n");
 }
+

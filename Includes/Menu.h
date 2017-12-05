@@ -10,9 +10,9 @@
 
 
 
-void runMenu();
-void choisirNbrBalle();
-void choisrTemps();
+void runMenu(unsigned char *ammoCode, unsigned char *timeCode);
+void choisirNbrBalle(unsigned char *ammoCode);
+void choisrTemps(unsigned char *timeCode);
 void instruction();
 
 

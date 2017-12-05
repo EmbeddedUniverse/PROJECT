@@ -90,6 +90,13 @@ void COM_setReceiveCallBack(void (*callBack)(unsigned char), SPI_Interface inter
     recvCallBacks[(int)interface] = (ReceiveCallBack)callBack;
 }
 
+bool COM_syncRead(SPI_Interface interface, unsigned char *receivedValue)
+{
+    COM_selectInterface(interface);
+
+    return readNewByteUART(receivedValue);
+}
+
 /****************************************************************************
     ISR :
 ****************************************************************************/
@@ -105,7 +112,7 @@ void interrupt ACC_recvRoutine()
 
 void interrupt PIC_recvRoutine()
 {
-    COM_selectInterface(ACCEL);
+    COM_selectInterface(PIC);
     unsigned char recvByte = readByteUART();
 
     if (recvCallBacks[PIC] != 0)
@@ -117,3 +124,4 @@ void clearFIFO(SPI_Interface interface)
     COM_selectInterface(interface);
     flushFIFO();
 }
+

@@ -10,6 +10,6 @@
 #ifndef INCLUDES_RUN_H_
 #define INCLUDES_RUN_H_
 
-void run();
+void run(unsigned char ammoCode, unsigned timeCode);
 
 #endif /* INCLUDES_RUN_H_ */

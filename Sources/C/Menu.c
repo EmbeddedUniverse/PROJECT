@@ -3,7 +3,7 @@
 
 
 
-void runMenu(void){
+void runMenu(unsigned char *ammoCode, unsigned char *timeCode){
        unsigned short commandMenu = 0;
        bool endMenu = false;
        while(!endMenu) {
@@ -17,10 +17,10 @@ void runMenu(void){
            scanf("%u", &commandMenu);
 
            if(commandMenu == 1)
-               choisirNbrBalle();
+               choisirNbrBalle(ammoCode);
 
            else if(commandMenu == 2)
-               choisrTemps();
+               choisrTemps(timeCode);
 
            else if(commandMenu == 3)
                instruction();
@@ -36,7 +36,7 @@ void runMenu(void){
 
 }
 
-void choisirNbrBalle(){
+void choisirNbrBalle(unsigned char *ammoCode){
     unsigned short command = 0;
     printf("\n------------------------------------------------------\n");
     printf("\t   Combien de munitions par chargeur voulez-vous? ");
@@ -49,22 +49,22 @@ void choisirNbrBalle(){
     switch(command){
         case 1:
             printf("\n\n-------6 munitions selectionnées------\n\n");
-            COM_send(_6Ammo,PIC);
+            *ammoCode = _6Ammo;
             break;
 
         case 2:
             printf("\n\n-------12 munitions selectionnées------\n\n");
-            COM_send(_12Ammo,PIC);
+            *ammoCode = _12Ammo;
             break;
 
         case 3:
             printf("\n\n-------24 munitions selectionnées------\n\n");
-            COM_send(_24Ammo,PIC);
+            *ammoCode = _24Ammo;
             break;
 
     }
 }
-void choisrTemps(){
+void choisrTemps(unsigned char *timeCode){
     unsigned short command = 0;
         printf("\n------------------------------------------------------\n");
         printf("\t   Combien de temps par partie voulez-vous? ");
@@ -77,17 +77,17 @@ void choisrTemps(){
         switch(command){
             case 1:
                 printf("\n\n-------30 secondes selectionnées------\n\n");
-                COM_send(_30secTimer,PIC);
+                *timeCode = _30secTimer;
                 break;
 
             case 2:
                 printf("\n\n-------60 secondes selectionnées------\n\n");
-                COM_send(_60secTimer,PIC);
+                *timeCode = _60secTimer;
                 break;
 
             case 3:
                 printf("\n\n-------120 secondes selectionnées------\n\n");
-                COM_send(_120secTimer,PIC);
+                *timeCode = _120secTimer;
                 break;
 
         }

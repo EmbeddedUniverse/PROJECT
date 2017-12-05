@@ -203,6 +203,23 @@ unsigned char readByteUART()
     return MCBSP_read(SPI_PortHandle) & 0xFF;
 }
 
+bool readNewByteUART(unsigned char * receivedValue)
+{
+    while(! MCBSP_xrdy(SPI_PortHandle));
+    MCBSP_write(SPI_PortHandle, SPI_READ_DATA);
+
+    unsigned short received = MCBSP_read(SPI_PortHandle);
+
+    bool dataIsNew = (received & DOUT) != 0;
+
+    if (dataIsNew)
+    {
+        *receivedValue = received & 0xFF;
+    }
+
+    return dataIsNew;
+}
+
 // Returns the number of flushed frames
 unsigned short flushFIFO()
 {

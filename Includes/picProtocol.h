@@ -9,6 +9,8 @@
 #define MODE_CHANGE_CODE    0xBB
 #define FIRE_CODE           0xCC
 #define START_CODE          0xDD
+#define END_CODE            0xEE
+#define TERMINATION_CODE    0xFF
 
 #define _6Ammo              0x0A
 #define _12Ammo             0x0B

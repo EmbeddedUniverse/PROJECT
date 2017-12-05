@@ -64,6 +64,7 @@ EXTERN int MAX3111_init(BaudRate baud);
 EXTERN bool sendByteUART(unsigned char data);
 EXTERN unsigned char readByteUART();
 unsigned short flushFIFO();
+bool readNewByteUART(unsigned char * receivedValue);
 
 #undef MAX3111_MODULE_IMPORT
 #undef EXTERN
