@@ -62,7 +62,7 @@ unsigned int maxAmmo = 24;
 unsigned short toggleCounter = 0;
 unsigned int globalTimer = 0;
 unsigned int singleGameTime = 121;
-
+unsigned int reloadTime = 0;
 
 
 
@@ -75,6 +75,7 @@ bool capteurFlag    = false;
 bool timerFlag      = false;
 bool endFlag        = false;
 bool startGame      = false;
+bool realStart      = false;
 
 // Declarations
 void interrupt rxIsr(void);
@@ -105,13 +106,15 @@ void main(void) {
    
   
    
-   /*while(!startGame){
+   while(!realStart){
         if(rxFlag){      
             rxFlag = false; // Reset the flag
             PIE1bits.RC1IE = 1; // Re-enable the interrupt control
-                  
+            if (startGame) {
+            realStart=true;
+            }     
         } 
-    }*/
+    }
     printStartGame();
     T0CONbits.TMR0ON = 1; // Start Timer
    
@@ -155,7 +158,9 @@ void main(void) {
         printRemTime(remainingTime);
         globalTimer = singleGameTime - remainingTime;
         printPoints(totalPoints);
+        int temp= ammoLeft;
         printRemBullets(ammoLeft);
+        ammoLeft= temp;
         switch(myState){
             case IDLE :
                 ammoLeft= maxAmmo;
@@ -180,6 +185,8 @@ void main(void) {
                 if(reloadFlag){
                     ammoLeft= maxAmmo;              
                     reloadFlag=false;
+                    rxFlag = false;
+                    pewFlag = false;
                     PIE1bits.RC1IE = 1;
                 }
 
@@ -187,6 +194,7 @@ void main(void) {
                     changeMode();
                     setModeLED(myModeState);
                     modeFlag=false;
+                    rxFlag = false;
                     PIE1bits.RC1IE = 1;
                 }
 
@@ -196,12 +204,13 @@ void main(void) {
                     stopShot();
                     ammoLeft -= 1;
                     pewFlag = false;
+                    rxFlag = false;
                     PIE1bits.RC1IE = 1;
                 }
                 else if(ammoLeft==0){
                     myState = NEED_RELOAD;
                 }
-                else if(capteurFlag /*&& myModeState == nextTarget[1]*/){
+                else if(capteurFlag && myModeState == nextTarget[1]){
                     capteurFlag = false;
                     INTCON3bits.INT1E = 1; 
                     myState = ACCUMULATE_POINTS;
@@ -215,13 +224,17 @@ void main(void) {
                     toggleGunLED();
                     toggleCounter=0;
                 }
-                if(reloadFlag){
-                    ammoLeft= maxAmmo;
-                    setModeLED(myModeState);
-                    toggleCounter=0;
-                    reloadFlag=false;
-                    PIE1bits.RC1IE = 1;
-                }
+                if(rxFlag){      
+                    rxFlag = false; // Reset the flag
+                    PIE1bits.RC1IE = 1; // Re-enable the interrupt control
+                    if (reloadFlag) {
+                        ammoLeft= maxAmmo;
+                        setModeLED(myModeState);
+                        toggleCounter=0;
+                        reloadFlag=false;
+                        myState = WAIT_KILL;
+                    }     
+                } 
                 break;
 
             case END_GAME:
@@ -376,11 +389,14 @@ void getRandomTarget(short Target[2]){
 }
 
 void changeMode(){
-    if (myModeState == MODE0){
-        myModeState=MODE1;                  
-    }       
-    else{
-        myModeState=MODE0;
+    if (globalTimer>(reloadTime+1)){
+        if (myModeState == MODE0){
+            myModeState=MODE1;                  
+        }       
+        else{
+            myModeState=MODE0;
+        }
+        reloadTime = globalTimer;
     }
 }
 
