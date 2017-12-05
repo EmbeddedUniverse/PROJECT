@@ -9,6 +9,8 @@
 #include "voiceDetector.h"
 #include "C6713Helper_UdeS.h"
 #include "circularBuffer.h"
+#include "firFilter.h"
+#include "firCoefficients64.dat"
 
 volatile short detectionArray[DETECTION_BUFFER_LENGTH];
 volatile int detectionIndex;
@@ -47,12 +49,9 @@ interrupt void c_int11(void)
     {
         detectionArray[detectionIndex++] = abs(newValue);
 
-        unsigned int i, sum = 0;
+        unsigned long moyenneMobile = FIR_compute((short *)detectionArray, (short *)MOY_MOB64_COEFF, DETECTION_BUFFER_LENGTH);
 
-        for (i = 0; i < DETECTION_BUFFER_LENGTH; ++i)
-            sum += detectionArray[i];
-
-        if (sum > DETECTION_THRESHOLD)
+        if (moyenneMobile > DETECTION_THRESHOLD)
         {
             voiceMEF = RECORDING;
         }
