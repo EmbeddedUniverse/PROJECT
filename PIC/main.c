@@ -56,11 +56,16 @@ unsigned char rxChar = 0x00;
 unsigned char transferedData = 0x00;
 short nextTarget[2];
 unsigned int ammoLeft = 24;
-int toggleCounter = 0;
-int globalTimer = 0;
-int singleGameTime = 10;
-int totalPoints = 0;
-int maxAmmo = 24;
+unsigned int totalPoints;
+unsigned int maxAmmo = 24;
+
+unsigned short toggleCounter = 0;
+unsigned int globalTimer = 0;
+unsigned int singleGameTime = 121;
+
+
+
+
 bool ErrorUART      = false; 
 bool rxFlag         = false; // USART Data Received flag
 bool reloadFlag     = false;
@@ -100,13 +105,13 @@ void main(void) {
    
   
    
-   while(!startGame){
+   /*while(!startGame){
         if(rxFlag){      
             rxFlag = false; // Reset the flag
             PIE1bits.RC1IE = 1; // Re-enable the interrupt control
                   
         } 
-    }
+    }*/
     printStartGame();
     T0CONbits.TMR0ON = 1; // Start Timer
    
@@ -131,6 +136,7 @@ void main(void) {
     }*/
     //TXREG1=0xEE;
     setModeLED(myModeState);
+    totalPoints = 0;
     ammoLeft = maxAmmo;
     while(!endFlag){
         
@@ -145,13 +151,13 @@ void main(void) {
         }
         
         // Affichage 
+        unsigned int remainingTime = singleGameTime-globalTimer;
+        printRemTime(remainingTime);
+        globalTimer = singleGameTime - remainingTime;
         printPoints(totalPoints);
         printRemBullets(ammoLeft);
-        printRemTime(singleGameTime-globalTimer);
-    
         switch(myState){
             case IDLE :
-                totalPoints = 0;
                 ammoLeft= maxAmmo;
                 printStartGame();
                 T0CONbits.TMR0ON = 1; // Start Timer
@@ -222,6 +228,7 @@ void main(void) {
                     //endFlag = true;
                     startGame = false;
                     T0CONbits.TMR0ON = 0;
+                   
                     TXREG1=0xEE;
                     while(!startGame){ 
                         printEndGame(totalPoints);
@@ -231,7 +238,8 @@ void main(void) {
                             PIE1bits.RC1IE = 1; // Re-enable the interrupt control
                         } 
                     }
-                    myState = IDLE;                   
+                    myState = IDLE; 
+                    totalPoints = 0;
                 break;                  
         }        
     }
