@@ -6,7 +6,7 @@ long long FIR_compute(short z[], short b[], int N)
 
     int i;
     for (i = 0; i < N; ++i)
-        sum = z[i] * b[i];
+        sum += z[i] * b[i];
 
     return sum;
 }
