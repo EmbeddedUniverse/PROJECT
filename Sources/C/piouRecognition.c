@@ -24,7 +24,7 @@
 #define HUM_PITCH_INDEX_9 FFT_BLOCK_SIZE*HUM_PITCH_9/VOICE_SAMPLING_FREQ
 #define NB_BLOCKS  (VOICE_BUFFER_LENGTH/(FFT_BLOCK_SIZE-FFT_BLOCK_OVERLAP))-1
 
-#define ERROR_TOLERANCE 0.01
+#define ERROR_TOLERANCE 0.10
 
 float HAM_WINDOW[FFT_BLOCK_SIZE];
 
@@ -35,7 +35,7 @@ float harmonicAmplitudes[FFT_BLOCK_SIZE/2];
 float bands [NB_BLOCKS][11];
 short indeces[FFT_BLOCK_SIZE/16];
 
-double sumSquareError;
+double sumSquareError[NB_BLOCKS];
 
 bool goodSeries();
 bool isP(int cblock);
@@ -171,21 +171,21 @@ bool detectPiou(short sample[VOICE_BUFFER_LENGTH])
         start += FFT_BLOCK_SIZE - FFT_BLOCK_OVERLAP;
     }
 
-    int o;
-    float tabTemp[10];
-
-    for(o = 0; o <NB_BLOCKS; o++){
-        tabTemp[0]=bands[o][1];
-        tabTemp[1]=bands[o][2];
-        tabTemp[2]=bands[o][3];
-        tabTemp[3]=bands[o][4];
-        tabTemp[4]=bands[o][5];
-        tabTemp[5]=bands[o][6];
-        tabTemp[6]=bands[o][7];
-        tabTemp[7]=bands[o][8];
-        tabTemp[8]=bands[o][9];
-        tabTemp[9]=bands[o][10];
-    }
+//    int o;
+//    float tabTemp[10];
+//
+//    for(o = 0; o <NB_BLOCKS; o++){
+//        tabTemp[0]=bands[o][1];
+//        tabTemp[1]=bands[o][2];
+//        tabTemp[2]=bands[o][3];
+//        tabTemp[3]=bands[o][4];
+//        tabTemp[4]=bands[o][5];
+//        tabTemp[5]=bands[o][6];
+//        tabTemp[6]=bands[o][7];
+//        tabTemp[7]=bands[o][8];
+//        tabTemp[8]=bands[o][9];
+//        tabTemp[9]=bands[o][10];
+//    }
 
 
 
@@ -335,18 +335,18 @@ bool isU(int cblock){
 
 
 bool isTA(int cblock){
-    sumSquareError = ((0.409847712-bands[cblock][1])*(0.409847712-bands[cblock][1]) +
-                    (0.13216094-bands[cblock][2])*(0.13216094-bands[cblock][2]) +
-                    (0.05570464-bands[cblock][3])*(0.05570464-bands[cblock][3]) +
-                    (0.084403212-bands[cblock][4])*(0.084403212-bands[cblock][4]) +
-                    (0.062883199-bands[cblock][5])*(0.062883199-bands[cblock][5]) +
-                    (0.036448766-bands[cblock][6])*(0.036448766-bands[cblock][6]) +
-                    (0.050541932-bands[cblock][7])*(0.050541932-bands[cblock][7]) +
-                    (0.058872362-bands[cblock][8])*(0.058872362-bands[cblock][8]) +
-                    (0.059124256-bands[cblock][9])*(0.059124256-bands[cblock][9]) +
-                    (0.050013011-bands[cblock][10])*(0.050013011-bands[cblock][10]));
+    sumSquareError[cblock] = ((0.137445-bands[cblock][1])*(0.137445-bands[cblock][1]) +
+                            (0.126986-bands[cblock][2])*(0.126986-bands[cblock][2]) +
+                            (0.019620-bands[cblock][3])*(0.019620-bands[cblock][3]) +
+                            (0.026776-bands[cblock][4])*(0.026776-bands[cblock][4]) +
+                            (0.259279-bands[cblock][5])*(0.259279-bands[cblock][5]) +
+                            (0.127798-bands[cblock][6])*(0.127798-bands[cblock][6]) +
+                            (0.082721-bands[cblock][7])*(0.082721-bands[cblock][7]) +
+                            (0.077315-bands[cblock][8])*(0.077315-bands[cblock][8]) +
+                            (0.089058-bands[cblock][9])*(0.089058-bands[cblock][9]) +
+                            (0.053001-bands[cblock][10])*(0.053001-bands[cblock][10]));
 
-    if(sumSquareError < ERROR_TOLERANCE )
+    if( sumSquareError[cblock] < ERROR_TOLERANCE )
         return true;
     else
         return false;
