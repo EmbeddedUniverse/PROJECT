@@ -24,7 +24,7 @@
 #define HUM_PITCH_INDEX_9 FFT_BLOCK_SIZE*HUM_PITCH_9/VOICE_SAMPLING_FREQ
 #define NB_BLOCKS  (VOICE_BUFFER_LENGTH/(FFT_BLOCK_SIZE-FFT_BLOCK_OVERLAP))-1
 
-#define ERROR_TOLERANCE 0.03
+#define ERROR_TOLERANCE 0.05
 
 float HAM_WINDOW[FFT_BLOCK_SIZE];
 
@@ -356,14 +356,14 @@ bool isA(int cblock){
                             (0.077402-bands[cblock][2])*(0.077402-bands[cblock][2]) +
                             (0.026613-bands[cblock][3])*(0.026613-bands[cblock][3]) +
                             (0.048531-bands[cblock][4])*(0.048531-bands[cblock][4]) +
-                            (0.299821-bands[cblock][5])*(0.299821-bands[cblock][5]) +
+                            (0.537275-bands[cblock][5])*(0.537275-bands[cblock][5]) +
                             (0.112100-bands[cblock][6])*(0.112100-bands[cblock][6]) +
                             (0.086246-bands[cblock][7])*(0.086246-bands[cblock][7]) +
                             (0.092258-bands[cblock][8])*(0.092258-bands[cblock][8]) +
                             (0.103228-bands[cblock][9])*(0.103228-bands[cblock][9]) +
                             (0.097041-bands[cblock][10])*(0.097041-bands[cblock][10]));
 
-    if( sumSquareErrorA[cblock] < ERROR_TOLERANCE )
+    if( sumSquareErrorA[cblock] < ERROR_TOLERANCE && bands[cblock][5] > 0.20 )
         return true;
     else
         return false;
