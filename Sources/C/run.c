@@ -30,8 +30,8 @@ void run(){
     {
         if (voiceSampleReady)
         {
-            //play(voiceSample, VOICE_BUFFER_LENGTH);
-            //while(!readyToPlay);
+            play(voiceSample, VOICE_BUFFER_LENGTH);
+            while(!readyToPlay);
 
             if (detectPiou(voiceSample))
             {

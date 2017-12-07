@@ -24,7 +24,7 @@
 #define HUM_PITCH_INDEX_9 FFT_BLOCK_SIZE*HUM_PITCH_9/VOICE_SAMPLING_FREQ
 #define NB_BLOCKS  (VOICE_BUFFER_LENGTH/(FFT_BLOCK_SIZE-FFT_BLOCK_OVERLAP))-1
 
-#define ERROR_TOLERANCE 0.10
+#define ERROR_TOLERANCE 0.03
 
 float HAM_WINDOW[FFT_BLOCK_SIZE];
 
@@ -35,13 +35,15 @@ float harmonicAmplitudes[FFT_BLOCK_SIZE/2];
 float bands [NB_BLOCKS][11];
 short indeces[FFT_BLOCK_SIZE/16];
 
-double sumSquareError[NB_BLOCKS];
+double sumSquareErrorT[NB_BLOCKS];
+double sumSquareErrorA[NB_BLOCKS];
 
 bool goodSeries();
 bool isP(int cblock);
 bool isI(int cblock);
 bool isU(int cblock);
-bool isTA(int cblock);
+bool isT(int cblock);
+bool isA(int cblock);
 
 void PIOU_init()
 {
@@ -158,34 +160,31 @@ bool detectPiou(short sample[VOICE_BUFFER_LENGTH])
 
         if(bands[cblock][0] < 0.10*bands[0][0])
             detectedPhonems[cblock] = '0';
-        else if(isTA(cblock) || isI(cblock))
-            if(isTA(cblock))
-                detectedPhonems[cblock] = 'A';
-            else if(isU(cblock))
-                detectedPhonems[cblock] = 'U';
-            else
-                detectedPhonems[cblock] = 'I';
+        else if(isT(cblock))
+            detectedPhonems[cblock] = 'T';
+        else if(isA(cblock))
+            detectedPhonems[cblock] = 'A';
         else
-            detectedPhonems[cblock] = '0';
+            detectedPhonems[cblock] = 'X';
 
         start += FFT_BLOCK_SIZE - FFT_BLOCK_OVERLAP;
     }
 
-//    int o;
-//    float tabTemp[10];
-//
-//    for(o = 0; o <NB_BLOCKS; o++){
-//        tabTemp[0]=bands[o][1];
-//        tabTemp[1]=bands[o][2];
-//        tabTemp[2]=bands[o][3];
-//        tabTemp[3]=bands[o][4];
-//        tabTemp[4]=bands[o][5];
-//        tabTemp[5]=bands[o][6];
-//        tabTemp[6]=bands[o][7];
-//        tabTemp[7]=bands[o][8];
-//        tabTemp[8]=bands[o][9];
-//        tabTemp[9]=bands[o][10];
-//    }
+    int o;
+    float tabTemp[10];
+
+    for(o = 0; o <NB_BLOCKS; o++){
+        tabTemp[0]=bands[o][1];
+        tabTemp[1]=bands[o][2];
+        tabTemp[2]=bands[o][3];
+        tabTemp[3]=bands[o][4];
+        tabTemp[4]=bands[o][5];
+        tabTemp[5]=bands[o][6];
+        tabTemp[6]=bands[o][7];
+        tabTemp[7]=bands[o][8];
+        tabTemp[8]=bands[o][9];
+        tabTemp[9]=bands[o][10];
+    }
 
 
 
@@ -250,10 +249,10 @@ bool goodSeries()
     int index = 0;
 
     // There must be a A in 2 phonems
-    for(; index < NB_BLOCKS-1; ++index)    {
-        if(detectedPhonems[index] == 'A')
-            if(detectedPhonems[index+1] == 'A')
-                return true;
+    for(; index < NB_BLOCKS-3; ++index)    {
+        if(detectedPhonems[index] == 'T')
+            if(detectedPhonems[index+1] == 'A' || detectedPhonems[index+2] == 'A' || detectedPhonems[index+3] == 'A')
+                        return true;
     }
 
     return false;
@@ -334,19 +333,37 @@ bool isU(int cblock){
 //}
 
 
-bool isTA(int cblock){
-    sumSquareError[cblock] = ((0.137445-bands[cblock][1])*(0.137445-bands[cblock][1]) +
-                            (0.126986-bands[cblock][2])*(0.126986-bands[cblock][2]) +
-                            (0.019620-bands[cblock][3])*(0.019620-bands[cblock][3]) +
-                            (0.026776-bands[cblock][4])*(0.026776-bands[cblock][4]) +
-                            (0.259279-bands[cblock][5])*(0.259279-bands[cblock][5]) +
-                            (0.127798-bands[cblock][6])*(0.127798-bands[cblock][6]) +
-                            (0.082721-bands[cblock][7])*(0.082721-bands[cblock][7]) +
-                            (0.077315-bands[cblock][8])*(0.077315-bands[cblock][8]) +
-                            (0.089058-bands[cblock][9])*(0.089058-bands[cblock][9]) +
-                            (0.053001-bands[cblock][10])*(0.053001-bands[cblock][10]));
+bool isT(int cblock){
+    sumSquareErrorT[cblock] = ((0.067752-bands[cblock][1])*(0.067752-bands[cblock][1]) +
+                            (0.100295-bands[cblock][2])*(0.100295-bands[cblock][2]) +
+                            (0.028310-bands[cblock][3])*(0.028310-bands[cblock][3]) +
+                            (0.040523-bands[cblock][4])*(0.040523-bands[cblock][4]) +
+                            (0.216980-bands[cblock][5])*(0.216980-bands[cblock][5]) +
+                            (0.119700-bands[cblock][6])*(0.119700-bands[cblock][6]) +
+                            (0.111312-bands[cblock][7])*(0.111312-bands[cblock][7]) +
+                            (0.113067-bands[cblock][8])*(0.113067-bands[cblock][8]) +
+                            (0.112665-bands[cblock][9])*(0.112665-bands[cblock][9]) +
+                            (0.089396-bands[cblock][10])*(0.089396-bands[cblock][10]));
 
-    if( sumSquareError[cblock] < ERROR_TOLERANCE )
+    if( sumSquareErrorT[cblock] < ERROR_TOLERANCE )
+        return true;
+    else
+        return false;
+}
+
+bool isA(int cblock){
+    sumSquareErrorA[cblock] = ((0.056759-bands[cblock][1])*(0.056759-bands[cblock][1]) +
+                            (0.077402-bands[cblock][2])*(0.077402-bands[cblock][2]) +
+                            (0.026613-bands[cblock][3])*(0.026613-bands[cblock][3]) +
+                            (0.048531-bands[cblock][4])*(0.048531-bands[cblock][4]) +
+                            (0.299821-bands[cblock][5])*(0.299821-bands[cblock][5]) +
+                            (0.112100-bands[cblock][6])*(0.112100-bands[cblock][6]) +
+                            (0.086246-bands[cblock][7])*(0.086246-bands[cblock][7]) +
+                            (0.092258-bands[cblock][8])*(0.092258-bands[cblock][8]) +
+                            (0.103228-bands[cblock][9])*(0.103228-bands[cblock][9]) +
+                            (0.097041-bands[cblock][10])*(0.097041-bands[cblock][10]));
+
+    if( sumSquareErrorA[cblock] < ERROR_TOLERANCE )
         return true;
     else
         return false;
