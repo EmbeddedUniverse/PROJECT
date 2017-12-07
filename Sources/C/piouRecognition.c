@@ -161,10 +161,10 @@ bool detectPiou(short sample[VOICE_BUFFER_LENGTH])
 
         if(bands[cblock][0] < 0.10*bands[0][0])
             detectedPhonems[cblock] = '0';
-        else if(isT(cblock))
-            detectedPhonems[cblock] = 'T';
         else if(isA(cblock))
             detectedPhonems[cblock] = 'A';
+        else if(isT(cblock))
+            detectedPhonems[cblock] = 'T';
         else
             detectedPhonems[cblock] = 'X';
 
