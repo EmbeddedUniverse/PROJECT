@@ -24,8 +24,8 @@
 #define HUM_PITCH_INDEX_9 FFT_BLOCK_SIZE*HUM_PITCH_9/VOICE_SAMPLING_FREQ
 #define NB_BLOCKS  (VOICE_BUFFER_LENGTH/(FFT_BLOCK_SIZE-FFT_BLOCK_OVERLAP))-1
 
-#define ERROR_TOLERANCE_T 0.10
-#define ERROR_TOLERANCE_A 0.05
+#define ERROR_TOLERANCE_T 0.08
+#define ERROR_TOLERANCE_A 0.04
 
 float HAM_WINDOW[FFT_BLOCK_SIZE];
 
@@ -159,14 +159,20 @@ bool detectPiou(short sample[VOICE_BUFFER_LENGTH])
 //        else
 //            detectedPhonems[cblock] = '0';
 
+        isA(cblock);
+        isT(cblock);
+
+        if( sumSquareErrorA[cblock] > ERROR_TOLERANCE_A &&
+            sumSquareErrorT[cblock] > ERROR_TOLERANCE_T)
+            detectedPhonems[cblock] = 'X';
+        else if(sumSquareErrorA[cblock] < sumSquareErrorT[cblock])
+            detectedPhonems[cblock] = 'A';
+        else
+            detectedPhonems[cblock] = 'T';
+
         if(bands[cblock][0] < 0.10*bands[0][0])
             detectedPhonems[cblock] = '0';
-        else if(isA(cblock))
-            detectedPhonems[cblock] = 'A';
-        else if(isT(cblock))
-            detectedPhonems[cblock] = 'T';
-        else
-            detectedPhonems[cblock] = 'X';
+
 
         start += FFT_BLOCK_SIZE - FFT_BLOCK_OVERLAP;
     }
